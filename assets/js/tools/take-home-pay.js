@@ -60,7 +60,7 @@ function populatePAMunis() {
   const rows = paData.filter((r) => r[1].split("/").includes(county))
     .sort((a, b) => a[2].localeCompare(b[2]) || a[3].localeCompare(b[3]));
   for (const [psd, , muni, sd, res] of rows) {
-    paMuniSel.append(el("option", { value: psd }, `${muni} / ${sd} SD — ${res}%`));
+    paMuniSel.append(el("option", { value: psd }, `${muni} / ${sd} — ${res}%`));
   }
 }
 paCountySel.addEventListener("change", () => { populatePAMunis(); if (typeof run === "function") run(); });
