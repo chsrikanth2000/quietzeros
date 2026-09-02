@@ -751,6 +751,71 @@ TOOLS += [
 ]
 
 
+TOOLS += [
+    # ------------------------------------------------ rental vs S&P 500
+    dict(
+        slug="rental-vs-sp500",
+        title="Rental property vs. the S&amp;P 500",
+        desc="Buy a rental property or put the same cash in an index fund? Every cost - vacancy, management, maintenance, selling costs - and every tax effect - depreciation, mortgage interest, passive-loss limits, capital gains - counted on both sides.",
+        cat="Saving &amp; investing",
+        h1="Rental property, or the S&amp;P 500?",
+        lede="Landlords count the rent and forget the roof; index-fund arguments forget that leverage cuts both ways. This prices every cost and every tax break on both sides, at your numbers. Nothing you type leaves this page.",
+        form="\n".join([
+            field("price", "Property price", prefix="$", value="320000", fmin="10000", fmax="20000000", step="5000",
+                  slider=("50000", "1500000", "5000"), err="Enter $10,000 to $20,000,000."),
+            field("down", "Down payment", suffix="%", value="25", fmin="0", fmax="100", step="1"),
+            field("rate", "Mortgage rate", suffix="%", value="6.5", fmin="0.1", fmax="25", step="0.125"),
+            field("term", "Loan term", suffix="yrs", value="30", fmin="5", fmax="40", step="1"),
+            field("closing", "Closing costs", suffix="% of price", value="3", fmin="0", fmax="10", step="0.5"),
+            field("rehab", "Upfront repairs / rehab", prefix="$", value="8000", fmin="0", fmax="1000000", step="500"),
+            field("rent", "Monthly rent (today)", prefix="$", value="2400", fmin="0", fmax="100000", step="50",
+                  slider=("200", "10000", "50")),
+            field("vacancy", "Vacancy rate", suffix="%", value="6", fmin="0", fmax="50", step="1",
+                  help_="Months empty between tenants, averaged - 6-8% is typical."),
+            field("rentgrow", "Rent grows at", suffix="%/yr", value="3", fmin="0", fmax="15", step="0.5"),
+            field("proptax", "Property tax", suffix="%/yr of value", value="1.2", fmin="0", fmax="4", step="0.05"),
+            field("insurance", "Landlord insurance", suffix="%/yr of value", value="0.6", fmin="0", fmax="4", step="0.05"),
+            field("maint", "Maintenance &amp; capex reserve", suffix="%/yr of value", value="1.2", fmin="0", fmax="5", step="0.1",
+                  help_="Roofs, HVAC, turnover - 1-1.5% of value yearly is the standard landlord reserve."),
+            field("mgmt", "Property management", suffix="% of rent", value="8", fmin="0", fmax="20", step="1",
+                  help_="Set to 0 if you self-manage - but then your time isn't free either."),
+            field("hoa", "HOA dues", prefix="$", value="0", fmin="0", fmax="10000", step="10", suffix="/mo"),
+            field("appre", "Home appreciation", suffix="%/yr", value="3.5", fmin="-5", fmax="15", step="0.5"),
+            field("building", "Building value (structure, not land)", suffix="% of price", value="80", fmin="0", fmax="100", step="5",
+                  help_="Only the structure depreciates. 80% is a common rule of thumb; your tax bill has the real split."),
+            field("sellcost", "Selling costs at exit", suffix="%", value="7", fmin="0", fmax="15", step="0.5",
+                  help_="Agent commission plus closing costs when you eventually sell."),
+            field("hold", "Holding period", suffix="yrs", value="15", fmin="1", fmax="40", step="1"),
+            field("otherinc", "Your other income (for the $25k loss-allowance phase-out)", prefix="$", value="120000", fmin="0", fmax="10000000", step="5000",
+                  help_="Rental losses offset other income dollar-for-dollar up to $25,000 if you actively manage - phasing out $100k-$150k MAGI."),
+            field("marg", "Your marginal tax rate", suffix="%", value="24", fmin="0", fmax="50", step="1"),
+            field("ltcg", "Long-term capital gains rate", suffix="%", value="15", fmin="0", fmax="37", step="1"),
+            field("spreturn", "S&amp;P 500 expected return", suffix="%/yr", value="8", fmin="0", fmax="20", step="0.5",
+                  help_="The alternative: put the same cash in an index fund instead."),
+        ]),
+        results="\n".join([
+            hero("Rental property ends"),
+            stats(("Property, after tax &amp; sale", "r-prop"), ("S&amp;P 500, same cash", "r-sp"), ("Total invested", "r-invested"), ("Avg. after-tax cash flow", "r-cashflow")),
+            chart("chart-compare", "Terminal wealth over the holding period - property vs. index fund"),
+            '''        <div class="chart-block">
+          <p class="chart-title">Where the property\u2019s advantage (or disadvantage) comes from</p>
+          <div class="impact-list" id="impact"></div>
+        </div>''',
+            sched("Year by year: cash flow, depreciation, and both balances"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>Both paths start with the identical cash: your down payment, closing costs and rehab money. The property path runs a real landlord's year, every year of the holding period: rent grows and a vacancy discount is applied, then property tax, insurance, maintenance and management costs (each a percentage of the CURRENT home value or rent, so they grow with the property) are subtracted, then the mortgage payment. What's left is cash flow - and it's taxed or sheltered honestly: mortgage interest and straight-line depreciation (structure value ÷ 27.5 years) reduce taxable rental income, and losses offset up to $25,000 of your other income before phasing out between $100,000 and $150,000 of it, exactly like the IRS passive-activity rules. The index-fund path grows the same starting cash at your expected return - and whenever the property needs extra cash in a bad year, the index path gets that same extra contribution too, so neither side is unfairly starved of capital.</p>
+      <p class="formula">depreciation/yr = (price &times; building %) &divide; 27.5 &nbsp;&middot;&nbsp; taxable rental income = rent collected &minus; operating costs &minus; mortgage interest &minus; depreciation</p>
+      <h3>What happens at the end</h3>
+      <p>The property sells at your appreciation rate, minus selling costs and the remaining loan. The gain is split two ways for tax: the depreciation you claimed gets "recaptured" at a flat 25%, and the rest of the gain is taxed at your capital-gains rate - both real IRS rules, not simplifications. Any positive cash flow collected along the way is assumed reinvested in the same index fund (with its own capital-gains tax applied at the end), so a landlord who banks the rent isn't penalized for not having spent it.</p>
+      <h3>The honest tilt</h3>
+      <p>Real estate wins on leverage (you control a $320,000 asset with a fraction down) and on the depreciation shield; the S&amp;P wins on liquidity, zero maintenance calls, and never needing a new roof at 2am. This tool prices the money; it can't price the phone call from a tenant.</p>
+      <h3>Notes</h3>
+      <p>Assumes steady occupancy at the stated vacancy rate (not lumpy real turnover), a constant marginal rate, and a sale at the end of the exact holding period. 1031 exchanges (which defer this sale tax entirely) aren't modeled - if you plan to exchange rather than cash out, the property side understates its result.</p>""",
+    ),
+]
+
+
 def build():
     outdir = ROOT / "tools"
     outdir.mkdir(exist_ok=True)

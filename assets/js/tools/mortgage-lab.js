@@ -3,9 +3,38 @@
 import { $, $$, el, bindCalc, readField, toNum, money, money2, moneyShort, years, pmt } from "../core.js";
 import { initToolPage } from "../toolpage.js";
 import { attachRateHint } from "../rate-hint.js";
-import { stackedArea, dataTable } from "../charts.js";
+import { stackedArea, breakdown, dataTable } from "../charts.js";
 
 initToolPage("mortgage-lab");
+
+/* ---- home-purchase mode: price/down auto-fill the loan amount, and
+   property tax + insurance + HOA add on top as escrow ---- */
+function chipVal(name) {
+  const c = document.querySelector(`input[name="${name}"]:checked`);
+  return c ? c.value : "no";
+}
+function buyOn() { return chipVal("buyhome") === "yes"; }
+function syncLoanFromPrice() {
+  if (!buyOn()) return;
+  const price = readField($("#price"));
+  const down = readField($("#down"));
+  $("#amount").value = String(Math.round(price * (1 - down / 100)));
+}
+for (const r of $$('input[name="buyhome"]')) {
+  r.addEventListener("change", () => {
+    const on = buyOn();
+    $("#buy-fields").hidden = !on;
+    $("#breakdown-block").hidden = !on;
+    $("#stat-loanamt").hidden = !on;
+    $("#stat-totalcost").hidden = !on;
+    $("#amount-help").hidden = on;
+    if (on) syncLoanFromPrice();
+    if (typeof recompute === "function") recompute();
+  });
+}
+for (const id of ["price", "down"]) {
+  $("#" + id).addEventListener("input", () => { syncLoanFromPrice(); if (typeof recompute === "function") recompute(); });
+}
 
 /* ================= scenario events (user-built timeline) ================= */
 
@@ -220,7 +249,34 @@ function compute() {
   $("#r-saved").textContent = money(base.totalInterest - plan.totalInterest);
   $("#r-sooner").textContent = years((base.months - plan.months) / 12);
   $("#r-interest").textContent = money(plan.totalInterest);
-  $("#r-pay").textContent = money2(plan.payment);
+
+  // home-purchase mode: escrow on top of principal & interest
+  const buy = buyOn();
+  let taxM = 0, insM = 0, hoaM = 0;
+  if (buy) {
+    taxM = readField($("#ptax")) / 12;
+    insM = readField($("#hins")) / 12;
+    hoaM = readField($("#hoafee"));
+  }
+  const escrow = taxM + insM + hoaM;
+  $("#r-pay").textContent = money2(plan.payment + escrow);
+
+  $("#stat-loanamt").hidden = !buy;
+  $("#stat-totalcost").hidden = !buy;
+  if (buy) {
+    $("#r-loanamt").textContent = money(amount);
+    $("#r-totalcost").textContent = money(amount + plan.totalInterest);
+    breakdown($("#chart-breakdown"), {
+      ariaLabel: "Monthly payment breakdown",
+      fmt: money2,
+      items: [
+        { name: "Principal & interest", value: plan.payment },
+        { name: "Property tax", value: taxM },
+        { name: "Insurance", value: insM },
+        { name: "HOA", value: hoaM },
+      ],
+    });
+  }
 
   $("#r-interpret").replaceChildren(
     evs.length === 0
@@ -229,7 +285,8 @@ function compute() {
     evs.length === 0 ? "" : Object.assign(document.createElement("strong"), {
       textContent: `${years((base.months - plan.months) / 12)} sooner`,
     }),
-    evs.length === 0 ? "" : ` than minimum payments and saves ${money(base.totalInterest - plan.totalInterest)} in interest.`
+    evs.length === 0 ? "" : ` than minimum payments and saves ${money(base.totalInterest - plan.totalInterest)} in interest.`,
+    buy ? ` Full payment right now, taxes and insurance included: ${money2(plan.payment + escrow)}/mo.` : ""
   );
 
   // balance chart (+ household debt when HELOC on)
@@ -328,6 +385,8 @@ function encodeState() {
   const st = {
     a: readField($("#amount")), r: readField($("#rate")), t: readField($("#term")),
     s: readYM("start"), iv: readField($("#invreturn")),
+    b: buyOn() ? [readField($("#price")), readField($("#down")), readField($("#ptax")),
+                  readField($("#hins")), readField($("#hoafee"))] : null,
     h: document.querySelector('input[name="heloc"]:checked').value === "yes"
       ? [readField($("#hamount")), readField($("#hrate")), readField($("#hio")), readField($("#hrepay"))] : null,
     e: events.map((e) => {
@@ -355,6 +414,14 @@ function restoreState() {
   setNum("#amount", st.a); setNum("#rate", st.r); setNum("#invreturn", st.iv);
   if ([15, 20, 30].includes(Number(st.t))) $("#term").value = String(Number(st.t));
   setYM("start", st.s);
+  if (Array.isArray(st.b)) {
+    document.querySelector('input[name="buyhome"][value="yes"]').checked = true;
+    $("#buy-fields").hidden = false;
+    $("#breakdown-block").hidden = false;
+    $("#amount-help").hidden = true;
+    setNum("#price", st.b[0]); setNum("#down", st.b[1]); setNum("#ptax", st.b[2]);
+    setNum("#hins", st.b[3]); setNum("#hoafee", st.b[4]);
+  }
   if (Array.isArray(st.h)) {
     document.querySelector('input[name="heloc"][value="yes"]').checked = true;
     $("#heloc-fields").hidden = false;

@@ -11,6 +11,6 @@
     document.getElementById("edate").textContent =
       "Week of " + new Date(d.latest.date30 + "T12:00:00").toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
   } catch {
-    document.getElementById("edate").textContent = "quietzeros.com/tools/mortgage-rates";
+    document.getElementById("edate").textContent = "quietzeros.com/tools/mortgage-lab";
   }
 })();

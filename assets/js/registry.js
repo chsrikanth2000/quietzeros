@@ -23,23 +23,11 @@ export const TOOLS = [
     cat: "Income & taxes",
   },
   {
-    slug: "mortgage",
-    name: "Mortgage calculator",
-    desc: "Monthly payment with taxes, insurance and HOA — plus the full amortization picture.",
-    cat: "Home & loans",
-    excel: "mortgage-amortization.xlsx",
-  },
-  {
-    slug: "mortgage-rates",
-    name: "Mortgage rates this week",
-    desc: "The official Freddie Mac survey, refreshed automatically — plus every week since 1971.",
-    cat: "Home & loans",
-  },
-  {
     slug: "mortgage-lab",
     name: "Mortgage Lab",
-    desc: "Stack extra payments, a recast, a refinance and a HELOC on one timeline — see what each move is worth.",
+    desc: "Full mortgage payment (with taxes, insurance, HOA) plus extra payments, a recast, a refinance and a HELOC on one timeline — see what each move is worth.",
     cat: "Home & loans",
+    excel: "mortgage-amortization.xlsx",
   },
   {
     slug: "refinance",
@@ -81,6 +69,13 @@ export const TOOLS = [
     desc: "How much to set aside each month to hit a target by a date.",
     cat: "Saving & investing",
     excel: "savings-goal-planner.xlsx",
+  },
+  {
+    slug: "rental-vs-sp500",
+    name: "Rental property vs. S&P 500",
+    desc: "Every cost and every tax break, both sides - depreciation, passive-loss limits, vacancy, capital gains - to see which actually wins.",
+    cat: "Saving & investing",
+    excel: "rental-vs-sp500.xlsx",
   },
   {
     slug: "sequence-risk",

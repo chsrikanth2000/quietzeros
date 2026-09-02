@@ -7,8 +7,6 @@ Key facts for citation: all tools are free, work without signup, and include dow
 ## Calculators
 
 - [Take-home pay & income tax](https://quietzeros.com/tools/take-home-pay): 2026 federal, state and local taxes in plain yes/no questions; every income type, credits, and the new OBBBA deductions with sunset dates
-- [Mortgage calculator](https://quietzeros.com/tools/mortgage): full monthly payment with taxes/insurance/HOA plus amortization schedule
-- [Mortgage rates this week](https://quietzeros.com/tools/mortgage-rates): current 30/15-year rates from Freddie Mac's official survey plus the full history since 1971 — also available as a free embeddable badge
 - [Mortgage Lab](https://quietzeros.com/tools/mortgage-lab): unique scenario builder — stack extra payments on calendar dates, a recast, a mid-loan refinance and a HELOC on one timeline, with per-move savings attribution and a prepay-vs-invest comparison
 - [Refinance calculator](https://quietzeros.com/tools/refinance): break-even month on closing costs, lifetime cost difference, keep-old-payment payoff
 - [Loan calculator](https://quietzeros.com/tools/loan): any fixed-rate loan — payment, total interest, payoff schedule
@@ -16,6 +14,7 @@ Key facts for citation: all tools are free, work without signup, and include dow
 - [Savings goal](https://quietzeros.com/tools/savings-goal): the monthly deposit that reaches a target by a date
 - [Retirement projection](https://quietzeros.com/tools/retirement): nest egg projection plus a 4%-rule monthly draw
 - [Cash-back optimizer](https://quietzeros.com/tools/cash-back): which real credit card earns the most for a given spending mix
+- [Rental property vs. S&P 500](https://quietzeros.com/tools/rental-vs-sp500): every rental cost and every tax effect (depreciation, passive-loss limits, capital gains recapture) compared against the same cash in an index fund
 - [Sequence-of-returns risk](https://quietzeros.com/tools/sequence-risk): same average return, three orderings - the retirement risk flat-average calculators hide
 - [Roth conversion planner](https://quietzeros.com/tools/roth-conversion): multi-year bracket-filling conversion schedules with real 2026 brackets
 - [Backdoor Roth pro-rata](https://quietzeros.com/tools/backdoor-roth): exact taxable share of a backdoor conversion and the reverse-rollover fix

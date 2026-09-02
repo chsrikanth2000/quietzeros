@@ -576,8 +576,107 @@ def sequence_risk():
     wb.save(OUT / "sequence-risk.xlsx")
 
 
+
+# ------------------------------------------------ rental vs S&P 500
+def rental_vs_sp():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "RentalVsSP"
+    title_block(ws, "Rental property vs. the S&P 500",
+                "Every landlord cost and every tax effect - depreciation, passive-loss limits, capital gains recapture - versus the same cash in an index fund.")
+    widths(ws, {"A": 2, "B": 36, "C": 15, "D": 3, "E": 30, "F": 15})
+
+    # Named rows (single source of truth - avoids the classic off-by-row bug)
+    R = {}
+    ins = [
+        ("price", "Property price", 320000, MONEY0),
+        ("down", "Down payment (%)", 0.25, PCT),
+        ("rate", "Mortgage rate", 0.065, PCT),
+        ("term", "Loan term (years)", 30, "0"),
+        ("closing", "Closing costs (% of price)", 0.03, PCT),
+        ("rehab", "Upfront repairs / rehab", 8000, MONEY0),
+        ("rent", "Monthly rent (today)", 2400, MONEY0),
+        ("vacancy", "Vacancy rate (%)", 0.06, PCT),
+        ("rentgrow", "Rent growth (%/yr)", 0.03, PCT),
+        ("proptax", "Property tax (%/yr of value)", 0.012, PCT),
+        ("ins", "Insurance (%/yr of value)", 0.006, PCT),
+        ("maint", "Maintenance (%/yr of value)", 0.012, PCT),
+        ("mgmt", "Management (% of rent)", 0.08, PCT),
+        ("hoa", "HOA (monthly)", 0, MONEY0),
+        ("appre", "Appreciation (%/yr)", 0.035, PCT),
+        ("building", "Building value (% of price)", 0.80, PCT),
+        ("sellcost", "Selling costs (%)", 0.07, PCT),
+        ("hold", "Holding period (years)", 15, "0"),
+        ("otherinc", "Your other income (for $25k loss-allowance phase-out)", 120000, MONEY0),
+        ("marg", "Your marginal tax rate", 0.24, PCT),
+        ("ltcg", "Capital gains rate", 0.15, PCT),
+        ("spreturn", "S&P 500 expected return (%/yr)", 0.08, PCT),
+    ]
+    label(ws, "B4", "Inputs", bold=True)
+    for i, (key, name, v, fmt) in enumerate(ins):
+        row = 5 + i
+        R[key] = row
+        label(ws, f"B{row}", name)
+        put(ws, f"C{row}", v, fill=INPUT_FILL, fmt=fmt)
+
+    r0 = 5 + len(ins) + 2
+    R["loanamt"] = r0
+    R["upfront"] = r0 + 1
+    R["pmt"] = r0 + 2
+    R["deprperyr"] = r0 + 3
+    label(ws, f"B{r0-1}", "Key computed values", bold=True)
+    label(ws, f"B{R['loanamt']}", "Loan amount")
+    put(ws, f"C{R['loanamt']}", f"=C{R['price']}*(1-C{R['down']})", fill=CALC_FILL, fmt=MONEY0)
+    label(ws, f"B{R['upfront']}", "Upfront cash (down + closing + rehab)")
+    put(ws, f"C{R['upfront']}", f"=C{R['price']}*C{R['down']}+C{R['price']}*C{R['closing']}+C{R['rehab']}",
+        fill=CALC_FILL, fmt=MONEY0)
+    label(ws, f"B{R['pmt']}", "Monthly P&I payment")
+    put(ws, f"C{R['pmt']}", f"=-PMT(C{R['rate']}/12,C{R['term']}*12,C{R['loanamt']})", fill=CALC_FILL, fmt=MONEY2)
+    label(ws, f"B{R['deprperyr']}", "Annual depreciation (building / 27.5 yrs)")
+    put(ws, f"C{R['deprperyr']}", f"=C{R['price']}*C{R['building']}/27.5", fill=CALC_FILL, fmt=MONEY0)
+
+    sh = wb.create_sheet("YearByYear")
+    widths(sh, {"A": 6})
+    heads = ["Year", "Home value", "Rent (net vacancy)", "Operating costs", "NOI",
+             "Interest", "Principal", "Loan balance", "Depreciation", "Taxable rental income",
+             "Tax effect", "Cash flow after tax"]
+    for i, h in enumerate(heads):
+        c = sh.cell(row=1, column=1 + i, value=h)
+        c.fill = HEAD_FILL; c.font = HEAD_FONT
+        sh.column_dimensions[get_column_letter(1 + i)].width = 15
+    sh.freeze_panes = "A2"
+    M = "RentalVsSP"
+    for y in range(1, 41):
+        row = y + 1
+        prevbal = f"{M}!$C${R['loanamt']}" if y == 1 else f"H{row-1}"
+        live = f"A{row}<={M}!$C${R['hold']}"
+        sh[f"A{row}"] = y
+        sh[f"B{row}"] = f'=IF({live},{M}!$C${R["price"]}*(1+{M}!$C${R["appre"]})^(A{row}-1),"")'
+        sh[f"C{row}"] = (f'=IF({live},{M}!$C${R["rent"]}*12*(1+{M}!$C${R["rentgrow"]})^(A{row}-1)'
+                         f'*(1-{M}!$C${R["vacancy"]}),"")')
+        sh[f"D{row}"] = (f'=IF({live},B{row}*({M}!$C${R["proptax"]}+{M}!$C${R["ins"]}+{M}!$C${R["maint"]})'
+                         f'+C{row}*{M}!$C${R["mgmt"]}+{M}!$C${R["hoa"]}*12,"")')
+        sh[f"E{row}"] = f'=IF({live},C{row}-D{row},"")'
+        sh[f"F{row}"] = f'=IF({live},{prevbal}*{M}!$C${R["rate"]}/12*12,"")'
+        sh[f"G{row}"] = f'=IF({live},{M}!$C${R["pmt"]}*12-F{row},"")'
+        sh[f"H{row}"] = f'=IF({live},MAX(0,{prevbal}-G{row}),"")'
+        sh[f"I{row}"] = (f'=IF({live},MIN({M}!$C${R["deprperyr"]},'
+                         f'{M}!$C${R["price"]}*{M}!$C${R["building"]}-SUM($I$2:I{row-1})),"")')
+        sh[f"J{row}"] = f'=IF({live},E{row}-F{row}-I{row},"")'
+        sh[f"K{row}"] = (f'=IF({live},IF(J{row}>=0,-J{row}*{M}!$C${R["marg"]},'
+                         f'MIN(-J{row},MAX(0,25000-0.5*MAX(0,{M}!$C${R["otherinc"]}-100000)))*{M}!$C${R["marg"]}),"")')
+        sh[f"L{row}"] = f'=IF({live},E{row}-F{row}-G{row}+K{row},"")'
+        for col in "BCDEFGHIJKL":
+            sh[f"{col}{row}"].number_format = MONEY2
+    ws[f"B{r0+5}"] = ("Note: the YearByYear sheet uses a simplified flat-balance interest estimate per year "
+                       "(the web tool runs a full monthly amortization). Figures will be close but not identical "
+                       "to the calculator - use the calculator for the exact numbers, this sheet for your own edits.")
+    ws[f"B{r0+5}"].font = SUB_FONT
+    wb.save(OUT / "rental-vs-sp500.xlsx")
+
+
 if __name__ == "__main__":
-    for fn in (mortgage, loan, compound, savings_goal, debt_payoff, budget, rent_vs_buy, multi_debt, roth_conversion, sequence_risk):
+    for fn in (mortgage, loan, compound, savings_goal, debt_payoff, budget, rent_vs_buy, multi_debt, roth_conversion, sequence_risk, rental_vs_sp):
         fn()
         print("built", fn.__name__)
     print("done ->", OUT)

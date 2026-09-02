@@ -4,8 +4,8 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qz-comments.chsrikanth2000.workers.dev https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
-  <title>Mortgage Lab — combine extra payments, recast, refinance & HELOC — Quiet Zeros</title>
-  <meta name="description" content="The mortgage scenario builder that doesn't exist anywhere else: stack extra payments on real dates, a recast, a mid-loan refinance and a HELOC in one timeline — see each move's savings, and whether investing beats prepaying. Private, in your browser.">
+  <title>Mortgage Lab — payment, taxes & insurance, extra payments, recast, refinance & HELOC — Quiet Zeros</title>
+  <meta name="description" content="The full mortgage calculator — price, down payment, taxes, insurance, HOA — plus the scenario builder that doesn't exist anywhere else: stack extra payments on real dates, a recast, a mid-loan refinance and a HELOC in one timeline. Private, in your browser.">
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/css/main.css">
   <script src="../assets/js/theme.js"></script>
@@ -50,7 +50,7 @@
     <div class="tool-head">
       <p class="crumbs"><a href="../index.html">Calculators</a> / Home &amp; loans</p>
       <h1>Mortgage Lab</h1>
-      <p class="lede">Real mortgages aren't one number — they're a lump sum in year two, a recast after the bonus, maybe a refinance in year five and a HELOC for the roof. Stack them all on one timeline and see what each move is worth. Nothing you type leaves this page.</p>
+      <p class="lede">The full mortgage payment — price, taxes, insurance, HOA — and the scenario builder no one else has: stack extra payments, a recast, a refinance and a HELOC on one timeline and see what each move is worth. Nothing you type leaves this page.</p>
     </div>
 
     <form class="calc" id="calc" autocomplete="off" novalidate>
@@ -59,6 +59,7 @@
           <label for="amount">Loan amount</label>
           <div class="input-wrap"><span class="affix">$</span><input id="amount" type="number" inputmode="decimal" value="400000" min="1000" max="20000000" step="1000"></div>
           <input type="range" data-pair="amount" min="50000" max="1500000" step="5000" value="400000" aria-label="Loan amount slider">
+          <p class="help" id="amount-help">Already have the loan, or don't need price/escrow? Just set the balance here.</p>
           <p class="err">Enter $1,000 to $20,000,000.</p>
         </div>
         <div class="field">
@@ -76,6 +77,38 @@
             </select>
           </div>
         </div>
+
+        <div class="field">
+          <label>Buying a home? Add price, taxes &amp; insurance</label>
+          <div class="chips" role="radiogroup" aria-label="Home purchase mode">
+            <label><input type="radio" name="buyhome" value="no" checked>No — just the loan</label>
+            <label><input type="radio" name="buyhome" value="yes">Yes — full payment</label>
+          </div>
+          <div class="subfields" id="buy-fields" hidden>
+            <div class="field">
+              <label for="price">Home price</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="price" type="number" inputmode="decimal" value="500000" min="10000" max="20000000" step="1000"></div>
+            </div>
+            <div class="field">
+              <label for="down">Down payment</label>
+              <div class="input-wrap"><input id="down" type="number" inputmode="decimal" value="20" min="0" max="100" step="0.5"><span class="affix">%</span></div>
+              <p class="help">Fills in the loan amount above automatically (price − down payment). 20% avoids PMI on most loans.</p>
+            </div>
+            <div class="field">
+              <label for="ptax">Property tax</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="ptax" type="number" inputmode="decimal" value="5500" min="0" max="200000" step="100"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="hins">Home insurance</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="hins" type="number" inputmode="decimal" value="1800" min="0" max="100000" step="100"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="hoafee">HOA dues</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="hoafee" type="number" inputmode="decimal" value="0" min="0" max="10000" step="10"><span class="affix">/mo</span></div>
+            </div>
+          </div>
+        </div>
+
         <div class="field">
           <label for="start_m">First payment month</label>
           <div class="ym-pair" id="start-picker"></div>
@@ -147,6 +180,13 @@
           <div class="stat" data-info="How much earlier the balance hits zero than the original schedule."><p class="k">Sooner by</p><p class="v" id="r-sooner">—</p></div>
           <div class="stat" data-info="All the interest you&#x27;d still pay following this plan to the end."><p class="k">Total interest (plan)</p><p class="v" id="r-interest">—</p></div>
           <div class="stat" data-info="Your current required payment. Recasts and refinances in your plan change this number at the month they happen."><p class="k">Monthly payment now</p><p class="v" id="r-pay">—</p></div>
+          <div class="stat" id="stat-loanamt" hidden data-info="Home price minus your down payment — the only part that accrues interest."><p class="k">Loan amount</p><p class="v" id="r-loanamt">—</p></div>
+          <div class="stat" id="stat-totalcost" hidden data-info="Loan amount plus lifetime interest — the true price of the home if you hold the loan to the end."><p class="k">Total cost of loan</p><p class="v" id="r-totalcost">—</p></div>
+        </div>
+
+        <div class="chart-block" id="breakdown-block" hidden>
+          <p class="chart-title">Where each month's payment goes, right now</p>
+          <div class="chart" id="chart-breakdown"></div>
         </div>
 
         <div class="chart-block">
@@ -168,6 +208,8 @@
           <summary>Balance by year</summary>
           <div id="sched-table"></div>
         </details>
+
+        <p id="excel-chip"></p>
       </div>
     </form>
 
@@ -177,6 +219,9 @@
     </aside>
 
     <article class="prose">
+      <h2>How this is calculated</h2>
+      <p>Turn on "Buying a home?" and the loan amount fills itself in from price minus down payment; property tax, insurance and HOA get added on top as their own line — they don't shrink the loan, they're recurring costs of owning, usually collected through escrow. The breakdown chart shows the split; on a typical loan, taxes and insurance can be a quarter or more of the check you write each month. The formula underneath the principal-and-interest part is the standard fixed-rate amortization:</p>
+      <p class="formula">M = P × [ i (1 + i)ⁿ ] / [ (1 + i)ⁿ − 1 ] &nbsp;— where <code>P</code> is the loan amount, <code>i</code> the monthly rate (APR ÷ 12), and <code>n</code> the number of monthly payments.</p>
       <h2>How the Lab works</h2>
       <p>Everything runs through one month-by-month simulation of your loan. Each event changes the machine's state at the month you chose:</p>
       <p><strong>One-time payment</strong> — the amount lands entirely on principal that month. <strong>Recurring extra</strong> — added to every payment (or every 12th, for yearly bonuses) from its start date. <strong>Recast</strong> — a lump sum hits principal <em>and</em> the lender re-amortizes: your required payment drops, the payoff date stays; most lenders charge a small fee (~$150–500) and require $5,000–10,000 minimum. <strong>Refinance</strong> — the balance (plus rolled-in closing costs, if chosen) becomes a new loan at the new rate and term from that month.</p>
