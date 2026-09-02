@@ -419,6 +419,23 @@ input[type="range"] {
 }
 .verdict strong { color: var(--brand); }
 
+/* ---- Sticky live summary (long interview pages) ---- */
+.sticky-summary {
+  position: fixed; left: 0; right: 0; bottom: 0; z-index: 40;
+  background: var(--card);
+  border-top: 1px solid var(--line-2);
+  padding: .6rem clamp(1rem, 4vw, 2rem);
+  display: flex; align-items: baseline; gap: 1.4rem; flex-wrap: wrap;
+  transform: translateY(110%); transition: transform .2s ease;
+  box-shadow: 0 -6px 24px rgba(0,0,0,.06);
+}
+.sticky-summary.show { transform: translateY(0); }
+.sticky-summary .ss-main { font-weight: 680; font-size: 1.15rem; font-variant-numeric: tabular-nums; color: var(--brand); }
+.sticky-summary .ss-item { font-size: .84rem; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.sticky-summary .ss-item strong { color: var(--ink); font-weight: 640; }
+.sticky-summary .ss-label { font: 620 .68rem/1 var(--font-ui); letter-spacing: .1em; text-transform: uppercase; color: var(--ink-3); }
+@media print { .sticky-summary { display: none; } }
+
 /* ---- Sources & vintage panel ---- */
 .sources {
   border: 1px solid var(--line-2); border-radius: var(--radius);

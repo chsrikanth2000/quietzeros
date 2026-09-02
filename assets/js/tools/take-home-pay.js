@@ -70,6 +70,21 @@ function updateStateUI() {
 stateSel.addEventListener("change", updateStateUI);
 updateStateUI();
 
+// live summary bar: follows you down the interview once the hero scrolls away
+const ssTake = el("span", { class: "ss-main" }, "—");
+const ssMonth = el("strong", {}, "—");
+const ssEff = el("strong", {}, "—");
+const stickyBar = el("div", { class: "sticky-summary", role: "status", "aria-label": "Live estimate" },
+  el("span", { class: "ss-label" }, "Take-home"),
+  ssTake,
+  el("span", { class: "ss-item" }, ssMonth, "/mo"),
+  el("span", { class: "ss-item" }, "effective rate ", ssEff));
+document.body.append(stickyBar);
+const heroEl = $("#r-hero");
+new IntersectionObserver((entries) => {
+  stickyBar.classList.toggle("show", !entries[0].isIntersecting);
+}, { rootMargin: "-60px 0px 0px 0px" }).observe(heroEl);
+
 /* ---- tax math ---- */
 
 function bracketTax(taxable, brackets) {
@@ -291,6 +306,9 @@ function compute() {
   $("#r-biweek").textContent = money(takeHome / 26);
   $("#r-eff").textContent = pct(eff);
   $("#r-marg").textContent = pct(marg);
+  ssTake.textContent = money(takeHome);
+  ssMonth.textContent = money(takeHome / 12);
+  ssEff.textContent = pct(eff);
 
   const keepPct = r.gross > 0 ? Math.round((takeHome / r.gross) * 100) : 0;
   const deltaFed = (rOther.fedTax + rOther.payroll) - (r.fedTax + r.payroll);
