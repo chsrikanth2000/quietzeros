@@ -19,12 +19,12 @@ SHELL = """<!doctype html>
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/css/main.css">
   <script src="../assets/js/theme.js"></script>
-  <link rel="canonical" href="https://quietzeros.com/tools/__SLUG__.html">
+  <link rel="canonical" href="https://quietzeros.com/tools/__SLUG__">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Quiet Zeros">
   <meta property="og:title" content="__TITLE__">
   <meta property="og:description" content="__DESC__">
-  <meta property="og:url" content="https://quietzeros.com/tools/__SLUG__.html">
+  <meta property="og:url" content="https://quietzeros.com/tools/__SLUG__">
   <meta property="og:image" content="https://quietzeros.com/assets/img/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
@@ -32,7 +32,7 @@ SHELL = """<!doctype html>
   <meta name="theme-color" content="#12523a">
   <link rel="preload" href="../assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"__TITLE__","url":"https://quietzeros.com/tools/__SLUG__.html","description":"__DESC__","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"__TITLE__","url":"https://quietzeros.com/tools/__SLUG__","description":"__DESC__","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5224815108212174" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -103,7 +103,7 @@ __PROSE__
           <a href="../terms.html">Terms</a>
         </nav>
       </div>
-      <p class="fineprint">© <span data-year>2026</span> Quiet Zeros. Results are estimates for planning, not financial advice.</p>
+      <p class="fineprint">© <span data-year>2026</span> Quiet Zeros. Estimates for planning only — not financial, tax or legal advice, and no substitute for a qualified financial planner or CPA.</p>
     </div>
   </footer>
 
