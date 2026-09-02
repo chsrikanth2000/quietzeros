@@ -56,86 +56,11 @@
     <form class="calc" id="calc" autocomplete="off" novalidate>
       <div class="calc-inputs">
         <div class="field">
-          <label for="d1bal">Loan 1 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d1bal" type="number" inputmode="decimal" value="3000" min="0" max="5000000" step="100"></div>
-          <p class="help">Card, auto, student loan - anything. Balance 0 skips a slot.</p>
-        </div>
-        <div class="field">
-          <label for="d1apr">Loan 1 - APR</label>
-          <div class="input-wrap"><input id="d1apr" type="number" inputmode="decimal" value="5" min="0" max="60" step="0.1"><span class="affix">%</span></div>
-        </div>
-        <div class="field">
-          <label for="d1min">Loan 1 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d1min" type="number" inputmode="decimal" value="60" min="0" max="100000" step="5"></div>
-        </div>
-        <div class="field">
-          <label for="d1x">Loan 1 - always pay extra</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d1x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
-          <p class="help">A dedicated top-up for THIS loan, on top of any strategy money.</p>
-        </div>
-        <div class="field">
-          <label for="d2bal">Loan 2 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d2bal" type="number" inputmode="decimal" value="9000" min="0" max="5000000" step="100"></div>
-        </div>
-        <div class="field">
-          <label for="d2apr">Loan 2 - APR</label>
-          <div class="input-wrap"><input id="d2apr" type="number" inputmode="decimal" value="22" min="0" max="60" step="0.1"><span class="affix">%</span></div>
-        </div>
-        <div class="field">
-          <label for="d2min">Loan 2 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d2min" type="number" inputmode="decimal" value="180" min="0" max="100000" step="5"></div>
-        </div>
-        <div class="field">
-          <label for="d2x">Loan 2 - always pay extra</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d2x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
-        </div>
-        <div class="field">
-          <label for="d3bal">Loan 3 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d3bal" type="number" inputmode="decimal" value="14000" min="0" max="5000000" step="100"></div>
-        </div>
-        <div class="field">
-          <label for="d3apr">Loan 3 - APR</label>
-          <div class="input-wrap"><input id="d3apr" type="number" inputmode="decimal" value="7.5" min="0" max="60" step="0.1"><span class="affix">%</span></div>
-        </div>
-        <div class="field">
-          <label for="d3min">Loan 3 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d3min" type="number" inputmode="decimal" value="280" min="0" max="100000" step="5"></div>
-        </div>
-        <div class="field">
-          <label for="d3x">Loan 3 - always pay extra</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d3x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
-        </div>
-        <div class="field">
-          <label for="d4bal">Loan 4 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d4bal" type="number" inputmode="decimal" value="0" min="0" max="5000000" step="100"></div>
-        </div>
-        <div class="field">
-          <label for="d4apr">Loan 4 - APR</label>
-          <div class="input-wrap"><input id="d4apr" type="number" inputmode="decimal" value="0" min="0" max="60" step="0.1"><span class="affix">%</span></div>
-        </div>
-        <div class="field">
-          <label for="d4min">Loan 4 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d4min" type="number" inputmode="decimal" value="0" min="0" max="100000" step="5"></div>
-        </div>
-        <div class="field">
-          <label for="d4x">Loan 4 - always pay extra</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d4x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
-        </div>
-        <div class="field">
-          <label for="d5bal">Loan 5 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d5bal" type="number" inputmode="decimal" value="0" min="0" max="5000000" step="100"></div>
-        </div>
-        <div class="field">
-          <label for="d5apr">Loan 5 - APR</label>
-          <div class="input-wrap"><input id="d5apr" type="number" inputmode="decimal" value="0" min="0" max="60" step="0.1"><span class="affix">%</span></div>
-        </div>
-        <div class="field">
-          <label for="d5min">Loan 5 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d5min" type="number" inputmode="decimal" value="0" min="0" max="100000" step="5"></div>
-        </div>
-        <div class="field">
-          <label for="d5x">Loan 5 - always pay extra</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d5x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
+          <label>Your loans - add as many as you have</label>
+          <div class="ev-add">
+            <button type="button" id="add-loan">+ Add a loan</button>
+          </div>
+          <div class="ev-list" id="loan-list"></div>
         </div>
         <div class="field">
           <label>Strategy - where does spare money aim?</label>
@@ -148,13 +73,7 @@
             <div class="field">
               <label for="focusdebt">Minimums on everything except</label>
               <div class="input-wrap">
-                <select id="focusdebt" aria-label="Focus loan">
-                  <option value="0" selected>Loan 1</option>
-                  <option value="1">Loan 2</option>
-                  <option value="2">Loan 3</option>
-                  <option value="3">Loan 4</option>
-                  <option value="4">Loan 5</option>
-                </select>
+                <select id="focusdebt" aria-label="Focus loan"></select>
               </div>
               <p class="help">All spare money hits this loan. When it dies, the rest continue by avalanche.</p>
             </div>

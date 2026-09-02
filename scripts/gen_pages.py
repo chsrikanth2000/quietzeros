@@ -733,28 +733,13 @@ TOOLS += [
         h1="Debt Payoff Lab",
         lede="Your actual loans, your actual plan: attack the highest rate, the smallest balance, or one loan you just want gone - add a little extra to any of them - and see exactly what each loan costs and when it dies. Nothing you type leaves this page.",
         form="\n".join([
-            field("d1bal", "Loan 1 - balance", prefix="$", value="3000", fmin="0", fmax="5000000", step="100",
-                  help_="Card, auto, student loan - anything. Balance 0 skips a slot."),
-            field("d1apr", "Loan 1 - APR", suffix="%", value="5", fmin="0", fmax="60", step="0.1"),
-            field("d1min", "Loan 1 - minimum payment", prefix="$", value="60", fmin="0", fmax="100000", step="5"),
-            field("d1x", "Loan 1 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10",
-                  help_="A dedicated top-up for THIS loan, on top of any strategy money."),
-            field("d2bal", "Loan 2 - balance", prefix="$", value="9000", fmin="0", fmax="5000000", step="100"),
-            field("d2apr", "Loan 2 - APR", suffix="%", value="22", fmin="0", fmax="60", step="0.1"),
-            field("d2min", "Loan 2 - minimum payment", prefix="$", value="180", fmin="0", fmax="100000", step="5"),
-            field("d2x", "Loan 2 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
-            field("d3bal", "Loan 3 - balance", prefix="$", value="14000", fmin="0", fmax="5000000", step="100"),
-            field("d3apr", "Loan 3 - APR", suffix="%", value="7.5", fmin="0", fmax="60", step="0.1"),
-            field("d3min", "Loan 3 - minimum payment", prefix="$", value="280", fmin="0", fmax="100000", step="5"),
-            field("d3x", "Loan 3 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
-            field("d4bal", "Loan 4 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
-            field("d4apr", "Loan 4 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
-            field("d4min", "Loan 4 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
-            field("d4x", "Loan 4 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
-            field("d5bal", "Loan 5 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
-            field("d5apr", "Loan 5 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
-            field("d5min", "Loan 5 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
-            field("d5x", "Loan 5 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
+            '''        <div class="field">
+          <label>Your loans - add as many as you have</label>
+          <div class="ev-add">
+            <button type="button" id="add-loan">+ Add a loan</button>
+          </div>
+          <div class="ev-list" id="loan-list"></div>
+        </div>''',
             '''        <div class="field">
           <label>Strategy - where does spare money aim?</label>
           <div class="chips" role="radiogroup" aria-label="Strategy">
@@ -766,13 +751,7 @@ TOOLS += [
             <div class="field">
               <label for="focusdebt">Minimums on everything except</label>
               <div class="input-wrap">
-                <select id="focusdebt" aria-label="Focus loan">
-                  <option value="0" selected>Loan 1</option>
-                  <option value="1">Loan 2</option>
-                  <option value="2">Loan 3</option>
-                  <option value="3">Loan 4</option>
-                  <option value="4">Loan 5</option>
-                </select>
+                <select id="focusdebt" aria-label="Focus loan"></select>
               </div>
               <p class="help">All spare money hits this loan. When it dies, the rest continue by avalanche.</p>
             </div>

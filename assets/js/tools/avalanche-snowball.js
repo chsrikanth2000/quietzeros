@@ -15,15 +15,58 @@ for (const r of $$('input[name="strategy"]')) {
   r.addEventListener("change", () => { $("#focus-fields").hidden = chipValue("strategy") !== "focus"; });
 }
 
+/* ---- dynamic loan rows ---- */
+let nextLoanId = 1;
+const loanRows = []; // { id, el }
+
+function loanField(id, name, label, value, opts = {}) {
+  const wrap = el("div", { class: "input-wrap" });
+  if (opts.prefix) wrap.append(el("span", { class: "affix" }, opts.prefix));
+  wrap.append(el("input", { id: `loan${id}-${name}`, type: "number", inputmode: "decimal",
+    value: String(value), min: "0", max: String(opts.max ?? 5000000), step: String(opts.step ?? 1) }));
+  if (opts.suffix) wrap.append(el("span", { class: "affix" }, opts.suffix));
+  return el("div", { class: "field" }, el("label", { for: `loan${id}-${name}` }, label), wrap);
+}
+
+function addLoan(bal = 5000, apr = 12, min = 100, ded = 0) {
+  const id = nextLoanId++;
+  const row = el("div", { class: "ev-row" },
+    el("div", { class: "ev-head" },
+      el("span", { class: "ev-title" }, `Loan ${loanRows.length + 1}`),
+      el("button", { class: "ev-del", type: "button", onclick: () => removeLoan(id) }, "remove")),
+    el("div", { class: "ev-fields" },
+      loanField(id, "bal", "Balance", bal, { prefix: "$", step: 100 }),
+      loanField(id, "apr", "APR", apr, { suffix: "%", max: 60, step: 0.1 }),
+      loanField(id, "min", "Minimum", min, { prefix: "$", step: 5, max: 100000 }),
+      loanField(id, "ded", "Always extra", ded, { prefix: "$", step: 10, max: 100000 })));
+  loanRows.push({ id, el: row });
+  $("#loan-list").append(row);
+  renumber();
+  if (typeof run === "function") run();
+}
+function removeLoan(id) {
+  const i = loanRows.findIndex((l) => l.id === id);
+  if (i >= 0) { loanRows[i].el.remove(); loanRows.splice(i, 1); renumber(); if (typeof run === "function") run(); }
+}
+function renumber() {
+  const focus = $("#focusdebt");
+  const keep = focus.value;
+  focus.replaceChildren();
+  loanRows.forEach((l, i) => {
+    l.el.querySelector(".ev-title").textContent = `Loan ${i + 1}`;
+    focus.append(el("option", { value: String(i) }, `Loan ${i + 1}`));
+  });
+  if ([...focus.options].some((o) => o.value === keep)) focus.value = keep;
+}
+$("#add-loan").addEventListener("click", () => addLoan());
+
 function readDebts() {
   const debts = [];
-  for (let n = 1; n <= 5; n++) {
-    const bal = readField($(`#d${n}bal`));
-    if (bal > 0) debts.push({
-      idx: n - 1, name: `Loan ${n}`, bal,
-      apr: readField($(`#d${n}apr`)), min: readField($(`#d${n}min`)), ded: readField($(`#d${n}x`)),
-    });
-  }
+  loanRows.forEach((l, i) => {
+    const g = (n) => readField($(`#loan${l.id}-${n}`));
+    const bal = g("bal");
+    if (bal > 0) debts.push({ idx: i, name: `Loan ${i + 1}`, bal, apr: g("apr"), min: g("min"), ded: g("ded") });
+  });
   return debts;
 }
 
@@ -186,4 +229,8 @@ function compute() {
   ]);
 }
 
-bindCalc($("#calc"), compute);
+const run = bindCalc($("#calc"), compute);
+// starter loans chosen so avalanche and snowball genuinely differ
+addLoan(3000, 5, 60, 0);
+addLoan(9000, 22, 180, 0);
+addLoan(14000, 7.5, 280, 0);

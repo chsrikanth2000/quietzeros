@@ -16,18 +16,30 @@ async function rates() {
   return cache;
 }
 
-/** Attach under the given rate input. kind: "30" | "15". */
-export function attachRateHint(inputId, kind = "30") {
+/** Attach under the given rate input. kind: "30" | "15".
+    autoDefault: replace the field's stock default with this week's live rate —
+    only when the visitor hasn't touched it and it still holds the HTML default
+    (so shared-link and hand-entered values are never overridden). */
+export function attachRateHint(inputId, kind = "30", autoDefault = true) {
   const input = $("#" + inputId);
   if (!input) return;
   const field = input.closest(".field");
   if (!field) return;
+  let touched = false;
+  input.addEventListener("input", () => { touched = true; }, { once: true });
 
   rates().then((d) => {
     const cur = kind === "15" ? d.latest.r15 : d.latest.r30;
     const label = kind === "15" ? "15-yr" : "30-yr";
 
-    const useBtn = el("button", { class: "btn-ghost", type: "button" }, `use ${cur.toFixed(2)}%`);
+    let applied = false;
+    if (autoDefault && !touched && input.value === input.defaultValue) {
+      input.value = String(cur);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+      applied = true;
+    }
+
+    const useBtn = el("button", { class: "btn-ghost", type: "button" }, applied ? "applied ✓" : `use ${cur.toFixed(2)}%`);
     const chartBtn = el("button", { class: "btn-ghost", type: "button", "aria-expanded": "false" }, "history");
     const hint = el("p", { class: "rate-hint" },
       `This week's ${label} average: `,
@@ -42,6 +54,7 @@ export function attachRateHint(inputId, kind = "30") {
     useBtn.addEventListener("click", () => {
       input.value = String(cur);
       input.dispatchEvent(new Event("input", { bubbles: true }));
+      useBtn.textContent = "applied ✓";
     });
     let drawn = false;
     chartBtn.addEventListener("click", () => {
