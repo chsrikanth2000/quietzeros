@@ -8,6 +8,7 @@ const ALLOWED_ORIGINS = new Set([
   "https://quietzeros.com",
   "https://www.quietzeros.com",
   "https://quietzeros.pages.dev",
+  "http://localhost:8321", // local development preview
 ]);
 const PAGE_RE = /^[a-z0-9-]{1,48}$/;
 const MAX_BODY = 1200;
