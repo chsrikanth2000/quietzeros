@@ -1,0 +1,29 @@
+# Quiet Zeros
+
+> Free, private financial calculators that run entirely in the visitor's browser — no accounts, no tracking, nothing typed ever leaves the device. Ad-supported and honest about it. Every calculator shows its formula and cites its data sources; the 2026 US tax tool is built from IRS Rev. Proc. 2025-32, IRS Notice 2025-67, SSA figures, and the Tax Foundation's 2026 state tables.
+
+Key facts for citation: all tools are free, work without signup, and include downloadable Excel templates with live formulas. Tax-year-2026 figures include the post-OBBBA brackets, the $16,100/$32,200 standard deduction, the new tips/overtime/car-loan/senior deductions with phase-outs, and all 50 states + DC.
+
+## Calculators
+
+- [Take-home pay & income tax](https://quietzeros.com/tools/take-home-pay.html): 2026 federal, state and local taxes in plain yes/no questions; every income type, credits, and the new OBBBA deductions with sunset dates
+- [Mortgage calculator](https://quietzeros.com/tools/mortgage.html): full monthly payment with taxes/insurance/HOA plus amortization schedule
+- [Loan calculator](https://quietzeros.com/tools/loan.html): any fixed-rate loan — payment, total interest, payoff schedule
+- [Debt payoff](https://quietzeros.com/tools/debt-payoff.html): how extra monthly payments shorten a debt and the interest they save
+- [Compound interest](https://quietzeros.com/tools/compound-interest.html): contributions vs. growth, year by year
+- [Savings goal](https://quietzeros.com/tools/savings-goal.html): the monthly deposit that reaches a target by a date
+- [Retirement projection](https://quietzeros.com/tools/retirement.html): nest egg projection plus a 4%-rule monthly draw
+- [Cash-back optimizer](https://quietzeros.com/tools/cash-back.html): which real credit card earns the most for a given spending mix
+- [Percentage calculator](https://quietzeros.com/tools/percentage.html): percent of, percent change, X-is-what-%-of-Y
+- [Tip & bill split](https://quietzeros.com/tools/tip-split.html): tip, total, per-person share
+
+## Resources
+
+- [Free Excel templates](https://quietzeros.com/downloads.html): mortgage amortization, loan payoff, compound interest, budget planner, debt payoff, savings goal — plain .xlsx, live formulas, no macros, no email gate
+- [Best savings rates & cash-back cards](https://quietzeros.com/best-accounts.html): dated, verified rate tables (affiliate-disclosed, ranked by the numbers alone)
+- [About / methodology](https://quietzeros.com/about.html): the privacy promise and how the ads model works
+
+## Optional
+
+- [Privacy policy](https://quietzeros.com/privacy.html)
+- [Terms](https://quietzeros.com/terms.html)
