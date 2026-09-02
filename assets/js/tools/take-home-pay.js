@@ -167,8 +167,28 @@ stateSel.addEventListener("change", () => { stateTouched = true; });
       const opt = document.querySelector(`input[name="nylocal"][value="${val}"]`);
       if (opt) opt.checked = true;
     }
+    let county = null;
+    if (geo.postalCode && (geo.region === "MD" || geo.region === "PA")) {
+      try {
+        const { ZIP_COUNTY } = await import("../data/zip-county.js");
+        county = ZIP_COUNTY[geo.postalCode] || null;
+        if (county && geo.region === "MD") {
+          $("#mdcounty").value = county;
+        } else if (county && geo.region === "PA") {
+          await ensurePAData();
+          populatePACounties();
+          if ([...$("#pacounty").options].some((o) => o.value === county)) {
+            $("#pacounty").value = county;
+            populatePAMunis();
+          } else county = null;
+        }
+      } catch { county = null; /* zip lookup is optional; state default still stands */ }
+    }
+    const countyDisplay = county && geo.region === "PA"
+      ? county.split(" ").map((w) => w[0] + w.slice(1).toLowerCase()).join(" ") + " county — pick your municipality below"
+      : county;
     const note = el("p", { class: "assume" },
-      `Set to ${STATES[geo.region].name} from your connection's general location — detected by our own server, stored nowhere. Change it anytime.`);
+      `Set to ${STATES[geo.region].name}${countyDisplay ? ` (${countyDisplay})` : ""} from your connection's general location — detected by our own server, stored nowhere. Change it anytime.`);
     stateSel.closest(".field").append(note);
     if (typeof run === "function") run();
   } catch { /* offline or blocked: the default state stands */ }
