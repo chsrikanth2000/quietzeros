@@ -47,6 +47,7 @@ export default {
         country: cf.country || null,
         region: cf.regionCode || null,
         city: cf.city || null,
+        postalCode: cf.postalCode || null,
       }, 200, h);
     }
 
