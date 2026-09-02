@@ -87,6 +87,7 @@ body {
   font: 400 16px/1.6 var(--font-ui);
   font-feature-settings: "cv05", "cv11";
   -webkit-font-smoothing: antialiased;
+  overflow-x: clip; /* belt-and-braces: no layout may force a horizontal scroll */
 }
 img, svg { display: block; max-width: 100%; }
 a { color: var(--brand); text-decoration-thickness: 1px; text-underline-offset: 3px; }
@@ -137,22 +138,28 @@ p  { margin: 0 0 1em; }
   background: var(--paper);
 }
 .site-header .wrap {
-  display: flex; align-items: center; gap: 1.5rem;
-  min-height: 64px;
+  display: flex; flex-wrap: wrap; align-items: center;
+  gap: .3rem 1.5rem;
+  min-height: 64px; padding-top: .6rem; padding-bottom: .6rem;
 }
 .wordmark {
   font-family: var(--font-display);
   font-weight: 600; font-size: 1.3rem; letter-spacing: -0.01em;
-  color: var(--ink); text-decoration: none;
+  color: var(--ink); text-decoration: none; white-space: nowrap;
   display: flex; align-items: center; gap: .55rem;
 }
 .wordmark svg { width: 22px; height: 22px; }
 .wordmark:hover { color: var(--brand); }
 
-.site-nav { margin-left: auto; display: flex; align-items: center; gap: 1.4rem; }
+.site-nav { margin-left: auto; display: flex; flex-wrap: wrap; align-items: center; gap: .4rem 1.4rem; }
 .site-nav a {
   color: var(--ink-2); text-decoration: none;
-  font-size: .92rem; font-weight: 480;
+  font-size: .92rem; font-weight: 480; white-space: nowrap;
+}
+@media (max-width: 560px) {
+  .site-nav { margin-left: 0; width: 100%; gap: .4rem 1.1rem; }
+  .site-nav a { font-size: .88rem; }
+  .theme-toggle { margin-left: auto; }
 }
 .site-nav a:hover, .site-nav a[aria-current="page"] { color: var(--ink); }
 .site-nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--brand-mark); text-decoration-thickness: 2px; text-underline-offset: 6px; }
@@ -170,6 +177,18 @@ p  { margin: 0 0 1em; }
 
 /* ---- Hero ---- */
 .hero { padding: clamp(3rem, 8vw, 5.5rem) 0 clamp(2.5rem, 6vw, 4rem); }
+.hero .wrap { position: relative; }
+.hero .wrap::after {
+  /* the quiet zero — one decided ornament, desktop only */
+  content: "0";
+  position: absolute; right: clamp(0px, 4vw, 3rem); top: 50%;
+  transform: translateY(-52%);
+  font-family: var(--font-display); font-weight: 500;
+  font-size: clamp(13rem, 24vw, 21rem); line-height: 1;
+  color: var(--ink); opacity: .05;
+  pointer-events: none; user-select: none;
+}
+@media (max-width: 980px) { .hero .wrap::after { content: none; } }
 .hero h1 { max-width: 16ch; }
 .hero .lede { margin-top: 1rem; }
 .badge-row { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.6rem; }
@@ -210,6 +229,11 @@ p  { margin: 0 0 1em; }
 .tool-row:hover .name { color: var(--brand); }
 .tool-row:hover .go { color: var(--brand); transform: translateX(3px); }
 .tool-row:hover { background: linear-gradient(to right, transparent, var(--brand-wash) 300%); }
+@media (max-width: 560px) {
+  .tool-row { grid-template-columns: 1.9rem 1fr; }
+  .tool-row .go { display: none; }
+  .tool-row .name { font-size: 1.22rem; }
+}
 
 .section-head {
   display: flex; align-items: baseline; justify-content: space-between;

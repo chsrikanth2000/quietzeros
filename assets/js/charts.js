@@ -18,6 +18,13 @@ document.addEventListener("qz:theme", () => {
   for (const render of registry.values()) render();
 });
 
+// re-render on resize so SVG text stays at a readable size on any screen
+let resizeTimer = 0;
+window.addEventListener("resize", () => {
+  clearTimeout(resizeTimer);
+  resizeTimer = setTimeout(() => { for (const render of registry.values()) render(); }, 150);
+});
+
 function niceTicks(max, count = 4) {
   if (max <= 0) return [0, 1];
   const step = Math.pow(10, Math.floor(Math.log10(max / count)));
@@ -36,7 +43,11 @@ function niceTicks(max, count = 4) {
 export function stackedArea(container, cfg) {
   const render = () => {
     container.replaceChildren();
-    const W = 640, H = 300, padL = 54, padR = 84, padT = 14, padB = 30;
+    // size the viewBox to the actual container so text renders ~1:1 (legible on phones)
+    const W = Math.max(320, Math.min(640, container.clientWidth || 640));
+    const narrow = W < 460;
+    const H = narrow ? 260 : 300;
+    const padL = narrow ? 46 : 54, padR = narrow ? 66 : 84, padT = 14, padB = 30;
     const iw = W - padL - padR, ih = H - padT - padB;
     const n = cfg.xs.length;
     if (n < 2) return;
@@ -56,7 +67,7 @@ export function stackedArea(container, cfg) {
     const svg = svgEl("svg", { viewBox: `0 0 ${W} ${H}`, role: "img", "aria-label": cfg.ariaLabel || "Chart" });
 
     // grid + y ticks
-    for (const t of niceTicks(yMax)) {
+    for (const t of niceTicks(yMax, narrow ? 3 : 4)) {
       svg.append(
         svgEl("line", { class: "gridline", x1: padL, x2: padL + iw, y1: y(t), y2: y(t) }),
         svgEl("text", { class: "tick", x: padL - 8, y: y(t) + 4, "text-anchor": "end" }, fmt(t))
@@ -64,7 +75,7 @@ export function stackedArea(container, cfg) {
     }
     // x ticks: first, a few middles, last — skip middles that would crowd the last
     const xtickIdx = new Set([0, n - 1]);
-    const stepi = Math.max(1, Math.round((n - 1) / 4));
+    const stepi = Math.max(1, Math.round((n - 1) / (narrow ? 3 : 4)));
     for (let xi = stepi; xi <= n - 1 - Math.max(1, Math.ceil(stepi * 0.6)); xi += stepi) xtickIdx.add(xi);
     for (const xi of xtickIdx) {
       svg.append(svgEl("text", { class: "tick", x: x(xi), y: padT + ih + 20, "text-anchor": "middle" }, cfg.xs[xi]));
