@@ -2,11 +2,15 @@
 """Flip the site from placeholder ad slots to live AdSense — one command.
 
 Usage:
-    python scripts/enable_adsense.py ca-pub-XXXXXXXXXXXXXXXX AD_SLOT_ID
+    python scripts/enable_adsense.py ca-pub-XXXXXXXXXXXXXXXX [AD_SLOT_ID]
 
-Where AD_SLOT_ID is the numeric "data-ad-slot" of one responsive display
-unit created in AdSense (Ads > By ad unit > Display ads). One unit can
-serve every slot on the site.
+Run with just the publisher ID during the AdSense APPLICATION stage:
+it installs the verification loader, ads.txt, and the widened CSP, while
+the labeled placeholder slots stay as they are (no units exist yet).
+
+After approval, create one responsive display unit (Ads > By ad unit >
+Display ads) and re-run with its numeric AD_SLOT_ID to go fully live.
+One unit can serve every slot on the site.
 
 What it does (idempotent — safe to re-run):
   1. ads.txt          — writes the authorized-seller line for your pub ID.
@@ -55,10 +59,10 @@ for (const ins of document.querySelectorAll("ins.adsbygoogle")) {
 """
 
 
-def main(pub, slot):
+def main(pub, slot=None):
     if not re.fullmatch(r"ca-pub-\d{16}", pub):
         sys.exit(f"'{pub}' does not look like a ca-pub-XXXXXXXXXXXXXXXX id")
-    if not re.fullmatch(r"\d{6,12}", slot):
+    if slot is not None and not re.fullmatch(r"\d{6,12}", slot):
         sys.exit(f"'{slot}' does not look like a numeric ad-slot id")
 
     (ROOT / "ads.txt").write_text(
@@ -74,14 +78,15 @@ def main(pub, slot):
         s = s.replace(CSP_OLD, CSP_ADS)
         if loader not in s:
             s = s.replace("</head>", f"  {loader}\n</head>")
-        unit = (r'\1' + f'\n      <ins class="adsbygoogle" data-ad-format="auto" '
-                f'data-full-width-responsive="true" data-ad-client="{pub}" '
-                f'data-ad-slot="{slot}"></ins>\n    ' + r'\2')
-        s = AD_BODY_RE.sub(unit, s)
-        if f'src="{rel}assets/js/ads.js"' not in s:
-            s = s.replace("</body>", f'  <script src="{rel}assets/js/ads.js" defer></script>\n</body>')
+        if slot is not None:
+            unit = (r'\1' + f'\n      <ins class="adsbygoogle" data-ad-format="auto" '
+                    f'data-full-width-responsive="true" data-ad-client="{pub}" '
+                    f'data-ad-slot="{slot}"></ins>\n    ' + r'\2')
+            s = AD_BODY_RE.sub(unit, s)
+            if f'src="{rel}assets/js/ads.js"' not in s:
+                s = s.replace("</body>", f'  <script src="{rel}assets/js/ads.js" defer></script>\n</body>')
         f.write_text(s, encoding="utf-8", newline="\n")
-    print("HTML pages updated (CSP, loader, units)")
+    print("HTML pages updated (CSP + loader" + (" + units" if slot else " — verification mode, no units yet") + ")")
 
     h = ROOT / "_headers"
     h.write_text(h.read_text(encoding="utf-8").replace(CSP_HEADERS_OLD, CSP_HEADERS_ADS),
@@ -98,6 +103,6 @@ def main(pub, slot):
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 3:
+    if len(sys.argv) not in (2, 3):
         sys.exit(__doc__)
-    main(sys.argv[1], sys.argv[2])
+    main(*sys.argv[1:])
