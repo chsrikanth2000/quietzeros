@@ -298,6 +298,28 @@
         </div>
 
         <div class="field">
+          <label>Any RSUs or stock compensation vesting this year?</label>
+          <div class="chips" role="radiogroup" aria-label="RSU or stock compensation">
+            <label><input type="radio" name="hasrsu" value="yes">Yes</label>
+            <label><input type="radio" name="hasrsu" value="no" checked>No</label>
+            <label><input type="radio" name="hasrsu" value="dk">Not sure</label>
+          </div>
+          <p class="assume" data-when="dk">We'll assume <strong>no</strong>. If shares vested and appeared on your W-2 or a 1099, the answer is yes.</p>
+          <div class="subfields" id="rsu-fields" hidden>
+            <div class="field">
+              <label for="rsuval">RSU / stock value vesting this year</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="rsuval" type="number" inputmode="decimal" value="0" min="0" max="20000000" step="1000"><span class="affix">/yr</span></div>
+              <p class="help">Shares × price at each vest. It's ordinary W-2 income the moment it vests — separate from your salary above, but taxed exactly like it.</p>
+            </div>
+            <div class="field">
+              <label for="rsustatewh">State supplemental withholding on the RSUs</label>
+              <div class="input-wrap"><input id="rsustatewh" type="number" inputmode="decimal" value="5" min="0" max="15" step="0.5"><span class="affix">%</span></div>
+              <p class="help">Employers withhold a flat 22% federal (37% past $1M) plus a flat state rate — both often below your real marginal rate, leaving a gap due at filing. We compute your real rate from everything else on this page.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
           <label>Paying interest on a student loan or a new car loan?</label>
           <div class="chips" role="radiogroup" aria-label="Loan interest">
             <label><input type="radio" name="hasloans" value="yes">Yes</label>
@@ -408,6 +430,11 @@
         <div class="chart-block">
           <p class="chart-title">Your taxes, itemized</p>
           <div class="chart" id="chart-taxes"></div>
+        </div>
+
+        <div class="note" id="rsu-panel" hidden>
+          <strong>RSU withholding check.</strong>
+          <p id="rsu-note" style="margin:.5rem 0 0"></p>
         </div>
 
         <div class="chart-block" id="move-panel" hidden>

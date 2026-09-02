@@ -66,6 +66,15 @@ function readYM(id) {
   if (!m || !y) return null;
   return `${y.value}-${String(m.value).padStart(2, "0")}`;
 }
+/** Set a month/year select pair from a "YYYY-MM" string, clamping to the
+    year select's available range. */
+function setYMField(prefix, ym) {
+  if (typeof ym !== "string" || !/^\d{4}-\d{2}$/.test(ym)) return;
+  const [y, mo] = ym.split("-");
+  const me = $(`#${prefix}_m`), ye = $(`#${prefix}_y`);
+  if (me) me.value = String(Number(mo));
+  if (ye && [...ye.options].some((o) => o.value === String(Number(y)))) ye.value = String(Number(y));
+}
 function monthField(id, label, value) {
   const now = new Date().getFullYear();
   return el("div", { class: "field" },
@@ -151,6 +160,11 @@ function monthIndexToLabel(mi) {
   const d = new Date(s.y, s.m - 1 + mi - 1, 1);
   return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
 }
+function monthIndexToYM(mi) {
+  const s = startYM();
+  const d = new Date(s.y, s.m - 1 + mi - 1, 1);
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
+}
 
 function readEvents() {
   return events.map((e) => {
@@ -172,6 +186,8 @@ function simulate(amount, ratePct, termYears, evs) {
   let payment = pmt(amount, ratePct, maturity);
   let totalInterest = 0, outOfPocket = 0, m = 0;
   const balances = [bal];
+  const outPath = [0];       // cumulative out-of-pocket by month (for break-even comparisons)
+  const paymentPath = [];    // required payment in effect during month m (index m-1)
   const cap = 1200;
   while (bal > 0.005 && m < cap) {
     m++;
@@ -185,6 +201,7 @@ function simulate(amount, ratePct, termYears, evs) {
         payment = pmt(bal, e.rate, e.term * 12);
       }
     }
+    paymentPath.push(payment);
     const interest = bal * rate;
     totalInterest += interest;
     let pay = Math.min(payment, bal + interest);
@@ -195,6 +212,7 @@ function simulate(amount, ratePct, termYears, evs) {
     }
     pay = Math.min(pay, bal + interest);
     outOfPocket += pay;
+    outPath.push(outOfPocket);
     bal = Math.max(0, bal + interest - pay);
     for (const e of evs) {
       if (e.type === "recast" && e.when === m && maturity > m) {
@@ -208,8 +226,10 @@ function simulate(amount, ratePct, termYears, evs) {
     }
   }
   if (bal > 0.005) return null;
-  return { months: m, totalInterest, outOfPocket, balances, payment };
+  return { months: m, totalInterest, outOfPocket, balances, outPath, paymentPath, payment };
 }
+/** Cumulative out-of-pocket at month m, holding flat after payoff. */
+function cumAt(sim, m) { return sim.outPath[Math.min(m, sim.outPath.length - 1)]; }
 
 /* ================= HELOC ================= */
 
@@ -319,16 +339,47 @@ function compute() {
   evs.forEach((e, idx) => {
     const without = simulate(amount, ratePct, termYears, evs.filter((_, j) => j !== idx));
     const saved = without ? (without.totalInterest - plan.totalInterest) : NaN;
-    const label = {
+    let label = {
       extra: `${money(e.amt)} one-time in ${monthIndexToLabel(e.when)}`,
       recur: `${money(e.amt)} extra every ${e.freq === 12 ? "year" : "month"} from ${monthIndexToLabel(e.when)}`,
       recast: `Recast with ${money(e.amt)} in ${monthIndexToLabel(e.when)}`,
       refi: `Refinance to ${e.rate}% / ${e.term} yrs in ${monthIndexToLabel(e.when)}`,
     }[e.type];
+
+    if (e.type === "refi" && without) {
+      // break-even: first month the refinance's cumulative cost drops below staying put
+      let be = null;
+      const span = Math.max(plan.months, without.months, e.when);
+      for (let mm = e.when; mm <= span; mm++) {
+        if (cumAt(plan, mm) < cumAt(without, mm)) { be = mm; break; }
+      }
+      label += be ? ` — breaks even ${monthIndexToLabel(be)}` : " — never breaks even in this plan";
+    }
     impact.append(el("div", { class: "impact-row" },
       el("span", {}, label),
       el("span", { class: "n" + (Number.isFinite(saved) && saved < 0 ? " bad" : "") },
         Number.isFinite(saved) ? `${saved >= 0 ? "saves" : "costs"} ${money(Math.abs(saved))}` : "—")));
+
+    // quick-add: keep paying the OLD amount instead of pocketing the lower one
+    if (e.type === "refi") {
+      const oldPay = e.when >= 2 ? plan.paymentPath[e.when - 2] : pmt(amount, ratePct, termYears * 12);
+      const newPay = plan.paymentPath[e.when - 1];
+      if (newPay < oldPay - 1 && !events.some((ev2) => ev2.type === "recur" && whenToMonthIndex(readYM(`ev${ev2.id}-when`) || defaultWhen(1)) === e.when)) {
+        const diff = oldPay - newPay;
+        impact.append(el("p", { class: "q-note" },
+          `💡 This refinance drops the payment by ${money2(diff)}. Keep paying your old amount instead and the freed-up rate cut goes straight to payoff: `,
+          el("button", {
+            class: "btn-ghost", type: "button",
+            onclick: () => {
+              addEvent("recur");
+              const newId = events[events.length - 1].id;
+              $(`#ev${newId}-amt`).value = String(Math.round(diff));
+              setYMField(`ev${newId}-when`, monthIndexToYM(e.when));
+              recompute();
+            },
+          }, `add a ${money(diff)}/mo recurring extra starting ${monthIndexToLabel(e.when)}`)));
+      }
+    }
   });
   if (heloc) {
     impact.append(el("div", { class: "impact-row" },
@@ -404,13 +455,7 @@ function restoreState() {
   let st;
   try { st = JSON.parse(atob(m[1].replace(/-/g, "+").replace(/_/g, "/"))); } catch { return; }
   const setNum = (id, v) => { const n = Number(v); if (Number.isFinite(n)) $(id).value = String(n); };
-  const setYM = (prefix, ym) => {
-    if (typeof ym !== "string" || !/^\d{4}-\d{2}$/.test(ym)) return;
-    const [y, mo] = ym.split("-");
-    const me = $(`#${prefix}_m`), ye = $(`#${prefix}_y`);
-    if (me) me.value = String(Number(mo));
-    if (ye && [...ye.options].some((o) => o.value === String(Number(y)))) ye.value = String(Number(y));
-  };
+  const setYM = setYMField;
   setNum("#amount", st.a); setNum("#rate", st.r); setNum("#invreturn", st.iv);
   if ([15, 20, 30].includes(Number(st.t))) $("#term").value = String(Number(st.t));
   setYM("start", st.s);

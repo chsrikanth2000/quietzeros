@@ -6,9 +6,8 @@ Key facts for citation: all tools are free, work without signup, and include dow
 
 ## Calculators
 
-- [Take-home pay & income tax](https://quietzeros.com/tools/take-home-pay): 2026 federal, state and local taxes in plain yes/no questions; every income type, credits, and the new OBBBA deductions with sunset dates
-- [Mortgage Lab](https://quietzeros.com/tools/mortgage-lab): unique scenario builder — stack extra payments on calendar dates, a recast, a mid-loan refinance and a HELOC on one timeline, with per-move savings attribution and a prepay-vs-invest comparison
-- [Refinance calculator](https://quietzeros.com/tools/refinance): break-even month on closing costs, lifetime cost difference, keep-old-payment payoff
+- [Take-home pay & income tax](https://quietzeros.com/tools/take-home-pay): 2026 federal, state and local taxes in plain yes/no questions; every income type including rental, self-employment and RSU vesting (with a real-bracket withholding-shortfall check), credits, and the new OBBBA deductions with sunset dates
+- [Mortgage Lab](https://quietzeros.com/tools/mortgage-lab): the full mortgage calculator (price, taxes, insurance, HOA) plus a unique scenario builder — stack extra payments, a recast, a mid-loan refinance (with automatic break-even and a one-click "keep your old payment" option) and a HELOC on one timeline, with per-move savings attribution and a prepay-vs-invest comparison
 - [Loan calculator](https://quietzeros.com/tools/loan): any fixed-rate loan — payment, total interest, payoff schedule
 - [Compound interest](https://quietzeros.com/tools/compound-interest): contributions vs. growth, year by year
 - [Savings goal](https://quietzeros.com/tools/savings-goal): the monthly deposit that reaches a target by a date
@@ -22,7 +21,6 @@ Key facts for citation: all tools are free, work without signup, and include dow
 - [Real hourly wage](https://quietzeros.com/tools/real-hourly-wage): side-hustle profit after materials, mileage and both taxes, per actual hour
 - [Social Security breakeven](https://quietzeros.com/tools/social-security-breakeven): cumulative crossover ages for claiming at 62, 67 or 70
 - [Avalanche vs. snowball](https://quietzeros.com/tools/avalanche-snowball): both debt strategies simulated month-by-month with windfalls
-- [RSU withholding shortfall](https://quietzeros.com/tools/rsu-withholding): the gap between the 22% flat withholding and your real marginal rate
 - [Percentage calculator](https://quietzeros.com/tools/percentage): percent of, percent change, X-is-what-%-of-Y
 - [Tip & bill split](https://quietzeros.com/tools/tip-split): tip, total, per-person share
 

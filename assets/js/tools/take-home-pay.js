@@ -49,6 +49,7 @@ wireChips("hastips", "tips-fields");
 wireChips("hasloans", "loan-fields");
 wireChips("hasgive", "give-fields");
 wireChips("hasrental", "rental-fields");
+wireChips("hasrsu", "rsu-fields");
 wireChips("rentalqbi", null);
 wireChips("ded529", null);
 wireChips("hasaccts", "accts-fields");
@@ -179,6 +180,8 @@ function gatherInputs() {
     otheritem: readField($("#otheritem")),
     tips: hasTips ? Math.min(readField($("#tips")), readField($("#wages"))) : 0,
     ot: hasTips ? readField($("#ot")) : 0,
+    rsu: chipValue("hasrsu") === "yes" ? readField($("#rsuval")) : 0,
+    rsustatewh: chipValue("hasrsu") === "yes" ? readField($("#rsustatewh")) / 100 : 0,
     slint: hasLoans ? readField($("#slint")) : 0,
     carint: hasLoans ? readField($("#carint")) : 0,
     give: chipValue("hasgive") === "yes" ? readField($("#give")) : 0,
@@ -192,23 +195,24 @@ function calcFederal(year, inp) {
   const Q = year === 2026 ? SAVE.qbi
     : { ...QBI2025, rate: SAVE.qbi.rate, minDeduction: SAVE.qbi.minDeduction, minQBI: SAVE.qbi.minQBI };
   const st = inp.status;
+  const wages = inp.wages + inp.rsu; // RSUs are ordinary wage income the moment they vest
   const depreciation = inp.rbasis / 27.5;
   inp = { ...inp, rental: inp.rents - inp.rexp - depreciation, depreciation };
 
   // --- payroll ---
-  const ssWages = Math.min(inp.wages, F.fica.ssWageBase);
+  const ssWages = Math.min(wages, F.fica.ssWageBase);
   const ficaSS = ssWages * F.fica.ssRate / 100;
-  const ficaMed = inp.wages * F.fica.medicareRate / 100;
+  const ficaMed = wages * F.fica.medicareRate / 100;
   const seNet = inp.se * F.se.factor;
   const seSSBase = Math.min(seNet, Math.max(0, F.fica.ssWageBase - ssWages));
   const seTax = seSSBase * F.se.ssRate / 100 + seNet * F.se.medicareRate / 100;
-  const addlMed = Math.max(0, inp.wages + seNet - F.fica.addlMedicareThreshold[st]) * F.fica.addlMedicareRate / 100;
+  const addlMed = Math.max(0, wages + seNet - F.fica.addlMedicareThreshold[st]) * F.fica.addlMedicareRate / 100;
   const payroll = ficaSS + ficaMed + addlMed + seTax;
 
   const pretax = inp.k401 + (st === "mfj" ? inp.k401s : 0) + inp.hsa;
 
   // --- rental: income adds; losses limited by the $25k active-participation allowance ---
-  const grossNoRental = inp.wages + inp.se + inp.interest + inp.qdiv + inp.odiv + inp.ltg + inp.stg + inp.other;
+  const grossNoRental = wages + inp.se + inp.interest + inp.qdiv + inp.odiv + inp.ltg + inp.stg + inp.other;
   const magiApprox = Math.max(0, grossNoRental - pretax - seTax / 2);
   let rentalAdj = inp.rental, suspendedLoss = 0;
   if (inp.rental < 0) {
@@ -321,11 +325,36 @@ function compute() {
   const sb = stateBrackets(st, inp.status);
   const stateTaxable = Math.max(0, r.agi - (inp.ded529 ? inp.plan529 : 0));
   const stateTax = bracketTax(stateTaxable, sb);
+
+  // --- RSU withholding check: real marginal cost of the RSUs (federal + state,
+  // holding everything else equal) versus the flat rate employers withhold ---
+  const rsuPanel = $("#rsu-panel");
+  if (inp.rsu > 0) {
+    const rNoRSU = calcFederal(year, { ...inp, rsu: 0 });
+    const stateTaxableNoRSU = Math.max(0, rNoRSU.agi - (inp.ded529 ? inp.plan529 : 0));
+    const stateTaxNoRSU = bracketTax(stateTaxableNoRSU, sb);
+    const fedCaused = r.fedTax - rNoRSU.fedTax;
+    const stateCaused = stateTax - stateTaxNoRSU;
+    const fedWithheld = Math.min(inp.rsu, 1000000) * 0.22 + Math.max(0, inp.rsu - 1000000) * 0.37;
+    const stateWithheld = inp.rsu * inp.rsustatewh;
+    const shortfall = (fedCaused - fedWithheld) + (stateCaused - stateWithheld);
+    rsuPanel.hidden = false;
+    $("#rsu-note").replaceChildren(
+      `Your ${money(inp.rsu)} of RSUs actually costs ${money(fedCaused + stateCaused)} in federal + state tax at your real marginal rate, versus ${money(fedWithheld + stateWithheld)} withheld by your employer's flat rate. `,
+      Object.assign(document.createElement("strong"), {
+        textContent: shortfall > 0
+          ? `Set aside about ${money(shortfall)} more before filing.`
+          : `You're covered — withholding ran ${money(-shortfall)} ahead of what you'll owe.`,
+      })
+    );
+  } else {
+    rsuPanel.hidden = true;
+  }
   let localTax = 0;
   if (st.nyc && chipValue("nyc") === "yes") {
     localTax = bracketTax(r.agi, inp.status === "mfj" ? NYC.mfj : NYC.single);
   } else if (st.local && !$("#local-q").hidden) {
-    localTax = (inp.wages + r.seNet) * readField($("#localrate")) / 100;
+    localTax = (inp.wages + inp.rsu + r.seNet) * readField($("#localrate")) / 100;
   }
 
   const savings = r.pretax + inp.ira + (inp.status === "mfj" ? inp.iras : 0) + inp.plan529;
@@ -391,7 +420,7 @@ function compute() {
 
   const k401Limit = SAVE.retirement.k401 + (inp.senior ? SAVE.retirement.k401Catchup50 : 0);
   const k401Room = Math.max(0, k401Limit - inp.k401);
-  if (k401Room > 0 && inp.wages > 0) {
+  if (k401Room > 0 && (inp.wages + inp.rsu) > 0) {
     card("Max your 401(k)", k401Room * margFrac,
       `You have ${money(k401Room)} of unused 2026 contribution room (limit ${money(k401Limit)}${inp.senior ? " incl. catch-up" : ""}). Every dollar in skips your ${pct(marg)} marginal rate.`);
   }
@@ -473,7 +502,7 @@ function compute() {
     const stB = STATES[code2];
     const sbB = stateBrackets(stB, inp.status);
     const stateTaxB = bracketTax(Math.max(0, r.agi - (inp.ded529 ? inp.plan529 : 0)), sbB);
-    const localB = stB.local ? (inp.wages + r.seNet) * stB.local.def / 100 : 0;
+    const localB = stB.local ? (inp.wages + inp.rsu + r.seNet) * stB.local.def / 100 : 0;
     const incomeA = stateTax + localTax, incomeB = stateTaxB + localB;
 
     const homeval = readField($("#homeval"));

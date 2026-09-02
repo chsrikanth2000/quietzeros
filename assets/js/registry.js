@@ -17,23 +17,11 @@ export const TOOLS = [
     cat: "Income & taxes",
   },
   {
-    slug: "rsu-withholding",
-    name: "RSU withholding shortfall",
-    desc: "Employers withhold 22% on vests; your real rate is higher. Estimate the April surprise.",
-    cat: "Income & taxes",
-  },
-  {
     slug: "mortgage-lab",
     name: "Mortgage Lab",
     desc: "Full mortgage payment (with taxes, insurance, HOA) plus extra payments, a recast, a refinance and a HELOC on one timeline — see what each move is worth.",
     cat: "Home & loans",
     excel: "mortgage-amortization.xlsx",
-  },
-  {
-    slug: "refinance",
-    name: "Refinance calculator",
-    desc: "Break-even on closing costs, honest lifetime difference, and the keep-your-old-payment trick.",
-    cat: "Home & loans",
   },
   {
     slug: "rent-vs-buy",
