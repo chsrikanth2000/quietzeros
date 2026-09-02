@@ -127,6 +127,19 @@ python scripts/gen_pages.py     # tool pages from the shared shell
 python scripts/build_excel.py   # Excel templates (needs: pip install openpyxl)
 ```
 
+## Deploying updates
+
+Always deploy through the staging script — it stamps every asset URL and module
+import with the git sha, which is what prevents browsers from pairing cached old
+JavaScript with fresh HTML (Cloudflare Pages caches assets for 4 hours and its
+_headers file cannot lower that):
+
+```
+git add -A && git commit -m "..." && git push
+python scripts/stage_deploy.py /tmp/deploy
+npx wrangler pages deploy /tmp/deploy --project-name quietzeros --branch main --commit-dirty=true
+```
+
 ## Name and trademark note
 
 "Quiet Zeros" was chosen in September 2026 with `quietzeros.com` unregistered and no search-visible
