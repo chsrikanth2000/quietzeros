@@ -1,0 +1,144 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'">
+  <title>Cash-back optimizer — Quiet Zeros</title>
+  <meta name="description" content="Enter your monthly spending and see which cash-back credit card actually earns you the most per year — computed from real reward structures, privately in your browser.">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="../assets/js/theme.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="wordmark" href="../index.html" aria-label="Quiet Zeros home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="4.6" ry="6.4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Quiet Zeros
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="../index.html">Calculators</a>
+        <a href="../downloads.html">Excel templates</a>
+        <a href="../about.html">About</a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <div class="tool-head">
+      <p class="crumbs"><a href="../index.html">Calculators</a> / Banking &amp; cards</p>
+      <h1>Cash-back optimizer</h1>
+      <p class="lede">Your spending pattern decides which card wins — not the marketing. Enter what a normal month looks like and see each card's real annual value. Nothing you type leaves this page.</p>
+    </div>
+
+    <form class="calc" id="calc" autocomplete="off" novalidate>
+      <div class="calc-inputs">
+        <div class="field">
+          <label for="groceries">Groceries &amp; supermarkets</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="groceries" type="number" inputmode="decimal" value="500" min="0" max="50000" step="25"><span class="affix">/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="dining">Dining &amp; takeout</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="dining" type="number" inputmode="decimal" value="250" min="0" max="50000" step="25"><span class="affix">/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="gas">Gas &amp; EV charging</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="gas" type="number" inputmode="decimal" value="150" min="0" max="50000" step="25"><span class="affix">/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="online">Online shopping</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="online" type="number" inputmode="decimal" value="200" min="0" max="50000" step="25"><span class="affix">/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="travel">Travel (flights, hotels, transit)</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="travel" type="number" inputmode="decimal" value="100" min="0" max="50000" step="25"><span class="affix">/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="streaming">Streaming &amp; subscriptions</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="streaming" type="number" inputmode="decimal" value="40" min="0" max="10000" step="5"><span class="affix">/mo</span></div>
+        </div>
+        <div class="field">
+          <label for="everything">Everything else</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="everything" type="number" inputmode="decimal" value="400" min="0" max="100000" step="25"><span class="affix">/mo</span></div>
+        </div>
+        <div class="field">
+          <label>Include first-year sign-up bonuses?</label>
+          <div class="chips" role="radiogroup" aria-label="Include sign-up bonuses">
+            <label><input type="radio" name="bonus" value="no" checked>No — ongoing value</label>
+            <label><input type="radio" name="bonus" value="yes">Yes — first year</label>
+          </div>
+          <p class="assume">Ongoing value is the honest comparison; bonuses flatter a card's first year only.</p>
+        </div>
+        <div class="calc-actions"><button class="btn-ghost" type="reset" data-reset>Reset to defaults</button></div>
+      </div>
+
+      <div class="calc-results">
+        <div class="hero-figure">
+          <p class="label" id="r-label">Best card for your spending</p>
+          <p class="value" id="r-hero" aria-live="polite">—</p>
+        </div>
+        <p class="interpret" id="r-interpret"></p>
+
+        <div class="chart-block">
+          <p class="chart-title">Annual cash back by card, with your spending</p>
+          <div class="chart" id="chart-rank"></div>
+        </div>
+
+        <details class="sched">
+          <summary>Full comparison table</summary>
+          <div id="rank-table"></div>
+        </details>
+      </div>
+    </form>
+
+    <div class="note" id="asof-note"></div>
+
+    <aside class="ad-slot" aria-label="Advertisement">
+      <span class="ad-tag">Advertisement</span>
+      <span class="ad-body">Ad space. A small number of ads like this keep Quiet Zeros free — <a href="../about.html#ads">here's how that works</a>.</span>
+    </aside>
+
+    <article class="prose">
+      <h2>How this is calculated</h2>
+      <p>Each card's reward structure — category rates, spending caps, annual fee — is applied to your monthly amounts, annualized:</p>
+      <p class="formula">annual value = Σ ( category spend × category rate, up to the card's cap ) − annual fee</p>
+      <p>Capped categories matter more than headlines: a "6% on groceries" card capped at $6,000/year earns at most $360 from groceries no matter how much you spend. Rotating 5% cards are credited here at their realistic effective rate on "everything else" style spending rather than a best-case fantasy.</p>
+      <h3>Why the winner changes as you type</h3>
+      <p>Flat 2%-on-everything cards win for spread-out spending; category cards win when one category dominates. The crossover is exactly what this tool finds — try moving your grocery number and watch the ranking reorder.</p>
+      <h3>Data integrity</h3>
+      <p>Reward structures are compiled from issuers' published terms (date shown above) and stored in one open data file anyone can inspect. Some links on our <a href="../best-accounts.html">accounts &amp; cards page</a> may be affiliate links — they never affect rates shown here or the ranking, which is pure arithmetic on your numbers.</p>
+    </article>
+
+    <section class="related">
+      <h2>Related tools</h2>
+      <ul class="related-list" id="related-tools"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <p class="disclosure"><strong>Free, and honest about why.</strong> Quiet Zeros is supported by a small number of clearly labeled ads — never inside a calculator, never disguised as content. Your numbers stay on your device.</p>
+        <nav aria-label="Footer">
+          <a href="../index.html">Calculators</a>
+          <a href="../downloads.html">Excel templates</a>
+          <a href="../best-accounts.html">Accounts &amp; cards</a>
+          <a href="../about.html">About</a>
+          <a href="../privacy.html">Privacy</a>
+          <a href="../terms.html">Terms</a>
+        </nav>
+      </div>
+      <p class="fineprint">© <span data-year>2026</span> Quiet Zeros. Results are estimates for planning, not financial advice.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="../assets/js/tools/cash-back.js"></script>
+</body>
+</html>
