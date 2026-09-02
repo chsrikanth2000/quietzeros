@@ -81,19 +81,90 @@
         </div>
 
         <div class="field" id="nyc-q" hidden>
-          <label>Do you live in New York City?</label>
-          <div class="chips" role="radiogroup" aria-label="New York City resident">
-            <label><input type="radio" name="nyc" value="yes">Yes</label>
-            <label><input type="radio" name="nyc" value="no" checked>No</label>
-            <label><input type="radio" name="nyc" value="dk">Not sure</label>
+          <label>Do you live in New York City or Yonkers?</label>
+          <div class="chips" role="radiogroup" aria-label="NYC or Yonkers resident">
+            <label><input type="radio" name="nylocal" value="nyc">NYC</label>
+            <label><input type="radio" name="nylocal" value="yonkers">Yonkers</label>
+            <label><input type="radio" name="nylocal" value="no" checked>Neither</label>
+            <label><input type="radio" name="nylocal" value="dk">Not sure</label>
           </div>
-          <p class="assume" data-when="dk">We'll assume <strong>no</strong> — NYC tax applies only to city residents.</p>
+          <p class="assume" data-when="dk">We'll assume <strong>neither</strong> — both taxes apply only to residents (Yonkers also taxes commuters who work there but live elsewhere, at a lower rate).</p>
+        </div>
+
+        <div class="field" id="md-q" hidden>
+          <label for="mdcounty">County of residence</label>
+          <div class="input-wrap"><select id="mdcounty" aria-label="Maryland county"></select></div>
+          <p class="help">Maryland's local income tax is set by county — from 2.25% (Worcester) to 3.30% (Dorchester, Kent). Anne Arundel and Frederick use income tiers instead of one flat rate.</p>
+        </div>
+
+        <div class="field" id="pa-q" hidden>
+          <div class="field">
+            <label for="pacounty">County</label>
+            <div class="input-wrap"><select id="pacounty" aria-label="Pennsylvania county"></select></div>
+          </div>
+          <div class="field">
+            <label for="pamuni">Municipality / school district</label>
+            <div class="input-wrap"><select id="pamuni" aria-label="Pennsylvania municipality"></select></div>
+            <p class="help" id="pa-hint">Pennsylvania's earned income tax is set per municipality and school district (2,619 of them) — pick yours for an exact resident rate.</p>
+          </div>
+        </div>
+
+        <div class="field" id="oh-q" hidden>
+          <label for="ohmuni">Municipality</label>
+          <div class="input-wrap"><select id="ohmuni" aria-label="Ohio municipality"></select></div>
+          <p class="help">Most Ohio cities and villages charge their own income tax on residents. If you work in a different Ohio city, yours may credit part of what you pay there — that credit isn't modeled here, only your home-city rate.</p>
+        </div>
+
+        <div class="field" id="mo-q" hidden>
+          <label>Do you live in Kansas City or St. Louis?</label>
+          <div class="chips" role="radiogroup" aria-label="Missouri city earnings tax">
+            <label><input type="radio" name="mocity" value="kc">Kansas City</label>
+            <label><input type="radio" name="mocity" value="stl">St. Louis</label>
+            <label><input type="radio" name="mocity" value="no" checked>Neither</label>
+          </div>
+          <p class="help">Both cities charge a 1% earnings tax on residents.</p>
+        </div>
+
+        <div class="field" id="de-q" hidden>
+          <label>Do you live in Wilmington?</label>
+          <div class="chips" role="radiogroup" aria-label="Wilmington wage tax">
+            <label><input type="radio" name="dewilm" value="yes">Yes</label>
+            <label><input type="radio" name="dewilm" value="no" checked>No</label>
+          </div>
+          <p class="help">Wilmington is the only Delaware city with its own wage tax: 1.25%.</p>
+        </div>
+
+        <div class="field" id="co-q" hidden>
+          <label>Do you work in Denver, Glendale, Greenwood Village or Sheridan?</label>
+          <div class="chips" role="radiogroup" aria-label="Colorado occupational privilege tax city">
+            <label><input type="radio" name="cocity" value="Denver">Denver</label>
+            <label><input type="radio" name="cocity" value="Glendale">Glendale</label>
+            <label><input type="radio" name="cocity" value="Greenwood Village">Greenwood Village</label>
+            <label><input type="radio" name="cocity" value="Sheridan">Sheridan</label>
+            <label><input type="radio" name="cocity" value="no" checked>None of these</label>
+          </div>
+          <p class="help">A small flat monthly "occupational privilege tax," not a percentage — a few dollars a month once you clear each city's monthly earnings threshold.</p>
         </div>
 
         <div class="field" id="local-q" hidden>
           <label for="localrate" id="local-label">Local income tax</label>
           <div class="input-wrap"><input id="localrate" type="number" inputmode="decimal" value="0" min="0" max="5" step="0.05"><span class="affix">%</span></div>
           <p class="help" id="local-hint"></p>
+        </div>
+
+        <div class="field">
+          <label>Do you work in a different state than you live in?</label>
+          <div class="chips" role="radiogroup" aria-label="Different work state">
+            <label><input type="radio" name="hasworkstate" value="yes">Yes</label>
+            <label><input type="radio" name="hasworkstate" value="no" checked>No</label>
+          </div>
+          <div class="subfields" id="workstate-fields" hidden>
+            <div class="field">
+              <label for="workstate">State where you work</label>
+              <div class="input-wrap"><select id="workstate" aria-label="Work state"></select></div>
+              <p class="help" id="workstate-note"></p>
+            </div>
+          </div>
         </div>
 
         <div class="field">

@@ -5,6 +5,18 @@ import { initToolPage } from "../toolpage.js";
 import { breakdown, dataTable } from "../charts.js";
 import { META, FED, FED2025, ITEMIZED, RENTAL, QBI2025, STATES, NYC, SAVE } from "../data/tax-2026.js";
 import { STATE_TAXES, STATE_TAXES_META } from "../data/state-taxes.js";
+import { RECIPROCITY, YONKERS, MD_NONRESIDENT_RATE, MD_COUNTIES, MO_CITIES, DE_WILMINGTON_RATE, CO_OPT } from "../data/local-taxes.js";
+
+let paData = null; // lazy-loaded: ~170KB, only fetched if PA is actually selected
+async function ensurePAData() {
+  if (!paData) paData = (await import("../data/local-tax-pa.js")).PA_EIT;
+  return paData;
+}
+let ohData = null;
+async function ensureOHData() {
+  if (!ohData) ohData = (await import("../data/local-tax-oh.js")).OH_MUNI;
+  return ohData;
+}
 
 initToolPage("take-home-pay");
 
@@ -21,6 +33,45 @@ for (const [code, st2] of Object.entries(STATES).sort((a, b) => a[1].name.locale
   state2Sel.append(el("option", { value: code }, st2.name));
 }
 state2Sel.addEventListener("change", () => { $("#move-extras").hidden = !state2Sel.value; });
+
+const workStateSel = $("#workstate");
+for (const [code, ws] of Object.entries(STATES).sort((a, b) => a[1].name.localeCompare(b[1].name))) {
+  workStateSel.append(el("option", { value: code }, ws.name));
+}
+workStateSel.value = "TX";
+workStateSel.addEventListener("change", () => { if (typeof run === "function") run(); });
+
+const mdCountySel = $("#mdcounty");
+for (const name of Object.keys(MD_COUNTIES)) mdCountySel.append(el("option", { value: name }, name));
+mdCountySel.addEventListener("change", () => { if (typeof run === "function") run(); });
+
+const paCountySel = $("#pacounty");
+const paMuniSel = $("#pamuni");
+function populatePACounties() {
+  if (paCountySel.options.length || !paData) return;
+  const counties = [...new Set(paData.flatMap((r) => r[1].split("/")))].sort();
+  for (const c of counties) paCountySel.append(el("option", { value: c }, c));
+  populatePAMunis();
+}
+function populatePAMunis() {
+  paMuniSel.replaceChildren();
+  if (!paData) return;
+  const county = paCountySel.value;
+  const rows = paData.filter((r) => r[1].split("/").includes(county))
+    .sort((a, b) => a[2].localeCompare(b[2]) || a[3].localeCompare(b[3]));
+  for (const [psd, , muni, sd, res] of rows) {
+    paMuniSel.append(el("option", { value: psd }, `${muni} / ${sd} SD — ${res}%`));
+  }
+}
+paCountySel.addEventListener("change", () => { populatePAMunis(); if (typeof run === "function") run(); });
+paMuniSel.addEventListener("change", () => { if (typeof run === "function") run(); });
+
+const ohMuniSel = $("#ohmuni");
+function populateOHMunis() {
+  if (ohMuniSel.options.length || !ohData) return;
+  for (const [name] of ohData) ohMuniSel.append(el("option", { value: name }, name));
+}
+ohMuniSel.addEventListener("change", () => { if (typeof run === "function") run(); });
 
 $("#sources-list").append(...META.sources.map((s) =>
   el("li", {}, el("a", { href: s.url, rel: "noopener" }, s.name))));
@@ -44,7 +95,11 @@ function wireChips(name, subfieldsId) {
 wireChips("hasse", "se-fields");
 wireChips("hasinv", "inv-fields");
 wireChips("itemize", "item-fields");
-wireChips("nyc", null);
+wireChips("nylocal", null);
+wireChips("mocity", null);
+wireChips("dewilm", null);
+wireChips("cocity", null);
+wireChips("hasworkstate", "workstate-fields");
 wireChips("hastips", "tips-fields");
 wireChips("hasloans", "loan-fields");
 wireChips("hasgive", "give-fields");
@@ -62,11 +117,25 @@ function updateSpouseUI() {
 for (const rdo of $$('input[name="status"]')) rdo.addEventListener("change", updateSpouseUI);
 updateSpouseUI();
 
+const DEDICATED_LOCAL = new Set(["MD", "MO", "DE", "PA", "OH"]); // states with their own widget below, not the generic % field
 function updateStateUI() {
-  const st = STATES[stateSel.value];
-  $("#nyc-q").hidden = !st.nyc;
+  const code = stateSel.value;
+  const st = STATES[code];
+  $("#nyc-q").hidden = code !== "NY";
+  $("#md-q").hidden = code !== "MD";
+  $("#mo-q").hidden = code !== "MO";
+  $("#de-q").hidden = code !== "DE";
+  $("#co-q").hidden = code !== "CO";
+  $("#pa-q").hidden = code !== "PA";
+  $("#oh-q").hidden = code !== "OH";
+  if (code === "PA") {
+    ensurePAData().then(() => { populatePACounties(); if (typeof run === "function") run(); });
+  }
+  if (code === "OH") {
+    ensureOHData().then(() => { populateOHMunis(); if (typeof run === "function") run(); });
+  }
   const lq = $("#local-q");
-  if (st.local) {
+  if (st.local && !DEDICATED_LOCAL.has(code)) {
     lq.hidden = false;
     $("#local-label").textContent = st.local.label;
     $("#local-hint").textContent = st.local.hint;
@@ -93,9 +162,10 @@ stateSel.addEventListener("change", () => { stateTouched = true; });
     if (stateTouched || geo.country !== "US" || !STATES[geo.region]) return;
     stateSel.value = geo.region;
     updateStateUI();
-    if (geo.region === "NY" && geo.city === "New York") {
-      const nycYes = document.querySelector('input[name="nyc"][value="yes"]');
-      if (nycYes) nycYes.checked = true;
+    if (geo.region === "NY" && (geo.city === "New York" || geo.city === "Yonkers")) {
+      const val = geo.city === "Yonkers" ? "yonkers" : "nyc";
+      const opt = document.querySelector(`input[name="nylocal"][value="${val}"]`);
+      if (opt) opt.checked = true;
     }
     const note = el("p", { class: "assume" },
       `Set to ${STATES[geo.region].name} from your connection's general location — detected by our own server, stored nowhere. Change it anytime.`);
@@ -142,6 +212,36 @@ function stateBrackets(st, status) {
   if (st.t !== "g") return [[0, 0]];
   const doubled = st.m === "double" || st.m === "approx-double";
   return status === "mfj" && doubled ? scaleBrackets(st.b, 2) : st.b;
+}
+
+function mdCountyTax(name, taxable, status) {
+  const c = MD_COUNTIES[name];
+  if (c == null) return 0;
+  return typeof c === "number" ? taxable * c / 100 : bracketTax(taxable, status === "mfj" ? c.mfj : c.single);
+}
+
+/** Live-state/work-state reciprocity: same-state or no work-state entered leaves
+ * stateTax untouched. Reciprocal pair -> only the live state is owed. Otherwise,
+ * approximate the standard "credit for tax paid to another jurisdiction" outcome:
+ * you end up paying whichever state's rate is higher, not the sum of both. */
+function applyReciprocity(liveCode, liveTax, stateTaxable, status) {
+  if (chipValue("hasworkstate") !== "yes") return { stateTax: liveTax, note: null };
+  const workCode = $("#workstate").value;
+  if (!workCode || workCode === liveCode) return { stateTax: liveTax, note: null };
+  const liveName = STATES[liveCode].name, workName = STATES[workCode].name;
+  const reciprocal = workCode === "DC" || (RECIPROCITY[liveCode] || []).includes(workCode);
+  if (reciprocal) {
+    return {
+      stateTax: liveTax,
+      note: ` Because ${liveName} and ${workName} have a reciprocal agreement, you owe income tax only to ${liveName} — ask your employer to stop withholding ${workName} tax with an exemption form.`,
+    };
+  }
+  const workTax = bracketTax(stateTaxable, stateBrackets(STATES[workCode], status));
+  const total = Math.max(liveTax, workTax);
+  return {
+    stateTax: total,
+    note: ` ${liveName} and ${workName} don't have a reciprocal agreement, so both states are technically owed tax — but ${liveName} credits what you pay ${workName}, capped at ${liveName}'s own tax on that income. Net effect modeled here: about ${money(total)}, roughly whichever state's rate is higher (this doesn't include any city or county tax ${workName} charges nonresident commuters).`,
+  };
 }
 
 function gatherInputs() {
@@ -324,7 +424,7 @@ function compute() {
   $("#q529").hidden = inp.plan529 <= 0;
   const sb = stateBrackets(st, inp.status);
   const stateTaxable = Math.max(0, r.agi - (inp.ded529 ? inp.plan529 : 0));
-  const stateTax = bracketTax(stateTaxable, sb);
+  let stateTax = bracketTax(stateTaxable, sb);
 
   // --- RSU withholding check: real marginal cost of the RSUs (federal + state,
   // holding everything else equal) versus the flat rate employers withhold ---
@@ -350,12 +450,37 @@ function compute() {
   } else {
     rsuPanel.hidden = true;
   }
+  const code = stateSel.value;
+  const wageBase = inp.wages + inp.rsu + r.seNet;
   let localTax = 0;
-  if (st.nyc && chipValue("nyc") === "yes") {
-    localTax = bracketTax(r.agi, inp.status === "mfj" ? NYC.mfj : NYC.single);
+  if (code === "NY") {
+    const nyloc = chipValue("nylocal");
+    if (nyloc === "nyc") localTax = bracketTax(r.agi, inp.status === "mfj" ? NYC.mfj : NYC.single);
+    else if (nyloc === "yonkers") localTax = stateTax * YONKERS.residentSurchargePctOfStateTax / 100;
+  } else if (code === "MD") {
+    localTax = mdCountyTax($("#mdcounty").value, stateTaxable, inp.status);
+  } else if (code === "MO") {
+    const city = chipValue("mocity");
+    if (city === "kc") localTax = wageBase * MO_CITIES["Kansas City"] / 100;
+    else if (city === "stl") localTax = wageBase * MO_CITIES["St. Louis"] / 100;
+  } else if (code === "DE") {
+    if (chipValue("dewilm") === "yes") localTax = wageBase * DE_WILMINGTON_RATE / 100;
+  } else if (code === "PA" && paData) {
+    const row = paData.find((r2) => r2[0] === paMuniSel.value);
+    if (row) localTax = wageBase * row[4] / 100;
+  } else if (code === "OH" && ohData) {
+    const row = ohData.find((r2) => r2[0] === ohMuniSel.value);
+    if (row) localTax = wageBase * row[1] / 100;
   } else if (st.local && !$("#local-q").hidden) {
-    localTax = (inp.wages + inp.rsu + r.seNet) * readField($("#localrate")) / 100;
+    localTax = wageBase * readField($("#localrate")) / 100;
   }
+  if (code === "CO") {
+    const opt = CO_OPT[chipValue("cocity")];
+    if (opt && wageBase / 12 >= opt.thresholdMonthly) localTax += opt.employeeMonthly * 12;
+  }
+
+  const recip = applyReciprocity(code, stateTax, stateTaxable, inp.status);
+  stateTax = recip.stateTax;
 
   const savings = r.pretax + inp.ira + (inp.status === "mfj" ? inp.iras : 0) + inp.plan529;
   const totalTax = r.fedTax + stateTax + localTax + r.payroll;
@@ -388,6 +513,7 @@ function compute() {
   if (!r.usingStd) bits.push(` You're itemizing: ${money(r.itemsTotal)} beats the ${money(r.std)} standard deduction (SALT allowed: ${money(r.saltAllowed)}).`);
   if (r.depreciation > 0) bits.push(` Depreciation contributes a ${money(r.depreciation)} paper deduction, making your rental's taxable result ${money(r.rental)}.`);
   if (r.suspendedLoss > 0) bits.push(` ${money(r.suspendedLoss)} of your rental loss is suspended this year (income phase-out) — it carries forward.`);
+  if (recip.note) bits.push(recip.note);
   $("#r-interpret").replaceChildren(...bits);
 
   breakdown($("#chart-breakdown"), {
