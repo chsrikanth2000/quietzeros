@@ -97,6 +97,26 @@
         </div>
 
         <div class="field">
+          <label for="state2">Thinking of moving? Compare a second state</label>
+          <div class="input-wrap"><select id="state2" aria-label="Comparison state"></select></div>
+          <p class="help">Shows the full picture — income, property AND sales taxes — for the same numbers in both states.</p>
+        </div>
+
+        <div class="field" id="move-extras" hidden>
+          <div class="subfields">
+            <div class="field">
+              <label for="homeval">Home value (for the property-tax comparison)</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="homeval" type="number" inputmode="decimal" value="400000" min="0" max="20000000" step="10000"></div>
+            </div>
+            <div class="field">
+              <label for="spendval">Yearly spending on taxable goods</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="spendval" type="number" inputmode="decimal" value="30000" min="0" max="1000000" step="1000"></div>
+              <p class="help">Roughly what runs through a card on goods, dining and retail — groceries are exempt in many states.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
           <label for="wages">Salary &amp; wages (W-2, before tax)</label>
           <div class="input-wrap"><span class="affix">$</span><input id="wages" type="number" inputmode="decimal" value="85000" min="0" max="10000000" step="1000"><span class="affix">/yr</span></div>
           <input type="range" data-pair="wages" min="0" max="400000" step="1000" value="85000" aria-label="Wages slider">
@@ -384,8 +404,14 @@
           <div class="chart" id="chart-taxes"></div>
         </div>
 
+        <div class="chart-block" id="move-panel" hidden>
+          <p class="chart-title" id="move-title">If you moved</p>
+          <div class="impact-list" id="move-list"></div>
+          <p class="q-note" id="move-note"></p>
+        </div>
+
         <details class="sched">
-          <summary>How your income fills the 2026 federal brackets</summary>
+          <summary id="bracket-summary">How your income fills the 2026 federal brackets</summary>
           <div id="bracket-table"></div>
         </details>
 
@@ -419,6 +445,8 @@
       <p>4. <strong>Two tax ladders</strong>: ordinary income climbs the 10–37% brackets; qualified dividends and long-term gains stack on top at the gentler 0/15/20% rates. High investment income adds the 3.8% net investment income tax.</p>
       <p>5. <strong>Credits</strong>: the $2,200-per-child tax credit, phasing out above $200,000 ($400,000 joint).</p>
       <p>6. <strong>State &amp; local</strong>: your state's 2026 rates applied to AGI, plus NYC brackets or the county/municipal rates where they exist.</p>
+      <h3>Location is a tax decision — but not the one the headlines sell</h3>
+      <p>"No income tax" states are never free; they collect differently. Texas skips the income tax and takes it back through some of the country's highest property-tax rates; Tennessee leans on a ~9.5% combined sales tax; Washington adds a capital-gains excise. Meanwhile a "high-tax" state can be cheaper for a renter with modest spending than a "no-tax" state is for a homeowner. The only honest comparison is <strong>all three big taxes at once — income, property, and sales — on your own numbers</strong>, which is exactly what the "compare a second state" option above computes. Two more things headline lists omit: local layers (NYC's city tax, Ohio municipalities, Maryland counties) can exceed some states' entire income tax, and moving mid-year usually means filing part-year returns in both states.</p>
       <h3>What "Not sure" does</h3>
       <p>Every "Not sure" answer picks the assumption that's true for most people and says so under the question — for example, the standard deduction instead of itemizing. You get a solid estimate from day one and can sharpen it as you learn the answers.</p>
       <h3>Honest limits</h3>

@@ -4,6 +4,7 @@ import { $, $$, el, bindCalc, readField, money, money2, pct } from "../core.js";
 import { initToolPage } from "../toolpage.js";
 import { breakdown, dataTable } from "../charts.js";
 import { META, FED, FED2025, ITEMIZED, RENTAL, QBI2025, STATES, NYC, SAVE } from "../data/tax-2026.js";
+import { STATE_TAXES, STATE_TAXES_META } from "../data/state-taxes.js";
 
 initToolPage("take-home-pay");
 
@@ -14,6 +15,12 @@ for (const [code, s] of Object.entries(STATES).sort((a, b) => a[1].name.localeCo
   stateSel.append(el("option", { value: code }, s.name));
 }
 stateSel.value = "TX";
+const state2Sel = $("#state2");
+state2Sel.append(el("option", { value: "" }, "No comparison"));
+for (const [code, st2] of Object.entries(STATES).sort((a, b) => a[1].name.localeCompare(b[1].name))) {
+  state2Sel.append(el("option", { value: code }, st2.name));
+}
+state2Sel.addEventListener("change", () => { $("#move-extras").hidden = !state2Sel.value; });
 
 $("#sources-list").append(...META.sources.map((s) =>
   el("li", {}, el("a", { href: s.url, rel: "noopener" }, s.name))));
@@ -456,6 +463,52 @@ function compute() {
       c.phase ? el("p", { class: "phase" }, c.phase) : null,
       c.sunset ? el("p", { class: "sunset" }, c.sunset) : null,
     )));
+
+  // --- relocation comparison: income + property + sales, both states ---
+  const mv = $("#move-panel");
+  const code2 = state2Sel.value;
+  if (code2 && code2 !== stateSel.value) {
+    const stB = STATES[code2];
+    const sbB = stateBrackets(stB, inp.status);
+    const stateTaxB = bracketTax(Math.max(0, r.agi - (inp.ded529 ? inp.plan529 : 0)), sbB);
+    const localB = stB.local ? (inp.wages + r.seNet) * stB.local.def / 100 : 0;
+    const incomeA = stateTax + localTax, incomeB = stateTaxB + localB;
+
+    const homeval = readField($("#homeval"));
+    const spendval = readField($("#spendval"));
+    const txA = STATE_TAXES[stateSel.value] || null;
+    const txB = STATE_TAXES[code2] || null;
+    const propA = txA ? homeval * txA.prop / 100 : null;
+    const propB = txB ? homeval * txB.prop / 100 : null;
+    const salesA = txA ? spendval * txA.sales / 100 : null;
+    const salesB = txB ? spendval * txB.sales / 100 : null;
+
+    mv.hidden = false;
+    $("#move-title").textContent = `${STATES[stateSel.value].name} vs. ${stB.name}, on your numbers`;
+    const rowEl = (label, a, b) => {
+      const diff = b - a;
+      return el("div", { class: "impact-row" },
+        el("span", {}, `${label}: ${money(a)} → ${money(b)}`),
+        el("span", { class: "n" + (diff > 0 ? " bad" : "") },
+          diff === 0 ? "same" : `${diff < 0 ? "saves" : "costs"} ${money(Math.abs(diff))}/yr`));
+    };
+    const rows2 = [rowEl("State & local income tax", incomeA, incomeB)];
+    if (propA != null && propB != null && homeval > 0) rows2.push(rowEl(`Property tax on a ${money(homeval)} home`, propA, propB));
+    if (salesA != null && salesB != null && spendval > 0) rows2.push(rowEl(`Sales tax on ${money(spendval)} of spending`, salesA, salesB));
+    const totalA = incomeA + (propA || 0) + (salesA || 0);
+    const totalB = incomeB + (propB || 0) + (salesB || 0);
+    const net = totalB - totalA;
+    rows2.push(el("div", { class: "impact-row" },
+      el("span", {}, el("strong", {}, "All three together")),
+      el("span", { class: "n" + (net > 0 ? " bad" : "") },
+        el("strong", {}, net === 0 ? "a wash" : `${net < 0 ? "saves" : "costs"} ${money(Math.abs(net))}/yr`))));
+    $("#move-list").replaceChildren(...rows2);
+    $("#move-note").textContent =
+      `Income tax uses this page's full engine on your exact inputs (${stB.local ? `${stB.name}'s typical local rate of ${stB.local.def}% included` : "no local income tax there"}). ` +
+      `Property and sales use statewide average effective rates (${STATE_TAXES_META.property}; ${STATE_TAXES_META.sales}) — your county and habits will vary. Not modeled: vehicle taxes, estate taxes, and ${code2 === "WA" ? "Washington's capital-gains excise, " : ""}moving-year part-residency.`;
+  } else {
+    mv.hidden = true;
+  }
 
   // bracket-fill table
   const bs = $("#bracket-summary");

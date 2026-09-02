@@ -50,6 +50,57 @@ export default {
       }, 200, h);
     }
 
+    // GET /rates — Freddie Mac PMMS history, fetched from Freddie Mac at the
+    // edge and cached 6 hours. Visitors talk only to this worker.
+    if (url.pathname === "/rates" && request.method === "GET") {
+      try {
+        let r;
+        for (let attempt = 0; attempt < 3; attempt++) {
+          r = await fetch("https://www.freddiemac.com/pmms/docs/PMMS_history.csv", {
+            cf: { cacheTtl: 21600, cacheEverything: true },
+            headers: { "User-Agent": "Mozilla/5.0 (compatible; quietzeros.com rates page)" },
+          });
+          if (r.ok) break;
+          await new Promise((res) => setTimeout(res, 400 * (attempt + 1)));
+        }
+        if (!r.ok) throw new Error(`PMMS HTTP ${r.status}`);
+        const m30 = [], m15 = [];
+        for (const line of (await r.text()).split("\n").slice(1)) {
+          const c = line.split(",");
+          if (c.length < 4) continue;
+          const dm = c[0].trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+          if (!dm) continue;
+          const iso = `${dm[3]}-${dm[1].padStart(2, "0")}-${dm[2].padStart(2, "0")}`;
+          const v30 = Number(c[1]), v15 = Number(c[3]);
+          if (Number.isFinite(v30) && c[1].trim() !== "") m30.push([iso, v30]);
+          if (Number.isFinite(v15) && c[3].trim() !== "") m15.push([iso, v15]);
+        }
+        if (m30.length < 100) throw new Error("PMMS parse failed");
+        const monthly = (rows) => {
+          const out = []; const seen = new Set();
+          for (const [d, v] of rows) {
+            const ym = d.slice(0, 7);
+            if (!seen.has(ym)) { seen.add(ym); out.push([ym, v]); }
+          }
+          return out;
+        };
+        const yearAgoDate = new Date(new Date(m30[m30.length - 1][0]).getTime() - 360 * 864e5).toISOString().slice(0, 10);
+        const yearAgo = [...m30].reverse().find(([d]) => d <= yearAgoDate);
+        return json({
+          source: "Freddie Mac Primary Mortgage Market Survey",
+          latest: {
+            date30: m30[m30.length - 1][0], r30: m30[m30.length - 1][1], prev30: m30[m30.length - 2][1],
+            yearAgo30: yearAgo ? yearAgo[1] : null,
+            date15: m15[m15.length - 1][0], r15: m15[m15.length - 1][1], prev15: m15[m15.length - 2][1],
+          },
+          recent30: m30.slice(-13), recent15: m15.slice(-13),
+          monthly30: monthly(m30), monthly15: monthly(m15),
+        }, 200, { ...h, "Cache-Control": "public, max-age=21600" });
+      } catch (e) {
+        return json({ error: "rates unavailable", detail: String(e && e.message || e) }, 503, h);
+      }
+    }
+
     if (url.pathname === "/comments" && request.method === "GET") {
       const page = url.searchParams.get("page") || "";
       if (!PAGE_RE.test(page)) return json({ error: "bad page" }, 400, h);

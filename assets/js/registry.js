@@ -18,6 +18,12 @@ export const TOOLS = [
     excel: "mortgage-amortization.xlsx",
   },
   {
+    slug: "mortgage-rates",
+    name: "Mortgage rates this week",
+    desc: "The official Freddie Mac survey, refreshed automatically — plus every week since 1971.",
+    cat: "Home & loans",
+  },
+  {
     slug: "mortgage-lab",
     name: "Mortgage Lab",
     desc: "Stack extra payments, a recast, a refinance and a HELOC on one timeline — see what each move is worth.",
