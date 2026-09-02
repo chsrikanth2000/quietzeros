@@ -37,6 +37,18 @@ export default {
 
     if (request.method === "OPTIONS") return new Response(null, { status: 204, headers: h });
 
+    // GET /geo — the visitor's region, computed by Cloudflare's edge from the
+    // connection itself. Nothing is looked up externally and nothing is stored;
+    // the response is the only thing that leaves this function.
+    if (url.pathname === "/geo" && request.method === "GET") {
+      const cf = request.cf || {};
+      return json({
+        country: cf.country || null,
+        region: cf.regionCode || null,
+        city: cf.city || null,
+      }, 200, h);
+    }
+
     if (url.pathname === "/comments" && request.method === "GET") {
       const page = url.searchParams.get("page") || "";
       if (!PAGE_RE.test(page)) return json({ error: "bad page" }, 400, h);

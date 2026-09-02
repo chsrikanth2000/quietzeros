@@ -70,6 +70,31 @@ function updateStateUI() {
 stateSel.addEventListener("change", updateStateUI);
 updateStateUI();
 
+/* Location-aware default: ask OUR edge (not a third party) which state the
+   connection is in, and preselect it — unless the visitor chose first.
+   Nothing is stored; the visitor can change it freely. */
+let stateTouched = false;
+stateSel.addEventListener("change", () => { stateTouched = true; });
+(async () => {
+  try {
+    const ctl = new AbortController();
+    setTimeout(() => ctl.abort(), 2500);
+    const res = await fetch("https://qz-comments.chsrikanth2000.workers.dev/geo", { signal: ctl.signal });
+    const geo = await res.json();
+    if (stateTouched || geo.country !== "US" || !STATES[geo.region]) return;
+    stateSel.value = geo.region;
+    updateStateUI();
+    if (geo.region === "NY" && geo.city === "New York") {
+      const nycYes = document.querySelector('input[name="nyc"][value="yes"]');
+      if (nycYes) nycYes.checked = true;
+    }
+    const note = el("p", { class: "assume" },
+      `Set to ${STATES[geo.region].name} from your connection's general location — detected by our own server, stored nowhere. Change it anytime.`);
+    stateSel.closest(".field").append(note);
+    if (typeof run === "function") run();
+  } catch { /* offline or blocked: the default state stands */ }
+})();
+
 // live summary bar: follows you down the interview once the hero scrolls away
 const ssTake = el("span", { class: "ss-main" }, "—");
 const ssMonth = el("strong", {}, "—");
