@@ -47,7 +47,7 @@ export function stackedArea(container, cfg) {
     const W = Math.max(320, Math.min(640, container.clientWidth || 640));
     const narrow = W < 460;
     const H = narrow ? 260 : 300;
-    const padL = narrow ? 46 : 54, padR = narrow ? 66 : 84, padT = 14, padB = 30;
+    const padL = narrow ? 46 : 54, padR = narrow ? 14 : 84, padT = 14, padB = 30;
     const iw = W - padL - padR, ih = H - padT - padB;
     const n = cfg.xs.length;
     if (n < 2) return;
@@ -105,6 +105,8 @@ export function stackedArea(container, cfg) {
     });
 
     // direct labels at line ends, pushed apart so they never collide
+    // (narrow charts drop them — no room; the legend carries identity there)
+    if (narrow) endLabels.length = 0;
     endLabels.sort((a, b) => a.y - b.y);
     for (let li = 1; li < endLabels.length; li++) {
       if (endLabels[li].y - endLabels[li - 1].y < 15) endLabels[li].y = endLabels[li - 1].y + 15;

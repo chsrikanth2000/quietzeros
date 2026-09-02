@@ -89,10 +89,22 @@ export function readField(input) {
     input[type=range][data-pair] with its numeric twin. */
 export function bindCalc(form, compute) {
   let raf = 0;
+  const results = form.querySelector(".calc-results");
+  const pinResults = () => {
+    if (!results || window.innerWidth <= 820) { if (results) results.style.removeProperty("--results-top"); return; }
+    const h = results.offsetHeight;
+    // pin so the column's bottom stays reachable when it's taller than the viewport
+    const top = Math.min(8, window.innerHeight - h - 80);
+    results.style.setProperty("--results-top", `${Math.round(top)}px`);
+  };
   const run = () => {
     cancelAnimationFrame(raf);
-    raf = requestAnimationFrame(() => { try { compute(); } catch (e) { console.error(e); } });
+    raf = requestAnimationFrame(() => {
+      try { compute(); } catch (e) { console.error(e); }
+      pinResults();
+    });
   };
+  window.addEventListener("resize", () => { clearTimeout(bindCalc._rt); bindCalc._rt = setTimeout(pinResults, 150); });
   for (const r of $$('input[type="range"][data-pair]', form)) {
     const twin = $("#" + r.dataset.pair, form);
     if (!twin) continue;

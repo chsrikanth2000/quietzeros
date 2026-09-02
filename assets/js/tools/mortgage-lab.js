@@ -18,11 +18,29 @@ const TYPE_META = {
   refi:   { title: "Refinance" },
 };
 
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+function ymSelects(id, ym, yearFrom, yearTo) {
+  const [y0, m0] = ym.split("-").map(Number);
+  const mo = el("select", { id: id + "_m", "aria-label": "Month" },
+    ...MONTHS.map((m, i) => el("option", i + 1 === m0 ? { value: String(i + 1), selected: "" } : { value: String(i + 1) }, m)));
+  const yr = el("select", { id: id + "_y", "aria-label": "Year" });
+  for (let y = yearFrom; y <= yearTo; y++) {
+    yr.append(el("option", y === y0 ? { value: String(y), selected: "" } : { value: String(y) }, String(y)));
+  }
+  return el("div", { class: "ym-pair" },
+    el("div", { class: "input-wrap" }, mo),
+    el("div", { class: "input-wrap" }, yr));
+}
+function readYM(id) {
+  const m = $("#" + id + "_m"), y = $("#" + id + "_y");
+  if (!m || !y) return null;
+  return `${y.value}-${String(m.value).padStart(2, "0")}`;
+}
 function monthField(id, label, value) {
+  const now = new Date().getFullYear();
   return el("div", { class: "field" },
-    el("label", { for: id }, label),
-    el("div", { class: "input-wrap" },
-      el("input", { id, type: "month", value })));
+    el("label", { for: id + "_m" }, label),
+    ymSelects(id, value, now - 1, now + 41));
 }
 function numField(id, label, value, opts = {}) {
   const wrap = el("div", { class: "input-wrap" });
@@ -41,7 +59,7 @@ function selField(id, label, options, selected) {
 }
 
 function defaultWhen(offsetMonths) {
-  const [y, m] = ($("#start").value || "2026-10").split("-").map(Number);
+  const [y, m] = (readYM("start") || "2026-10").split("-").map(Number);
   const d = new Date(y, m - 1 + offsetMonths, 1);
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}`;
 }
@@ -84,10 +102,12 @@ function removeEvent(id) {
 }
 for (const b of $$("[data-add]")) b.addEventListener("click", () => addEvent(b.dataset.add));
 
+$("#start-picker").append(...ymSelects("start", "2026-10", 1990, new Date().getFullYear() + 2).children);
+
 /* ================= simulation ================= */
 
 function startYM() {
-  const [y, m] = ($("#start").value || "2026-10").split("-").map(Number);
+  const [y, m] = (readYM("start") || "2026-10").split("-").map(Number);
   return { y, m };
 }
 function whenToMonthIndex(ym) {
@@ -106,7 +126,7 @@ function readEvents() {
   return events.map((e) => {
     const g = (name) => $(`#ev${e.id}-${name}`);
     const v = (name, fb = 0) => (g(name) ? toNum(g(name).value, fb) : fb);
-    const when = g("when") ? whenToMonthIndex(g("when").value) : 1;
+    const when = whenToMonthIndex(readYM(`ev${e.id}-when`) || defaultWhen(1));
     if (e.type === "extra") return { type: "extra", when, amt: v("amt") };
     if (e.type === "recur") return { type: "recur", when, amt: v("amt"), freq: Math.round(v("freq", 1)) || 1 };
     if (e.type === "recast") return { type: "recast", when, amt: v("amt") };
@@ -284,6 +304,10 @@ function compute() {
     svp.replaceChildren(el("p", { class: "q-note" }, "Add a monthly recurring extra to compare prepaying it against investing it."));
   }
 
+  if (events.length || document.querySelector('input[name="heloc"]:checked').value === "yes") {
+    history.replaceState(null, "", location.pathname + "#s=" + encodeState());
+  }
+
   // yearly table
   const rows = [];
   for (let y = 1; y * 12 <= plan.months + 11; y++) {
@@ -295,8 +319,77 @@ function compute() {
   ]);
 }
 
+/* ============ share: the whole plan lives in the URL fragment ============ */
+/* The fragment never leaves the browser (servers don't receive #...), so a
+   shared link carries the scenario without the site ever seeing it. */
+
+function encodeState() {
+  const st = {
+    a: readField($("#amount")), r: readField($("#rate")), t: readField($("#term")),
+    s: readYM("start"), iv: readField($("#invreturn")),
+    h: document.querySelector('input[name="heloc"]:checked').value === "yes"
+      ? [readField($("#hamount")), readField($("#hrate")), readField($("#hio")), readField($("#hrepay"))] : null,
+    e: events.map((e) => {
+      const g = (n) => $(`#ev${e.id}-${n}`);
+      const val = (n) => (g(n) ? g(n).value : null);
+      return [e.type, readYM(`ev${e.id}-when`), val("amt"), val("freq"), val("rate"), val("term"), val("closing"), val("rollin")];
+    }),
+  };
+  return btoa(JSON.stringify(st)).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+}
+
+function restoreState() {
+  const m = location.hash.match(/^#s=([A-Za-z0-9_-]+)$/);
+  if (!m) return;
+  let st;
+  try { st = JSON.parse(atob(m[1].replace(/-/g, "+").replace(/_/g, "/"))); } catch { return; }
+  const setNum = (id, v) => { const n = Number(v); if (Number.isFinite(n)) $(id).value = String(n); };
+  const setYM = (prefix, ym) => {
+    if (typeof ym !== "string" || !/^\d{4}-\d{2}$/.test(ym)) return;
+    const [y, mo] = ym.split("-");
+    const me = $(`#${prefix}_m`), ye = $(`#${prefix}_y`);
+    if (me) me.value = String(Number(mo));
+    if (ye && [...ye.options].some((o) => o.value === String(Number(y)))) ye.value = String(Number(y));
+  };
+  setNum("#amount", st.a); setNum("#rate", st.r); setNum("#invreturn", st.iv);
+  if ([15, 20, 30].includes(Number(st.t))) $("#term").value = String(Number(st.t));
+  setYM("start", st.s);
+  if (Array.isArray(st.h)) {
+    document.querySelector('input[name="heloc"][value="yes"]').checked = true;
+    $("#heloc-fields").hidden = false;
+    setNum("#hamount", st.h[0]); setNum("#hrate", st.h[1]); setNum("#hio", st.h[2]); setNum("#hrepay", st.h[3]);
+  }
+  for (const row of (Array.isArray(st.e) ? st.e.slice(0, 20) : [])) {
+    const [type, when, amt, freq, rate, term, closing, rollin] = row;
+    if (!TYPE_META[type]) continue;
+    addEvent(type);
+    const id = events[events.length - 1].id;
+    setYM(`ev${id}-when`, when);
+    const g = (n) => $(`#ev${id}-${n}`);
+    if (g("amt") && amt != null) setNum(`#ev${id}-amt`, amt);
+    if (g("freq") && (freq === "1" || freq === "12")) g("freq").value = freq;
+    if (g("rate") && rate != null) setNum(`#ev${id}-rate`, rate);
+    if (g("term") && ["15", "20", "30"].includes(String(term))) g("term").value = String(term);
+    if (g("closing") && closing != null) setNum(`#ev${id}-closing`, closing);
+    if (g("rollin") && (rollin === "yes" || rollin === "no")) g("rollin").value = rollin;
+  }
+}
+
 let recompute = () => {};
+restoreState();
 recompute = bindCalc($("#calc"), compute);
+
+$("#share-btn").addEventListener("click", async () => {
+  const url = location.origin + location.pathname + "#s=" + encodeState();
+  history.replaceState(null, "", url);
+  const status = $("#share-status");
+  try {
+    await navigator.clipboard.writeText(url);
+    status.textContent = "Link copied — it carries the whole plan, and only the person you send it to sees it.";
+  } catch {
+    status.textContent = "Copy this address bar URL — it now carries the whole plan.";
+  }
+});
 
 // print: open the schedule so the report is complete, then print
 $("#print-btn").addEventListener("click", () => {
