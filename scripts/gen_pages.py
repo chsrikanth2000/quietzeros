@@ -724,49 +724,93 @@ TOOLS += [
       <h3>What is deliberately left out</h3>
       <p>COLA raises all three streams by the same percentage, so it barely moves the crossovers - these are real (today's) dollars. Not modeled: spousal and survivor strategy (often the strongest reason to delay - the survivor keeps the LARGER benefit), taxes on benefits, the earnings test if you claim while working, and investing early benefits. A financial planner earns their fee on the spousal question.</p>""",
     ),
-    # ------------------------------------------------ avalanche vs snowball
+    # ------------------------------------------------ debt payoff lab
     dict(
         slug="avalanche-snowball",
-        title="Debt avalanche vs. snowball - real payoff dates",
-        desc="Both strategies simulated month by month across your actual debts - payoff dates, interest difference, and a windfall option.",
+        title="Debt Payoff Lab - avalanche, snowball, or focus one loan",
+        desc="Every debt, every strategy: avalanche, snowball, or minimums-on-everything-but-one. Per-loan extras, windfalls, rolling payments - with per-loan interest and real end dates.",
         cat="Home &amp; loans",
-        h1="Avalanche vs. snowball",
-        lede="Avalanche (highest rate first) saves the most interest; snowball (smallest balance first) retires debts fastest. Enter your real debts and see both, month by month - including what a windfall changes. Nothing you type leaves this page.",
+        h1="Debt Payoff Lab",
+        lede="Your actual loans, your actual plan: attack the highest rate, the smallest balance, or one loan you just want gone - add a little extra to any of them - and see exactly what each loan costs and when it dies. Nothing you type leaves this page.",
         form="\n".join([
-            field("d1bal", "Debt 1 - balance", prefix="$", value="6500", fmin="0", fmax="5000000", step="100",
-                  help_="Card, loan, anything. Leave a balance at 0 to skip a slot."),
-            field("d1apr", "Debt 1 - APR", suffix="%", value="24", fmin="0", fmax="60", step="0.1"),
-            field("d1min", "Debt 1 - minimum payment", prefix="$", value="130", fmin="0", fmax="100000", step="5"),
-            field("d2bal", "Debt 2 - balance", prefix="$", value="14000", fmin="0", fmax="5000000", step="100"),
-            field("d2apr", "Debt 2 - APR", suffix="%", value="7.5", fmin="0", fmax="60", step="0.1"),
-            field("d2min", "Debt 2 - minimum payment", prefix="$", value="280", fmin="0", fmax="100000", step="5"),
-            field("d3bal", "Debt 3 - balance", prefix="$", value="2100", fmin="0", fmax="5000000", step="100"),
-            field("d3apr", "Debt 3 - APR", suffix="%", value="29", fmin="0", fmax="60", step="0.1"),
-            field("d3min", "Debt 3 - minimum payment", prefix="$", value="60", fmin="0", fmax="100000", step="5"),
-            field("d4bal", "Debt 4 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
-            field("d4apr", "Debt 4 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
-            field("d4min", "Debt 4 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
-            field("d5bal", "Debt 5 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
-            field("d5apr", "Debt 5 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
-            field("d5min", "Debt 5 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
-            field("extra", "Extra toward debt each month", prefix="$", value="300", fmin="0", fmax="100000", step="25",
+            field("d1bal", "Loan 1 - balance", prefix="$", value="3000", fmin="0", fmax="5000000", step="100",
+                  help_="Card, auto, student loan - anything. Balance 0 skips a slot."),
+            field("d1apr", "Loan 1 - APR", suffix="%", value="5", fmin="0", fmax="60", step="0.1"),
+            field("d1min", "Loan 1 - minimum payment", prefix="$", value="60", fmin="0", fmax="100000", step="5"),
+            field("d1x", "Loan 1 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10",
+                  help_="A dedicated top-up for THIS loan, on top of any strategy money."),
+            field("d2bal", "Loan 2 - balance", prefix="$", value="9000", fmin="0", fmax="5000000", step="100"),
+            field("d2apr", "Loan 2 - APR", suffix="%", value="22", fmin="0", fmax="60", step="0.1"),
+            field("d2min", "Loan 2 - minimum payment", prefix="$", value="180", fmin="0", fmax="100000", step="5"),
+            field("d2x", "Loan 2 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
+            field("d3bal", "Loan 3 - balance", prefix="$", value="14000", fmin="0", fmax="5000000", step="100"),
+            field("d3apr", "Loan 3 - APR", suffix="%", value="7.5", fmin="0", fmax="60", step="0.1"),
+            field("d3min", "Loan 3 - minimum payment", prefix="$", value="280", fmin="0", fmax="100000", step="5"),
+            field("d3x", "Loan 3 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
+            field("d4bal", "Loan 4 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
+            field("d4apr", "Loan 4 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
+            field("d4min", "Loan 4 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
+            field("d4x", "Loan 4 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
+            field("d5bal", "Loan 5 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
+            field("d5apr", "Loan 5 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
+            field("d5min", "Loan 5 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
+            field("d5x", "Loan 5 - always pay extra", prefix="$", value="0", fmin="0", fmax="100000", step="10"),
+            '''        <div class="field">
+          <label>Strategy - where does spare money aim?</label>
+          <div class="chips" role="radiogroup" aria-label="Strategy">
+            <label><input type="radio" name="strategy" value="av" checked>Avalanche (highest APR)</label>
+            <label><input type="radio" name="strategy" value="sb">Snowball (smallest balance)</label>
+            <label><input type="radio" name="strategy" value="focus">Focus one loan</label>
+          </div>
+          <div class="subfields" id="focus-fields" hidden>
+            <div class="field">
+              <label for="focusdebt">Minimums on everything except</label>
+              <div class="input-wrap">
+                <select id="focusdebt" aria-label="Focus loan">
+                  <option value="0" selected>Loan 1</option>
+                  <option value="1">Loan 2</option>
+                  <option value="2">Loan 3</option>
+                  <option value="3">Loan 4</option>
+                  <option value="4">Loan 5</option>
+                </select>
+              </div>
+              <p class="help">All spare money hits this loan. When it dies, the rest continue by avalanche.</p>
+            </div>
+          </div>
+        </div>''',
+            '''        <div class="field">
+          <label>When a loan is paid off, its payment...</label>
+          <div class="chips" role="radiogroup" aria-label="Rollover">
+            <label><input type="radio" name="roll" value="yes" checked>rolls into the attack</label>
+            <label><input type="radio" name="roll" value="no">goes back in my pocket</label>
+          </div>
+          <p class="assume">Rolling is the classic method - constant outlay, fastest finish. Pocketing shows how your monthly payment shrinks as loans die.</p>
+        </div>''',
+            field("extra", "Extra toward debt each month (strategy money)", prefix="$", value="300", fmin="0", fmax="100000", step="25",
                   slider=("0", "2000", "25")),
             field("windfall", "One-time windfall", prefix="$", value="0", fmin="0", fmax="1000000", step="250",
-                  help_="Tax refund, bonus - applied to the target debt in the month below."),
+                  help_="Tax refund, bonus - applied to the strategy's target in the month below."),
             field("windmonth", "... arriving in month", suffix="", value="6", fmin="1", fmax="120", step="1"),
         ]),
         results="\n".join([
-            hero("Avalanche saves"),
-            stats(("Avalanche: debt-free in", "r-av-time"), ("Snowball: debt-free in", "r-sb-time"), ("Avalanche interest", "r-av-int"), ("Snowball interest", "r-sb-int")),
-            chart("chart-avsb", "Total debt over time, both strategies"),
-            sched("Payoff order and dates, both strategies"),
+            hero("Debt-free in"),
+            stats(("Total interest, your plan", "r-int"), ("Monthly outlay now", "r-paynow"), ("Outlay after first payoff", "r-paylater"), ("Best alternative saves", "r-alt")),
+            chart("chart-bal", "Total debt over time - your plan vs. minimums only"),
+            chart("chart-outlay", "What you actually pay each month"),
+            '''        <div class="chart-block">
+          <p class="chart-title">Strategy face-off, same budget</p>
+          <div class="impact-list" id="impact"></div>
+        </div>''',
+            sched("Each loan: interest paid and payoff date"),
         ]),
         prose="""      <h2>How this is calculated</h2>
-      <p>Both strategies run the identical budget - all minimums plus your extra (and windfall) - month by month. The only difference is targeting: <strong>avalanche</strong> aims every spare dollar at the highest APR; <strong>snowball</strong> at the smallest balance. When a debt dies, its minimum rolls into the attack - that rolling is where both strategies get their power.</p>
-      <h3>Which should you pick?</h3>
-      <p>Mathematically, avalanche always wins or ties - the number above is its edge on your debts. But the gap is often smaller than people expect, and snowball's early kills are real fuel for the humans actually doing this. Honest rule: if the avalanche edge is under a few hundred dollars, pick whichever keeps you paying. If it is thousands, let math win.</p>
+      <p>Every month, each loan accrues interest at its APR. Minimums are paid first, then each loan's dedicated extra, then the strategy money - avalanche aims it at the highest APR, snowball at the smallest balance, focus at the one loan you chose (falling back to avalanche once it's gone). Windfalls land on the strategy's current target. When a loan dies, its payment either rolls into the attack or returns to your pocket - your choice, and the outlay chart shows the difference.</p>
+      <h3>Focus mode - the honest word about it</h3>
+      <p>Paying minimums on everything except one loan is emotionally excellent and mathematically fine WHEN the focused loan carries the highest rate - then it IS avalanche. Focusing a low-rate loan (say, clearing a car note for cash-flow room) costs real interest; the face-off list prices that choice so you make it with open eyes.</p>
+      <h3>Dedicated extras vs. strategy money</h3>
+      <p>A dedicated extra sticks to its loan no matter what - useful for a loan with a co-signer to protect or a promotional rate expiring. Strategy money hunts wherever the strategy points. Most plans work best with everything in strategy money; the option exists because real life has exceptions.</p>
       <h3>Notes</h3>
-      <p>Assumes fixed APRs, no new charges, constant minimums (card minimums actually shrink with the balance - paying the fixed amount is already a win). If neither strategy finishes, the payments do not cover interest and the results will say so.</p>""",
+      <p>Fixed APRs, no new charges, constant minimums. If the budget can't cover interest, the results say so. Payoff dates assume this month is month 1.</p>""",
     ),
     # ------------------------------------------------ RSU withholding
     dict(

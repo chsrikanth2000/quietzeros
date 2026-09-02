@@ -62,8 +62,8 @@ export const TOOLS = [
   },
   {
     slug: "avalanche-snowball",
-    name: "Avalanche vs. snowball",
-    desc: "Your real debts, both strategies simulated month by month - payoff dates, interest gap, windfalls.",
+    name: "Debt Payoff Lab",
+    desc: "Avalanche, snowball, or focus one loan - per-loan extras, windfalls, and real payoff dates for every debt.",
     cat: "Home & loans",
     excel: "multi-debt-payoff.xlsx",
   },

@@ -4,16 +4,16 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qz-comments.chsrikanth2000.workers.dev https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
-  <title>Debt avalanche vs. snowball - real payoff dates — Quiet Zeros</title>
-  <meta name="description" content="Both strategies simulated month by month across your actual debts - payoff dates, interest difference, and a windfall option.">
+  <title>Debt Payoff Lab - avalanche, snowball, or focus one loan — Quiet Zeros</title>
+  <meta name="description" content="Every debt, every strategy: avalanche, snowball, or minimums-on-everything-but-one. Per-loan extras, windfalls, rolling payments - with per-loan interest and real end dates.">
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="../assets/css/main.css">
   <script src="../assets/js/theme.js"></script>
   <link rel="canonical" href="https://quietzeros.com/tools/avalanche-snowball">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Quiet Zeros">
-  <meta property="og:title" content="Debt avalanche vs. snowball - real payoff dates">
-  <meta property="og:description" content="Both strategies simulated month by month across your actual debts - payoff dates, interest difference, and a windfall option.">
+  <meta property="og:title" content="Debt Payoff Lab - avalanche, snowball, or focus one loan">
+  <meta property="og:description" content="Every debt, every strategy: avalanche, snowball, or minimums-on-everything-but-one. Per-loan extras, windfalls, rolling payments - with per-loan interest and real end dates.">
   <meta property="og:url" content="https://quietzeros.com/tools/avalanche-snowball">
   <meta property="og:image" content="https://quietzeros.com/assets/img/og.png">
   <meta property="og:image:width" content="1200">
@@ -22,7 +22,7 @@
   <meta name="theme-color" content="#12523a">
   <link rel="preload" href="../assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
-  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Debt avalanche vs. snowball - real payoff dates","url":"https://quietzeros.com/tools/avalanche-snowball","description":"Both strategies simulated month by month across your actual debts - payoff dates, interest difference, and a windfall option.","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Debt Payoff Lab - avalanche, snowball, or focus one loan","url":"https://quietzeros.com/tools/avalanche-snowball","description":"Every debt, every strategy: avalanche, snowball, or minimums-on-everything-but-one. Per-loan extras, windfalls, rolling payments - with per-loan interest and real end dates.","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5224815108212174" crossorigin="anonymous"></script>
 </head>
 <body>
@@ -49,82 +49,134 @@
   <main id="main" class="wrap">
     <div class="tool-head">
       <p class="crumbs"><a href="../index.html">Calculators</a> / Home &amp; loans</p>
-      <h1>Avalanche vs. snowball</h1>
-      <p class="lede">Avalanche (highest rate first) saves the most interest; snowball (smallest balance first) retires debts fastest. Enter your real debts and see both, month by month - including what a windfall changes. Nothing you type leaves this page.</p>
+      <h1>Debt Payoff Lab</h1>
+      <p class="lede">Your actual loans, your actual plan: attack the highest rate, the smallest balance, or one loan you just want gone - add a little extra to any of them - and see exactly what each loan costs and when it dies. Nothing you type leaves this page.</p>
     </div>
 
     <form class="calc" id="calc" autocomplete="off" novalidate>
       <div class="calc-inputs">
         <div class="field">
-          <label for="d1bal">Debt 1 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d1bal" type="number" inputmode="decimal" value="6500" min="0" max="5000000" step="100"></div>
-          <p class="help">Card, loan, anything. Leave a balance at 0 to skip a slot.</p>
+          <label for="d1bal">Loan 1 - balance</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d1bal" type="number" inputmode="decimal" value="3000" min="0" max="5000000" step="100"></div>
+          <p class="help">Card, auto, student loan - anything. Balance 0 skips a slot.</p>
         </div>
         <div class="field">
-          <label for="d1apr">Debt 1 - APR</label>
-          <div class="input-wrap"><input id="d1apr" type="number" inputmode="decimal" value="24" min="0" max="60" step="0.1"><span class="affix">%</span></div>
+          <label for="d1apr">Loan 1 - APR</label>
+          <div class="input-wrap"><input id="d1apr" type="number" inputmode="decimal" value="5" min="0" max="60" step="0.1"><span class="affix">%</span></div>
         </div>
         <div class="field">
-          <label for="d1min">Debt 1 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d1min" type="number" inputmode="decimal" value="130" min="0" max="100000" step="5"></div>
+          <label for="d1min">Loan 1 - minimum payment</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d1min" type="number" inputmode="decimal" value="60" min="0" max="100000" step="5"></div>
         </div>
         <div class="field">
-          <label for="d2bal">Debt 2 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d2bal" type="number" inputmode="decimal" value="14000" min="0" max="5000000" step="100"></div>
+          <label for="d1x">Loan 1 - always pay extra</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d1x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
+          <p class="help">A dedicated top-up for THIS loan, on top of any strategy money.</p>
         </div>
         <div class="field">
-          <label for="d2apr">Debt 2 - APR</label>
-          <div class="input-wrap"><input id="d2apr" type="number" inputmode="decimal" value="7.5" min="0" max="60" step="0.1"><span class="affix">%</span></div>
+          <label for="d2bal">Loan 2 - balance</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d2bal" type="number" inputmode="decimal" value="9000" min="0" max="5000000" step="100"></div>
         </div>
         <div class="field">
-          <label for="d2min">Debt 2 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d2min" type="number" inputmode="decimal" value="280" min="0" max="100000" step="5"></div>
+          <label for="d2apr">Loan 2 - APR</label>
+          <div class="input-wrap"><input id="d2apr" type="number" inputmode="decimal" value="22" min="0" max="60" step="0.1"><span class="affix">%</span></div>
         </div>
         <div class="field">
-          <label for="d3bal">Debt 3 - balance</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d3bal" type="number" inputmode="decimal" value="2100" min="0" max="5000000" step="100"></div>
+          <label for="d2min">Loan 2 - minimum payment</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d2min" type="number" inputmode="decimal" value="180" min="0" max="100000" step="5"></div>
         </div>
         <div class="field">
-          <label for="d3apr">Debt 3 - APR</label>
-          <div class="input-wrap"><input id="d3apr" type="number" inputmode="decimal" value="29" min="0" max="60" step="0.1"><span class="affix">%</span></div>
+          <label for="d2x">Loan 2 - always pay extra</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d2x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
         </div>
         <div class="field">
-          <label for="d3min">Debt 3 - minimum payment</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="d3min" type="number" inputmode="decimal" value="60" min="0" max="100000" step="5"></div>
+          <label for="d3bal">Loan 3 - balance</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d3bal" type="number" inputmode="decimal" value="14000" min="0" max="5000000" step="100"></div>
         </div>
         <div class="field">
-          <label for="d4bal">Debt 4 - balance</label>
+          <label for="d3apr">Loan 3 - APR</label>
+          <div class="input-wrap"><input id="d3apr" type="number" inputmode="decimal" value="7.5" min="0" max="60" step="0.1"><span class="affix">%</span></div>
+        </div>
+        <div class="field">
+          <label for="d3min">Loan 3 - minimum payment</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d3min" type="number" inputmode="decimal" value="280" min="0" max="100000" step="5"></div>
+        </div>
+        <div class="field">
+          <label for="d3x">Loan 3 - always pay extra</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d3x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
+        </div>
+        <div class="field">
+          <label for="d4bal">Loan 4 - balance</label>
           <div class="input-wrap"><span class="affix">$</span><input id="d4bal" type="number" inputmode="decimal" value="0" min="0" max="5000000" step="100"></div>
         </div>
         <div class="field">
-          <label for="d4apr">Debt 4 - APR</label>
+          <label for="d4apr">Loan 4 - APR</label>
           <div class="input-wrap"><input id="d4apr" type="number" inputmode="decimal" value="0" min="0" max="60" step="0.1"><span class="affix">%</span></div>
         </div>
         <div class="field">
-          <label for="d4min">Debt 4 - minimum payment</label>
+          <label for="d4min">Loan 4 - minimum payment</label>
           <div class="input-wrap"><span class="affix">$</span><input id="d4min" type="number" inputmode="decimal" value="0" min="0" max="100000" step="5"></div>
         </div>
         <div class="field">
-          <label for="d5bal">Debt 5 - balance</label>
+          <label for="d4x">Loan 4 - always pay extra</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d4x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
+        </div>
+        <div class="field">
+          <label for="d5bal">Loan 5 - balance</label>
           <div class="input-wrap"><span class="affix">$</span><input id="d5bal" type="number" inputmode="decimal" value="0" min="0" max="5000000" step="100"></div>
         </div>
         <div class="field">
-          <label for="d5apr">Debt 5 - APR</label>
+          <label for="d5apr">Loan 5 - APR</label>
           <div class="input-wrap"><input id="d5apr" type="number" inputmode="decimal" value="0" min="0" max="60" step="0.1"><span class="affix">%</span></div>
         </div>
         <div class="field">
-          <label for="d5min">Debt 5 - minimum payment</label>
+          <label for="d5min">Loan 5 - minimum payment</label>
           <div class="input-wrap"><span class="affix">$</span><input id="d5min" type="number" inputmode="decimal" value="0" min="0" max="100000" step="5"></div>
         </div>
         <div class="field">
-          <label for="extra">Extra toward debt each month</label>
+          <label for="d5x">Loan 5 - always pay extra</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="d5x" type="number" inputmode="decimal" value="0" min="0" max="100000" step="10"></div>
+        </div>
+        <div class="field">
+          <label>Strategy - where does spare money aim?</label>
+          <div class="chips" role="radiogroup" aria-label="Strategy">
+            <label><input type="radio" name="strategy" value="av" checked>Avalanche (highest APR)</label>
+            <label><input type="radio" name="strategy" value="sb">Snowball (smallest balance)</label>
+            <label><input type="radio" name="strategy" value="focus">Focus one loan</label>
+          </div>
+          <div class="subfields" id="focus-fields" hidden>
+            <div class="field">
+              <label for="focusdebt">Minimums on everything except</label>
+              <div class="input-wrap">
+                <select id="focusdebt" aria-label="Focus loan">
+                  <option value="0" selected>Loan 1</option>
+                  <option value="1">Loan 2</option>
+                  <option value="2">Loan 3</option>
+                  <option value="3">Loan 4</option>
+                  <option value="4">Loan 5</option>
+                </select>
+              </div>
+              <p class="help">All spare money hits this loan. When it dies, the rest continue by avalanche.</p>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label>When a loan is paid off, its payment...</label>
+          <div class="chips" role="radiogroup" aria-label="Rollover">
+            <label><input type="radio" name="roll" value="yes" checked>rolls into the attack</label>
+            <label><input type="radio" name="roll" value="no">goes back in my pocket</label>
+          </div>
+          <p class="assume">Rolling is the classic method - constant outlay, fastest finish. Pocketing shows how your monthly payment shrinks as loans die.</p>
+        </div>
+        <div class="field">
+          <label for="extra">Extra toward debt each month (strategy money)</label>
           <div class="input-wrap"><span class="affix">$</span><input id="extra" type="number" inputmode="decimal" value="300" min="0" max="100000" step="25"></div>
-          <input type="range" data-pair="extra" min="0" max="2000" step="25" value="300" aria-label="Extra toward debt each month slider">
+          <input type="range" data-pair="extra" min="0" max="2000" step="25" value="300" aria-label="Extra toward debt each month (strategy money) slider">
         </div>
         <div class="field">
           <label for="windfall">One-time windfall</label>
           <div class="input-wrap"><span class="affix">$</span><input id="windfall" type="number" inputmode="decimal" value="0" min="0" max="1000000" step="250"></div>
-          <p class="help">Tax refund, bonus - applied to the target debt in the month below.</p>
+          <p class="help">Tax refund, bonus - applied to the strategy's target in the month below.</p>
         </div>
         <div class="field">
           <label for="windmonth">... arriving in month</label>
@@ -135,22 +187,30 @@
 
       <div class="calc-results">
         <div class="hero-figure">
-          <p class="label">Avalanche saves</p>
+          <p class="label">Debt-free in</p>
           <p class="value" id="r-hero" aria-live="polite">—</p>
         </div>
         <p class="interpret" id="r-interpret"></p>
         <div class="stat-row">
-          <div class="stat"><p class="k">Avalanche: debt-free in</p><p class="v" id="r-av-time">—</p></div>
-          <div class="stat"><p class="k">Snowball: debt-free in</p><p class="v" id="r-sb-time">—</p></div>
-          <div class="stat"><p class="k">Avalanche interest</p><p class="v" id="r-av-int">—</p></div>
-          <div class="stat"><p class="k">Snowball interest</p><p class="v" id="r-sb-int">—</p></div>
+          <div class="stat"><p class="k">Total interest, your plan</p><p class="v" id="r-int">—</p></div>
+          <div class="stat"><p class="k">Monthly outlay now</p><p class="v" id="r-paynow">—</p></div>
+          <div class="stat"><p class="k">Outlay after first payoff</p><p class="v" id="r-paylater">—</p></div>
+          <div class="stat"><p class="k">Best alternative saves</p><p class="v" id="r-alt">—</p></div>
         </div>
         <div class="chart-block">
-          <p class="chart-title">Total debt over time, both strategies</p>
-          <div class="chart" id="chart-avsb"></div>
+          <p class="chart-title">Total debt over time - your plan vs. minimums only</p>
+          <div class="chart" id="chart-bal"></div>
+        </div>
+        <div class="chart-block">
+          <p class="chart-title">What you actually pay each month</p>
+          <div class="chart" id="chart-outlay"></div>
+        </div>
+        <div class="chart-block">
+          <p class="chart-title">Strategy face-off, same budget</p>
+          <div class="impact-list" id="impact"></div>
         </div>
         <details class="sched">
-          <summary>Payoff order and dates, both strategies</summary>
+          <summary>Each loan: interest paid and payoff date</summary>
           <div id="sched-table"></div>
         </details>
         <p id="excel-chip"></p>
@@ -164,11 +224,13 @@
 
     <article class="prose">
       <h2>How this is calculated</h2>
-      <p>Both strategies run the identical budget - all minimums plus your extra (and windfall) - month by month. The only difference is targeting: <strong>avalanche</strong> aims every spare dollar at the highest APR; <strong>snowball</strong> at the smallest balance. When a debt dies, its minimum rolls into the attack - that rolling is where both strategies get their power.</p>
-      <h3>Which should you pick?</h3>
-      <p>Mathematically, avalanche always wins or ties - the number above is its edge on your debts. But the gap is often smaller than people expect, and snowball's early kills are real fuel for the humans actually doing this. Honest rule: if the avalanche edge is under a few hundred dollars, pick whichever keeps you paying. If it is thousands, let math win.</p>
+      <p>Every month, each loan accrues interest at its APR. Minimums are paid first, then each loan's dedicated extra, then the strategy money - avalanche aims it at the highest APR, snowball at the smallest balance, focus at the one loan you chose (falling back to avalanche once it's gone). Windfalls land on the strategy's current target. When a loan dies, its payment either rolls into the attack or returns to your pocket - your choice, and the outlay chart shows the difference.</p>
+      <h3>Focus mode - the honest word about it</h3>
+      <p>Paying minimums on everything except one loan is emotionally excellent and mathematically fine WHEN the focused loan carries the highest rate - then it IS avalanche. Focusing a low-rate loan (say, clearing a car note for cash-flow room) costs real interest; the face-off list prices that choice so you make it with open eyes.</p>
+      <h3>Dedicated extras vs. strategy money</h3>
+      <p>A dedicated extra sticks to its loan no matter what - useful for a loan with a co-signer to protect or a promotional rate expiring. Strategy money hunts wherever the strategy points. Most plans work best with everything in strategy money; the option exists because real life has exceptions.</p>
       <h3>Notes</h3>
-      <p>Assumes fixed APRs, no new charges, constant minimums (card minimums actually shrink with the balance - paying the fixed amount is already a win). If neither strategy finishes, the payments do not cover interest and the results will say so.</p>
+      <p>Fixed APRs, no new charges, constant minimums. If the budget can't cover interest, the results say so. Payoff dates assume this month is month 1.</p>
     </article>
 
     <section class="related">
