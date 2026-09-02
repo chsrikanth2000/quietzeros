@@ -136,6 +136,22 @@ export function initChrome() {
   window.addEventListener("beforeprint", () => {
     for (const d of document.querySelectorAll("details")) d.setAttribute("open", "");
   });
+
+  // info popovers on stat tiles: hover/focus on desktop, tap-toggle on touch
+  for (const stat of document.querySelectorAll(".stat[data-info]")) {
+    const btn = el("button", { class: "info-btn", type: "button", "aria-expanded": "false", "aria-label": "What is this?" }, "?");
+    const pop = el("div", { class: "info-pop", role: "tooltip" }, stat.dataset.info);
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = btn.getAttribute("aria-expanded") === "true";
+      for (const b of document.querySelectorAll('.info-btn[aria-expanded="true"]')) b.setAttribute("aria-expanded", "false");
+      btn.setAttribute("aria-expanded", String(!open));
+    });
+    stat.append(btn, pop);
+  }
+  document.addEventListener("click", () => {
+    for (const b of document.querySelectorAll('.info-btn[aria-expanded="true"]')) b.setAttribute("aria-expanded", "false");
+  });
 }
 
 /* ---- Amortization math (shared by several tools) ---- */
