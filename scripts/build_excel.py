@@ -369,8 +369,215 @@ def budget():
     wb.save(OUT / "budget-planner.xlsx")
 
 
+
+# ------------------------------------------------------------ rent vs buy
+def rent_vs_buy():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "RentVsBuy"
+    title_block(ws, "Rent vs. buy - full opportunity cost",
+                "Owner vs. renter net worth, yearly. Includes invested down payment, maintenance, and 6% selling costs.")
+    widths(ws, {"A": 2, "B": 30, "C": 14, "D": 3, "E": 8, "F": 15, "G": 15, "H": 15, "I": 15})
+    ins = [("Home price", 425000, MONEY0), ("Down payment (%)", 0.20, PCT), ("Mortgage rate", 0.065, PCT),
+           ("Property tax (%/yr)", 0.011, PCT), ("Maintenance+insurance (%/yr)", 0.015, PCT),
+           ("Appreciation (%/yr)", 0.035, PCT), ("Rent today (monthly)", 2200, MONEY0),
+           ("Rent growth (%/yr)", 0.03, PCT), ("Investment return (%/yr)", 0.07, PCT)]
+    label(ws, "B4", "Inputs", bold=True)
+    for i, (name, v, fmt) in enumerate(ins):
+        label(ws, f"B{5+i}", name)
+        put(ws, f"C{5+i}", v, fill=INPUT_FILL, fmt=fmt)
+    label(ws, "B15", "Monthly P&I (computed)")
+    put(ws, "C15", "=-PMT(C7/12,360,C5*(1-C6))", fill=CALC_FILL, fmt=MONEY2)
+    label(ws, "B16", "Renter starting portfolio (down + 3% closing)")
+    put(ws, "C16", "=C5*C6+C5*0.03", fill=CALC_FILL, fmt=MONEY0)
+    ws["B18"] = "Yearly model (annual approximation of the web tool's monthly engine)."
+    ws["B18"].font = SUB_FONT
+
+    r0 = 20
+    heads = ["Year", "Home value", "Loan balance", "Owner net worth", "Renter net worth"]
+    for idx, h in enumerate(heads):
+        c = ws.cell(row=r0, column=5 + idx, value=h)
+        c.fill = HEAD_FILL; c.font = HEAD_FONT; c.alignment = Alignment(horizontal="center")
+    for y in range(0, 41):
+        row = r0 + 1 + y
+        ws[f"E{row}"] = y
+        if y == 0:
+            ws[f"F{row}"] = "=C5"
+            ws[f"G{row}"] = "=C5*(1-C6)"
+            ws[f"I{row}"] = "=C16"
+        else:
+            ws[f"F{row}"] = f"=F{row-1}*(1+$C$10)"
+            ws[f"G{row}"] = f"=MAX(0,G{row-1}*(1+$C$7)-$C$15*12)"
+            ws[f"I{row}"] = (f"=I{row-1}*(1+$C$13)+MAX(0,($C$15*12+F{row-1}*($C$8+$C$9))"
+                             f"-$C$11*12*(1+$C$12)^({y-1}))")
+        ws[f"H{row}"] = f"=F{row}*0.94-G{row}"
+        for col in "FGHI":
+            ws[f"{col}{row}"].number_format = MONEY0
+    wb.save(OUT / "rent-vs-buy.xlsx")
+
+
+# --------------------------------------------------- multi-debt payoff
+def multi_debt():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Debts"
+    title_block(ws, "Multi-debt payoff planner",
+                "Up to 5 debts, rolling minimums, extra payment. Priority 1-5: the lowest number gets every spare dollar. Rank by APR for avalanche, by balance for snowball.")
+    widths(ws, {"A": 2, "B": 26, "C": 13, "D": 13, "E": 13, "F": 13})
+    label(ws, "B4", "Inputs", bold=True)
+    for idx, h in enumerate(["Balance", "APR", "Minimum", "Priority"]):
+        c = ws.cell(row=5, column=3 + idx, value=h)
+        c.fill = HEAD_FILL; c.font = HEAD_FONT; c.alignment = Alignment(horizontal="center")
+    defaults = [(6500, 0.24, 130, 2), (14000, 0.075, 280, 3), (2100, 0.29, 60, 1), (0, 0.0, 0, 4), (0, 0.0, 0, 5)]
+    for i, (b, a, m, pr) in enumerate(defaults):
+        row = 6 + i
+        label(ws, f"B{row}", f"Debt {i+1}")
+        put(ws, f"C{row}", b, fill=INPUT_FILL, fmt=MONEY0)
+        put(ws, f"D{row}", a, fill=INPUT_FILL, fmt=PCT)
+        put(ws, f"E{row}", m, fill=INPUT_FILL, fmt=MONEY0)
+        put(ws, f"F{row}", pr, fill=INPUT_FILL, fmt="0")
+    label(ws, "B12", "Extra per month")
+    put(ws, "C12", 300, fill=INPUT_FILL, fmt=MONEY0)
+    label(ws, "B13", "Monthly budget (mins + extra)")
+    put(ws, "C13", "=SUM(E6:E10)+C12", fill=CALC_FILL, fmt=MONEY0)
+
+    sh = wb.create_sheet("Schedule")
+    sh.column_dimensions["A"].width = 7
+    for i in range(5):
+        for j, h in enumerate([f"D{i+1} bal", f"D{i+1} int"]):
+            col = 2 + i * 2 + j
+            c = sh.cell(row=1, column=col, value=h)
+            c.fill = HEAD_FILL; c.font = HEAD_FONT
+        sh.column_dimensions[get_column_letter(2 + i * 2)].width = 12
+        sh.column_dimensions[get_column_letter(3 + i * 2)].width = 11
+    c = sh.cell(row=1, column=12, value="Total"); c.fill = HEAD_FILL; c.font = HEAD_FONT
+    sh.column_dimensions["L"].width = 13
+    c = sh.cell(row=1, column=1, value="Month"); c.fill = HEAD_FILL; c.font = HEAD_FONT
+    sh["A2"] = 0
+    for i in range(5):
+        bcol = get_column_letter(2 + i * 2)
+        sh[f"{bcol}2"] = f"=Debts!C{6+i}"
+        sh[f"{bcol}2"].number_format = MONEY2
+    sh["L2"] = "=B2+D2+F2+H2+J2"
+    sh["L2"].number_format = MONEY2
+    for m in range(1, 361):
+        row = m + 2
+        sh[f"A{row}"] = m
+        alive_min = "+".join(
+            f"IF({get_column_letter(2+i*2)}{row-1}>0.005,MIN(Debts!$E${6+i},{get_column_letter(2+i*2)}{row-1}),0)"
+            for i in range(5))
+        sh[f"N{row}"] = f"=Debts!$C$13-({alive_min})"
+        prio = ",".join(
+            f"IF({get_column_letter(2+i*2)}{row-1}>0.005,Debts!$F${6+i},99)" for i in range(5))
+        sh[f"O{row}"] = f"=MIN({prio})"
+        for i in range(5):
+            bcol = get_column_letter(2 + i * 2)
+            icol = get_column_letter(3 + i * 2)
+            prev = f"{bcol}{row-1}"
+            sh[f"{icol}{row}"] = f"=IF({prev}>0.005,{prev}*Debts!$D${6+i}/12,0)"
+            target = f"IF(Debts!$F${6+i}=$O{row},MAX(0,$N{row}),0)"
+            pay = f"MIN({prev}+{icol}{row},MIN(Debts!$E${6+i},{prev})+{target})"
+            sh[f"{bcol}{row}"] = f"=IF({prev}<=0.005,0,MAX(0,{prev}+{icol}{row}-({pay})))"
+            sh[f"{bcol}{row}"].number_format = MONEY2
+            sh[f"{icol}{row}"].number_format = MONEY2
+        sh[f"L{row}"] = f"=B{row}+D{row}+F{row}+H{row}+J{row}"
+        sh[f"L{row}"].number_format = MONEY2
+    sh.freeze_panes = "A2"
+    wb.save(OUT / "multi-debt-payoff.xlsx")
+
+
+# ------------------------------------------------------- roth conversion
+def roth_conversion():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Plan"
+    title_block(ws, "Roth conversion bracket planner",
+                "Fill your chosen bracket every year. 2026 brackets live on the Brackets sheet - marginal tax computed exactly via SUMPRODUCT.")
+    widths(ws, {"A": 2, "B": 34, "C": 16, "D": 3, "E": 8, "F": 15, "G": 14, "H": 15})
+    label(ws, "B4", "Inputs", bold=True)
+    label(ws, "B5", "Traditional balance to convert")
+    put(ws, "C5", 400000, fill=INPUT_FILL, fmt=MONEY0)
+    label(ws, "B6", "Current taxable income")
+    put(ws, "C6", 60000, fill=INPUT_FILL, fmt=MONEY0)
+    label(ws, "B7", "Bracket ceiling (top $, see Brackets sheet)")
+    put(ws, "C7", 105700, fill=INPUT_FILL, fmt=MONEY0)
+    label(ws, "B8", "Balance growth (%/yr)")
+    put(ws, "C8", 0.06, fill=INPUT_FILL, fmt=PCT)
+    label(ws, "B10", "Converted per year (bracket space)")
+    put(ws, "C10", "=MAX(0,C7-C6)", fill=CALC_FILL, fmt=MONEY0)
+
+    bs = wb.create_sheet("Brackets")
+    for col, w in {"A": 10, "B": 14, "C": 14, "D": 10}.items():
+        bs.column_dimensions[col].width = w
+    for idx, h in enumerate(["Rate", "Single from", "Joint from", "Step"]):
+        c = bs.cell(row=1, column=1 + idx, value=h)
+        c.fill = HEAD_FILL; c.font = HEAD_FONT
+    single = [(0.10, 0, 0), (0.12, 12400, 24800), (0.22, 50400, 100800), (0.24, 105700, 211400),
+              (0.32, 201775, 403550), (0.35, 256225, 512450), (0.37, 640600, 768700)]
+    for i, (r, s1, s2) in enumerate(single):
+        prev = single[i - 1][0] if i else 0
+        bs.cell(row=2 + i, column=1, value=r).number_format = PCT
+        bs.cell(row=2 + i, column=2, value=s1).number_format = MONEY0
+        bs.cell(row=2 + i, column=3, value=s2).number_format = MONEY0
+        bs.cell(row=2 + i, column=4, value=r - prev).number_format = PCT
+    bs["A10"] = "Single-filer thresholds are used in the Plan sheet; swap column B for C in the formulas if filing jointly."
+    bs["A10"].font = SUB_FONT
+
+    r0 = 13
+    for idx, h in enumerate(["Year", "Converted", "Tax that year", "Balance left"]):
+        c = ws.cell(row=r0, column=5 + idx, value=h)
+        c.fill = HEAD_FILL; c.font = HEAD_FONT; c.alignment = Alignment(horizontal="center")
+    for y in range(1, 41):
+        row = r0 + y
+        ws[f"E{row}"] = y
+        prev_bal = "$C$5" if y == 1 else f"H{row-1}"
+        ws[f"F{row}"] = f"=MIN($C$10,{prev_bal})"
+        ws[f"G{row}"] = (f"=SUMPRODUCT((($C$6+F{row})>Brackets!$B$2:$B$8)*(($C$6+F{row})-Brackets!$B$2:$B$8)*Brackets!$D$2:$D$8)"
+                         f"-SUMPRODUCT(($C$6>Brackets!$B$2:$B$8)*($C$6-Brackets!$B$2:$B$8)*Brackets!$D$2:$D$8)")
+        ws[f"H{row}"] = f"=MAX(0,({prev_bal}-F{row})*(1+$C$8))"
+        for col in "FGH":
+            ws[f"{col}{row}"].number_format = MONEY0
+    wb.save(OUT / "roth-conversion-planner.xlsx")
+
+
+# ------------------------------------------------------- sequence risk
+def sequence_risk():
+    wb = Workbook()
+    ws = wb.active
+    ws.title = "Sequence"
+    title_block(ws, "Sequence-of-returns risk",
+                "The same set of yearly returns in three orders - crash-first, neutral, boom-first - with withdrawals.")
+    widths(ws, {"A": 2, "B": 26, "C": 14, "D": 3, "E": 8, "F": 11, "G": 11, "H": 11, "I": 14, "J": 14, "K": 14})
+    label(ws, "B4", "Inputs", bold=True)
+    for i, (name, v, fmt) in enumerate([("Starting portfolio", 1000000, MONEY0), ("Yearly withdrawal", 40000, MONEY0),
+                                        ("Average return", 0.07, PCT), ("Volatility (spread)", 0.12, PCT),
+                                        ("Years", 30, "0")]):
+        label(ws, f"B{5+i}", name)
+        put(ws, f"C{5+i}", v, fill=INPUT_FILL, fmt=fmt)
+    r0 = 12
+    for idx, h in enumerate(["Year", "r crash-first", "r neutral", "r boom-first", "Bal crash", "Bal neutral", "Bal boom"]):
+        c = ws.cell(row=r0, column=5 + idx, value=h)
+        c.fill = HEAD_FILL; c.font = HEAD_FONT; c.alignment = Alignment(horizontal="center")
+    for y in range(1, 51):
+        row = r0 + y
+        ws[f"E{row}"] = y
+        live = f"$E{row}<=$C$9"
+        ws[f"F{row}"] = f'=IF({live},$C$7+1.5*$C$8*(2*($E{row}-1)/($C$9-1)-1),"")'
+        ws[f"H{row}"] = f'=IF({live},$C$7+1.5*$C$8*(2*($C$9-$E{row})/($C$9-1)-1),"")'
+        ws[f"G{row}"] = (f'=IF({live},IF(MOD($E{row},2)=1,'
+                         f'$C$7+1.5*$C$8*(2*($C$9-($E{row}+1)/2)/($C$9-1)-1),'
+                         f'$C$7+1.5*$C$8*(2*($E{row}/2-1)/($C$9-1)-1)),"")')
+        for col, rcol in (("I", "F"), ("J", "G"), ("K", "H")):
+            prev = "$C$5" if y == 1 else f"{col}{row-1}"
+            ws[f"{col}{row}"] = f'=IF({live},MAX(0,({prev}-$C$6)*(1+{rcol}{row})),"")'
+            ws[f"{col}{row}"].number_format = MONEY0
+        for col in "FGH":
+            ws[f"{col}{row}"].number_format = PCT
+    wb.save(OUT / "sequence-risk.xlsx")
+
+
 if __name__ == "__main__":
-    for fn in (mortgage, loan, compound, savings_goal, debt_payoff, budget):
+    for fn in (mortgage, loan, compound, savings_goal, debt_payoff, budget, rent_vs_buy, multi_debt, roth_conversion, sequence_risk):
         fn()
         print("built", fn.__name__)
     print("done ->", OUT)

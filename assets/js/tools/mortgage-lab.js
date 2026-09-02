@@ -2,6 +2,7 @@
 
 import { $, $$, el, bindCalc, readField, toNum, money, money2, moneyShort, years, pmt } from "../core.js";
 import { initToolPage } from "../toolpage.js";
+import { attachRateHint } from "../rate-hint.js";
 import { stackedArea, dataTable } from "../charts.js";
 
 initToolPage("mortgage-lab");
@@ -378,6 +379,7 @@ function restoreState() {
 let recompute = () => {};
 restoreState();
 recompute = bindCalc($("#calc"), compute);
+attachRateHint("rate", "30");
 
 $("#share-btn").addEventListener("click", async () => {
   const url = location.origin + location.pathname + "#s=" + encodeState();

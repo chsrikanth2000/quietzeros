@@ -11,6 +11,18 @@ export const TOOLS = [
     cat: "Income & taxes",
   },
   {
+    slug: "real-hourly-wage",
+    name: "Real hourly wage",
+    desc: "Side-hustle revenue minus materials, miles, fees and both taxes, divided by ALL your hours.",
+    cat: "Income & taxes",
+  },
+  {
+    slug: "rsu-withholding",
+    name: "RSU withholding shortfall",
+    desc: "Employers withhold 22% on vests; your real rate is higher. Estimate the April surprise.",
+    cat: "Income & taxes",
+  },
+  {
     slug: "mortgage",
     name: "Mortgage calculator",
     desc: "Monthly payment with taxes, insurance and HOA — plus the full amortization picture.",
@@ -42,6 +54,20 @@ export const TOOLS = [
     cat: "Home & loans",
   },
   {
+    slug: "rent-vs-buy",
+    name: "Rent vs. buy, honestly",
+    desc: "Down-payment opportunity cost, PMI, maintenance and selling costs all counted - with the crossover year.",
+    cat: "Home & loans",
+    excel: "rent-vs-buy.xlsx",
+  },
+  {
+    slug: "avalanche-snowball",
+    name: "Avalanche vs. snowball",
+    desc: "Your real debts, both strategies simulated month by month - payoff dates, interest gap, windfalls.",
+    cat: "Home & loans",
+    excel: "multi-debt-payoff.xlsx",
+  },
+  {
     slug: "loan",
     name: "Loan calculator",
     desc: "Auto, personal or student loans: payment, total interest, and payoff schedule.",
@@ -68,6 +94,32 @@ export const TOOLS = [
     desc: "How much to set aside each month to hit a target by a date.",
     cat: "Saving & investing",
     excel: "savings-goal-planner.xlsx",
+  },
+  {
+    slug: "sequence-risk",
+    name: "Sequence-of-returns risk",
+    desc: "Same average return, three orderings - why retiring into a crash devastates a portfolio.",
+    cat: "Saving & investing",
+    excel: "sequence-risk.xlsx",
+  },
+  {
+    slug: "roth-conversion",
+    name: "Roth conversion planner",
+    desc: "Multi-year conversions that fill your tax bracket exactly, with real 2026 brackets.",
+    cat: "Saving & investing",
+    excel: "roth-conversion-planner.xlsx",
+  },
+  {
+    slug: "backdoor-roth",
+    name: "Backdoor Roth pro-rata",
+    desc: "What the pro-rata rule really taxes on your conversion - and the 401(k) escape hatch.",
+    cat: "Saving & investing",
+  },
+  {
+    slug: "social-security-breakeven",
+    name: "Social Security breakeven",
+    desc: "Claim at 62, 67 or 70 - the cumulative crossover ages that surprise everyone.",
+    cat: "Saving & investing",
   },
   {
     slug: "retirement",

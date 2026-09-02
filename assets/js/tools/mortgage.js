@@ -2,6 +2,7 @@
 
 import { $, bindCalc, readField, money, money2, moneyShort, pmt, amortize } from "../core.js";
 import { initToolPage } from "../toolpage.js";
+import { attachRateHint } from "../rate-hint.js";
 import { stackedArea, breakdown, dataTable } from "../charts.js";
 
 initToolPage("mortgage");
@@ -67,3 +68,4 @@ function compute() {
 }
 
 bindCalc(form, compute);
+attachRateHint("rate", "30");

@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qz-comments.chsrikanth2000.workers.dev https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
+  <title>Roth conversion bracket optimizer — Quiet Zeros</title>
+  <meta name="description" content="Plan multi-year traditional-to-Roth IRA conversions that fill - but never spill over - your chosen tax bracket. With the real 2026 brackets.">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="../assets/js/theme.js"></script>
+  <link rel="canonical" href="https://quietzeros.com/tools/roth-conversion">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Quiet Zeros">
+  <meta property="og:title" content="Roth conversion bracket optimizer">
+  <meta property="og:description" content="Plan multi-year traditional-to-Roth IRA conversions that fill - but never spill over - your chosen tax bracket. With the real 2026 brackets.">
+  <meta property="og:url" content="https://quietzeros.com/tools/roth-conversion">
+  <meta property="og:image" content="https://quietzeros.com/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#12523a">
+  <link rel="preload" href="../assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Roth conversion bracket optimizer","url":"https://quietzeros.com/tools/roth-conversion","description":"Plan multi-year traditional-to-Roth IRA conversions that fill - but never spill over - your chosen tax bracket. With the real 2026 brackets.","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5224815108212174" crossorigin="anonymous"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="wordmark" href="../index.html" aria-label="Quiet Zeros home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="4.6" ry="6.4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Quiet Zeros
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="../index.html">Calculators</a>
+        <a href="../downloads.html">Excel templates</a>
+        <a href="../about.html">About</a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <div class="tool-head">
+      <p class="crumbs"><a href="../index.html">Calculators</a> / Saving &amp; investing</p>
+      <h1>Roth conversion planner</h1>
+      <p class="lede">Convert too much in one year and you pay top rates; too little and the balance grows into future taxes. This fills your chosen bracket exactly, year by year, with real 2026 brackets. Nothing you type leaves this page.</p>
+    </div>
+
+    <form class="calc" id="calc" autocomplete="off" novalidate>
+      <div class="calc-inputs">
+        <div class="field">
+          <label>Filing status</label>
+          <div class="chips" role="radiogroup" aria-label="Filing status">
+            <label><input type="radio" name="status" value="single" checked>Single</label>
+            <label><input type="radio" name="status" value="mfj">Married, joint</label>
+          </div>
+        </div>
+        <div class="field">
+          <label for="trad">Traditional IRA / old 401(k) balance to convert</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="trad" type="number" inputmode="decimal" value="400000" min="1000" max="100000000" step="5000"></div>
+          <input type="range" data-pair="trad" min="10000" max="2000000" step="10000" value="400000" aria-label="Traditional IRA / old 401(k) balance to convert slider">
+          <p class="err">Enter $1,000 to $100,000,000.</p>
+        </div>
+        <div class="field">
+          <label for="taxable">Current taxable income (after deductions)</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="taxable" type="number" inputmode="decimal" value="60000" min="0" max="10000000" step="1000"></div>
+          <p class="help">Line 15 on your 1040 - income already using up bracket space each year.</p>
+        </div>
+        <div class="field">
+          <label for="ceiling">Fill up to the top of</label>
+          <div class="input-wrap">
+            <select id="ceiling" aria-label="Bracket ceiling">
+              <option value="12">the 12% bracket</option>
+              <option value="22" selected>the 22% bracket</option>
+              <option value="24">the 24% bracket</option>
+              <option value="32">the 32% bracket</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="growth">Balance grows at</label>
+          <div class="input-wrap"><input id="growth" type="number" inputmode="decimal" value="6" min="0" max="15" step="0.5"><span class="affix">%</span></div>
+        </div>
+        <div class="calc-actions"><button class="btn-ghost" type="reset" data-reset>Reset to defaults</button></div>
+      </div>
+
+      <div class="calc-results">
+        <div class="hero-figure">
+          <p class="label">Fully converted in</p>
+          <p class="value" id="r-hero" aria-live="polite">—</p>
+        </div>
+        <p class="interpret" id="r-interpret"></p>
+        <div class="stat-row">
+          <div class="stat"><p class="k">Convert in year 1</p><p class="v" id="r-annual">—</p></div>
+          <div class="stat"><p class="k">Total conversion tax</p><p class="v" id="r-tax">—</p></div>
+          <div class="stat"><p class="k">Tax if converted all at once</p><p class="v" id="r-lump">—</p></div>
+        </div>
+        <div class="chart-block">
+          <p class="chart-title">Traditional balance drawdown under the plan</p>
+          <div class="chart" id="chart-conv"></div>
+        </div>
+        <details class="sched">
+          <summary>Year-by-year conversion schedule</summary>
+          <div id="sched-table"></div>
+        </details>
+        <p id="excel-chip"></p>
+      </div>
+    </form>
+
+    <aside class="ad-slot" aria-label="Advertisement">
+      <span class="ad-tag">Advertisement</span>
+      <span class="ad-body">Ad space. A small number of ads like this keep Quiet Zeros free — <a href="../about.html#ads">here's how that works</a>.</span>
+    </aside>
+
+    <article class="prose">
+      <h2>How this is calculated</h2>
+      <p>Each year the plan converts exactly the space left in your chosen bracket: the bracket's top minus your taxable income. Tax on each conversion is computed with the real 2026 brackets - including any lower brackets a large gap spans - while the unconverted balance keeps growing at your rate.</p>
+      <h3>Why spread conversions at all</h3>
+      <p>Converting everything at once shoves most of it into the top brackets - the lump-sum figure above shows that penalty on your numbers. Spreading keeps every converted dollar at your chosen rate or below. The trade: the remaining balance keeps growing, so there is more to convert later - which is why the schedule sometimes never finishes at low ceilings.</p>
+      <h3>Windows that make conversions golden</h3>
+      <p>Early retirement before Social Security and RMDs; any low-income year; a market crash (converting depressed shares moves the whole recovery into the Roth). Watch two side effects: conversions can raise Medicare IRMAA premiums two years later, and each conversion carries its own 5-year clock for penalty-free access under 59 1/2.</p>
+      <h3>Notes</h3>
+      <p>Assumes constant brackets and other income (2026 rules throughout); state tax on conversions not included - check your rate in the <a href="take-home-pay.html">tax tool</a>.</p>
+    </article>
+
+    <section class="related">
+      <h2>Related tools</h2>
+      <ul class="related-list" id="related-tools"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <p class="disclosure"><strong>Free, and honest about why.</strong> Quiet Zeros is supported by a small number of clearly labeled ads — never inside a calculator, never disguised as content. Your numbers stay on your device.</p>
+        <nav aria-label="Footer">
+          <a href="../index.html">Calculators</a>
+          <a href="../downloads.html">Excel templates</a>
+          <a href="../best-accounts.html">Accounts &amp; cards</a>
+          <a href="../about.html">About</a>
+          <a href="../privacy.html">Privacy</a>
+          <a href="../terms.html">Terms</a>
+        </nav>
+      </div>
+      <p class="fineprint">© <span data-year>2026</span> Quiet Zeros. Estimates for planning only — not financial, tax or legal advice, and no substitute for a qualified financial planner or CPA.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="../assets/js/tools/roth-conversion.js"></script>
+</body>
+</html>

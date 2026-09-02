@@ -507,6 +507,309 @@ TOOLS += [
 ]
 
 
+TOOLS += [
+    # ------------------------------------------------ sequence-of-returns
+    dict(
+        slug="sequence-risk",
+        title="Sequence-of-returns risk simulator",
+        desc="Why retiring into a crash devastates a portfolio even when the average return is identical - three orderings of the same returns, wildly different endings.",
+        cat="Saving &amp; investing",
+        h1="Sequence-of-returns risk",
+        lede="Average return is a lie of omission: the ORDER of good and bad years decides whether a retirement portfolio survives. Same returns, three different orders. Nothing you type leaves this page.",
+        form="\n".join([
+            field("nest", "Starting portfolio", prefix="$", value="1000000", fmin="10000", fmax="100000000", step="10000",
+                  slider=("100000", "5000000", "50000"), err="Enter $10,000 to $100,000,000."),
+            field("spend", "Yearly withdrawal", prefix="$", value="40000", fmin="0", fmax="10000000", step="1000",
+                  help_="The classic 4% rule on $1M. Withdrawals are what make sequence matter."),
+            field("avg", "Average annual return", suffix="%", value="7", fmin="0", fmax="20", step="0.5"),
+            field("vol", "Volatility (typical swing)", suffix="%", value="12", fmin="0", fmax="30", step="1",
+                  help_="Diversified stock portfolios historically swing roughly plus/minus 12-15% around their average."),
+            field("yrs", "Years in retirement", suffix="yrs", value="30", fmin="5", fmax="50", step="1"),
+        ]),
+        results="\n".join([
+            hero("Gap between best and worst order"),
+            stats(("Crash-first ending", "r-bad"), ("Steady ending", "r-flat"), ("Boom-first ending", "r-good")),
+            chart("chart-seq", "Same returns, three orders - balance over time"),
+            sched("Balance by year, all three orders"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>We build one fixed set of yearly returns whose average matches your number - spread across your volatility - then run the identical set in three orders: worst years first, steady, best years first. Every path earns <em>exactly the same returns overall</em>. The only difference is sequence.</p>
+      <p class="formula">balance<sub>y+1</sub> = (balance<sub>y</sub> - withdrawal) x (1 + r<sub>y</sub>)</p>
+      <h3>Why order matters once you withdraw</h3>
+      <p>Selling shares in a down year converts a temporary loss into a permanent one - those shares are gone before the recovery arrives. Without withdrawals, order is irrelevant (multiplication commutes); with withdrawals, early losses compound against you forever. That is sequence-of-returns risk, and it is why two retirees with identical portfolios and identical average returns can end 30 years apart by millions.</p>
+      <h3>What to do about it</h3>
+      <p>The standard defenses: hold 1-3 years of spending in cash or bonds so down years aren't sale years; flex withdrawals downward in crashes; or work one more year past a bear market's start. The gap shown above is the price of ignoring it.</p>""",
+    ),
+    # ------------------------------------------------ roth conversion
+    dict(
+        slug="roth-conversion",
+        title="Roth conversion bracket optimizer",
+        desc="Plan multi-year traditional-to-Roth IRA conversions that fill - but never spill over - your chosen tax bracket. With the real 2026 brackets.",
+        cat="Saving &amp; investing",
+        h1="Roth conversion planner",
+        lede="Convert too much in one year and you pay top rates; too little and the balance grows into future taxes. This fills your chosen bracket exactly, year by year, with real 2026 brackets. Nothing you type leaves this page.",
+        form="\n".join([
+            '''        <div class="field">
+          <label>Filing status</label>
+          <div class="chips" role="radiogroup" aria-label="Filing status">
+            <label><input type="radio" name="status" value="single" checked>Single</label>
+            <label><input type="radio" name="status" value="mfj">Married, joint</label>
+          </div>
+        </div>''',
+            field("trad", "Traditional IRA / old 401(k) balance to convert", prefix="$", value="400000", fmin="1000", fmax="100000000", step="5000",
+                  slider=("10000", "2000000", "10000"), err="Enter $1,000 to $100,000,000."),
+            field("taxable", "Current taxable income (after deductions)", prefix="$", value="60000", fmin="0", fmax="10000000", step="1000",
+                  help_="Line 15 on your 1040 - income already using up bracket space each year."),
+            '''        <div class="field">
+          <label for="ceiling">Fill up to the top of</label>
+          <div class="input-wrap">
+            <select id="ceiling" aria-label="Bracket ceiling">
+              <option value="12">the 12% bracket</option>
+              <option value="22" selected>the 22% bracket</option>
+              <option value="24">the 24% bracket</option>
+              <option value="32">the 32% bracket</option>
+            </select>
+          </div>
+        </div>''',
+            field("growth", "Balance grows at", suffix="%", value="6", fmin="0", fmax="15", step="0.5"),
+        ]),
+        results="\n".join([
+            hero("Fully converted in"),
+            stats(("Convert in year 1", "r-annual"), ("Total conversion tax", "r-tax"), ("Tax if converted all at once", "r-lump")),
+            chart("chart-conv", "Traditional balance drawdown under the plan"),
+            sched("Year-by-year conversion schedule"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>Each year the plan converts exactly the space left in your chosen bracket: the bracket's top minus your taxable income. Tax on each conversion is computed with the real 2026 brackets - including any lower brackets a large gap spans - while the unconverted balance keeps growing at your rate.</p>
+      <h3>Why spread conversions at all</h3>
+      <p>Converting everything at once shoves most of it into the top brackets - the lump-sum figure above shows that penalty on your numbers. Spreading keeps every converted dollar at your chosen rate or below. The trade: the remaining balance keeps growing, so there is more to convert later - which is why the schedule sometimes never finishes at low ceilings.</p>
+      <h3>Windows that make conversions golden</h3>
+      <p>Early retirement before Social Security and RMDs; any low-income year; a market crash (converting depressed shares moves the whole recovery into the Roth). Watch two side effects: conversions can raise Medicare IRMAA premiums two years later, and each conversion carries its own 5-year clock for penalty-free access under 59 1/2.</p>
+      <h3>Notes</h3>
+      <p>Assumes constant brackets and other income (2026 rules throughout); state tax on conversions not included - check your rate in the <a href="take-home-pay.html">tax tool</a>.</p>""",
+    ),
+    # ------------------------------------------------ backdoor pro-rata
+    dict(
+        slug="backdoor-roth",
+        title="Backdoor Roth pro-rata calculator",
+        desc="The pro-rata rule decides how much of your backdoor Roth conversion is taxable - the trap for high earners with existing pre-tax IRA money, computed correctly.",
+        cat="Saving &amp; investing",
+        h1="Backdoor Roth &amp; the pro-rata rule",
+        lede="The backdoor Roth is simple - unless you already hold pre-tax IRA money, in which case the IRS taxes every conversion proportionally. Here is exactly what your conversion costs, and the escape hatch. Nothing you type leaves this page.",
+        form="\n".join([
+            field("pretax", "ALL existing pre-tax IRA money (traditional + SEP + SIMPLE + rollover)", prefix="$", value="95000", fmin="0", fmax="100000000", step="1000",
+                  help_="Every IRA in your name counts, across all custodians, as of Dec 31 of the conversion year. Workplace 401(k)s do NOT count.",
+                  err="Enter $0 to $100,000,000."),
+            field("basis", "Non-deductible (after-tax) contribution this year", prefix="$", value="7500", fmin="0", fmax="100000", step="500",
+                  help_="The 2026 IRA limit is $7,500 ($8,600 at 50+)."),
+            field("convert", "Amount you will convert to Roth", prefix="$", value="7500", fmin="1", fmax="100000000", step="500"),
+            field("marg", "Your marginal tax rate", suffix="%", value="32", fmin="0", fmax="50", step="1",
+                  help_="Federal + state, on your next dollar - the <a href=\"take-home-pay.html\">tax tool</a> shows it."),
+        ]),
+        results="\n".join([
+            hero("Taxable share of your conversion"),
+            stats(("Tax owed on conversion", "r-tax"), ("Tax-free share", "r-free"), ("Basis left in the IRA", "r-left")),
+            chart("chart-prorata", "How the IRS sees every dollar you convert"),
+            sched("The arithmetic, step by step"),
+        ]),
+        prose="""      <h2>How the pro-rata rule works</h2>
+      <p>The IRS treats all your IRAs as one pot. When you convert, you cannot choose to convert "just the after-tax part" - every converted dollar carries the pot's overall pre-tax percentage:</p>
+      <p class="formula">taxable % = pre-tax money / (pre-tax money + after-tax basis)</p>
+      <p>With $95,000 pre-tax and a $7,500 non-deductible contribution, the pot is 92.7% pre-tax - so 92.7% of ANY conversion is taxed as income, exactly as if the backdoor did not exist. Form 8606 does this math at filing time; better to see it now.</p>
+      <h3>The escape hatch: the reverse rollover</h3>
+      <p>Pre-tax money sitting in a <em>workplace</em> plan does not count in the formula. If your 401(k) accepts roll-ins (most do), move the pre-tax IRA money into it before December 31 - the pot becomes almost pure basis and the conversion becomes almost tax-free. That single move is usually worth thousands.</p>
+      <h3>Notes</h3>
+      <p>The December 31 balance is what counts - converting in January does not dodge a balance that exists in December. Earnings between contribution and conversion are taxable (convert promptly). Federal treatment; a few states differ slightly.</p>""",
+    ),
+    # ------------------------------------------------ rent vs buy
+    dict(
+        slug="rent-vs-buy",
+        title="Rent vs. buy - full opportunity cost",
+        desc="The rent-vs-buy comparison done honestly: the invested down payment, PMI, maintenance, closing and selling costs all included - with the real crossover year.",
+        cat="Home &amp; loans",
+        h1="Rent or buy, honestly",
+        lede="Most versions rig the answer by ignoring what your down payment could earn invested - or the 6% you will pay to sell. This one counts everything, both directions. Nothing you type leaves this page.",
+        form="\n".join([
+            field("price", "Home price", prefix="$", value="425000", fmin="10000", fmax="20000000", step="5000",
+                  slider=("100000", "1500000", "5000"), err="Enter $10,000 to $20,000,000."),
+            field("down", "Down payment", suffix="%", value="20", fmin="0", fmax="100", step="1",
+                  help_="Below 20% adds PMI automatically (0.8%/yr until 20% equity)."),
+            field("rate", "Mortgage rate", suffix="%", value="6.5", fmin="0.1", fmax="25", step="0.125"),
+            field("proptax", "Property tax rate", suffix="%/yr", value="1.1", fmin="0", fmax="4", step="0.05"),
+            field("maint", "Maintenance &amp; insurance", suffix="%/yr", value="1.5", fmin="0", fmax="5", step="0.1",
+                  help_="The forgotten line: roofs, water heaters, insurance - 1-2% of value yearly is typical."),
+            field("appre", "Home appreciation", suffix="%/yr", value="3.5", fmin="-5", fmax="15", step="0.5"),
+            field("rent", "Comparable rent today", prefix="$", value="2200", fmin="100", fmax="100000", step="50",
+                  slider=("500", "8000", "50")),
+            field("rentgrow", "Rent grows at", suffix="%/yr", value="3", fmin="0", fmax="15", step="0.5"),
+            field("invest", "Investments would earn", suffix="%/yr", value="7", fmin="0", fmax="20", step="0.5",
+                  help_="What the down payment + closing costs + any monthly savings earn if you rent instead."),
+            field("horizon", "How long you would stay", suffix="yrs", value="10", fmin="1", fmax="40", step="1"),
+        ]),
+        results="\n".join([
+            hero("After your stay, buying leaves you"),
+            stats(("Owner net worth", "r-own"), ("Renter net worth", "r-rentnw"), ("Crossover year", "r-cross")),
+            chart("chart-rvb", "Net worth over time - owner vs. renter, everything counted"),
+            sched("Year-by-year net worth, both paths"),
+        ]),
+        prose="""      <h2>What "everything counted" means</h2>
+      <p><strong>The owner's side:</strong> mortgage payment, property tax, maintenance and insurance, PMI while equity is under 20%, and 3% closing costs going in - against growing equity and appreciation, minus 6% selling costs whenever you would sell. <strong>The renter's side:</strong> rent, growing yearly - while the down payment, closing costs, and every month the renter's total costs run cheaper than the owner's get invested at your return.</p>
+      <p class="formula">owner net worth = home value x (1 - 6%) - loan balance ; renter net worth = invested portfolio</p>
+      <h3>Why most calculators flatter buying</h3>
+      <p>Three omissions do it: the down payment's investment earnings (on $85,000 at 7%, roughly $6,000 the renter earns every year), maintenance (1-2% of value, invisible until the roof fails), and the 6% exit fee. Include them and short stays usually favor renting - the crossover year above is where that flips for your numbers.</p>
+      <h3>Notes</h3>
+      <p>Mortgage-interest deductions are ignored - with today's standard deduction most owners do not itemize (the <a href="take-home-pay.html">tax tool</a> checks). Rent stability and the joy of painting a wall are real but unpriceable - this is the money half of the decision.</p>""",
+    ),
+    # ------------------------------------------------ real hourly wage
+    dict(
+        slug="real-hourly-wage",
+        title="Real hourly wage - side hustle calculator",
+        desc="Revenue minus materials, mileage, platform fees, self-employment tax and income tax, divided by ALL your hours - the number side-hustle articles never compute.",
+        cat="Income &amp; taxes",
+        h1="What your side hustle really pays",
+        lede="Revenue is vanity. After materials, miles, fees and both taxes - divided by every hour including the unpaid admin - here is your actual wage. Nothing you type leaves this page.",
+        form="\n".join([
+            field("revenue", "Monthly revenue", prefix="$", value="1500", fmin="0", fmax="1000000", step="50",
+                  slider=("0", "10000", "50")),
+            field("materials", "Materials &amp; supplies", prefix="$", value="350", fmin="0", fmax="1000000", step="25",
+                  help_="Filament, packaging, parts - everything consumed making what you sold."),
+            field("fees", "Platform &amp; payment fees", prefix="$", value="150", fmin="0", fmax="1000000", step="25",
+                  help_="Etsy/eBay/Amazon take 6-15%; card processing about 3%."),
+            field("other", "Other costs (tools, software, booth fees)", prefix="$", value="50", fmin="0", fmax="1000000", step="25"),
+            field("miles", "Miles driven for it", suffix="mi/mo", value="100", fmin="0", fmax="20000", step="10"),
+            field("milerate", "IRS mileage rate", suffix="c/mi", value="70", fmin="0", fmax="120", step="0.5",
+                  help_="70 cents is the 2025 IRS standard rate - update when the IRS posts the new year."),
+            field("marg", "Your marginal income-tax rate", suffix="%", value="22", fmin="0", fmax="50", step="1",
+                  help_="Side income stacks on TOP of your day job - the <a href=\"take-home-pay.html\">tax tool</a> shows your rate."),
+            field("hours", "ALL hours - making, listing, shipping, admin", suffix="hrs/mo", value="40", fmin="1", fmax="500", step="1"),
+        ]),
+        results="\n".join([
+            hero("Your real hourly wage"),
+            stats(("Monthly profit before tax", "r-profit"), ("Self-employment tax", "r-setax"), ("Income tax", "r-inctax"), ("Take-home per month", "r-net")),
+            chart("chart-hustle", "Where each month's revenue actually goes"),
+            sched("The arithmetic, line by line"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>Profit = revenue - materials - fees - other costs - the mileage deduction (miles x the IRS rate, which also approximates your real vehicle cost). Then both taxes hit: <strong>self-employment tax</strong> at 15.3% of 92.35% of profit - the tax W-2 people never see because employers pay half - and <strong>income tax</strong> at your marginal rate, because side income stacks on top of your salary, not beside it.</p>
+      <p class="formula">real wage = (profit - SE tax - income tax) / all hours</p>
+      <h3>The two lies side-hustle math usually tells</h3>
+      <p>Counting only "making" hours - photography, listings, customer messages, packaging and the post-office run are hours too. And using average instead of marginal tax - your thousandth side-hustle dollar is taxed like your last salary dollar, not your first. Fix both and many hustles pay under minimum wage; the good ones prove themselves.</p>
+      <h3>Notes</h3>
+      <p>Half the SE tax is deductible against income tax (included). Hobby-loss rules, inventory accounting and state tax are not modeled. If profit clears about $1,000/yr, remember quarterly estimated taxes.</p>""",
+    ),
+    # ------------------------------------------------ social security
+    dict(
+        slug="social-security-breakeven",
+        title="Social Security claiming-age breakeven",
+        desc="Claim at 62, 67 or 70? The cumulative-benefit crossover ages, computed - they surprise almost everyone.",
+        cat="Saving &amp; investing",
+        h1="When to claim Social Security",
+        lede="Claiming at 62 pays 30% less forever; waiting to 70 pays 24% more forever. Which wins depends on one thing - how long you live past the crossover ages this shows. Nothing you type leaves this page.",
+        form="\n".join([
+            field("fra", "Your monthly benefit at full retirement age (67)", prefix="$", value="2400", fmin="100", fmax="10000", step="50",
+                  slider=("500", "5000", "50"),
+                  help_="From your statement at ssa.gov/myaccount - takes two minutes to look up."),
+            field("horizon", "Show through age", suffix="", value="95", fmin="75", fmax="105", step="1"),
+        ]),
+        results="\n".join([
+            hero("Waiting 67 to 70 pays off at age"),
+            stats(("Claim at 62", "r-62"), ("Claim at 67", "r-67"), ("Claim at 70", "r-70"), ("62 vs 67 crossover", "r-cross1")),
+            chart("chart-ss", "Cumulative benefits collected, by claiming age"),
+            sched("Cumulative totals at each age"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>For anyone born 1960 or later, claiming at 62 pays 70% of your full benefit; 67 pays 100%; 70 pays 124% (delayed credits of 8% per year). The chart accumulates each stream from its start age; where lines cross is the age at which waiting overtakes claiming early.</p>
+      <h3>Reading your crossovers</h3>
+      <p>The typical pattern: 62-vs-67 crosses in the late 70s, 67-vs-70 in the early 80s. Life expectancy for someone who has already reached 62 is roughly 84 for men and 86 for women - past both crossovers - which is why actuaries usually favor waiting <em>if you can afford to</em>. Claim early when health or family history argues a shorter horizon, when you need the cash, or when a survivor benefit is not in play.</p>
+      <h3>What is deliberately left out</h3>
+      <p>COLA raises all three streams by the same percentage, so it barely moves the crossovers - these are real (today's) dollars. Not modeled: spousal and survivor strategy (often the strongest reason to delay - the survivor keeps the LARGER benefit), taxes on benefits, the earnings test if you claim while working, and investing early benefits. A financial planner earns their fee on the spousal question.</p>""",
+    ),
+    # ------------------------------------------------ avalanche vs snowball
+    dict(
+        slug="avalanche-snowball",
+        title="Debt avalanche vs. snowball - real payoff dates",
+        desc="Both strategies simulated month by month across your actual debts - payoff dates, interest difference, and a windfall option.",
+        cat="Home &amp; loans",
+        h1="Avalanche vs. snowball",
+        lede="Avalanche (highest rate first) saves the most interest; snowball (smallest balance first) retires debts fastest. Enter your real debts and see both, month by month - including what a windfall changes. Nothing you type leaves this page.",
+        form="\n".join([
+            field("d1bal", "Debt 1 - balance", prefix="$", value="6500", fmin="0", fmax="5000000", step="100",
+                  help_="Card, loan, anything. Leave a balance at 0 to skip a slot."),
+            field("d1apr", "Debt 1 - APR", suffix="%", value="24", fmin="0", fmax="60", step="0.1"),
+            field("d1min", "Debt 1 - minimum payment", prefix="$", value="130", fmin="0", fmax="100000", step="5"),
+            field("d2bal", "Debt 2 - balance", prefix="$", value="14000", fmin="0", fmax="5000000", step="100"),
+            field("d2apr", "Debt 2 - APR", suffix="%", value="7.5", fmin="0", fmax="60", step="0.1"),
+            field("d2min", "Debt 2 - minimum payment", prefix="$", value="280", fmin="0", fmax="100000", step="5"),
+            field("d3bal", "Debt 3 - balance", prefix="$", value="2100", fmin="0", fmax="5000000", step="100"),
+            field("d3apr", "Debt 3 - APR", suffix="%", value="29", fmin="0", fmax="60", step="0.1"),
+            field("d3min", "Debt 3 - minimum payment", prefix="$", value="60", fmin="0", fmax="100000", step="5"),
+            field("d4bal", "Debt 4 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
+            field("d4apr", "Debt 4 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
+            field("d4min", "Debt 4 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
+            field("d5bal", "Debt 5 - balance", prefix="$", value="0", fmin="0", fmax="5000000", step="100"),
+            field("d5apr", "Debt 5 - APR", suffix="%", value="0", fmin="0", fmax="60", step="0.1"),
+            field("d5min", "Debt 5 - minimum payment", prefix="$", value="0", fmin="0", fmax="100000", step="5"),
+            field("extra", "Extra toward debt each month", prefix="$", value="300", fmin="0", fmax="100000", step="25",
+                  slider=("0", "2000", "25")),
+            field("windfall", "One-time windfall", prefix="$", value="0", fmin="0", fmax="1000000", step="250",
+                  help_="Tax refund, bonus - applied to the target debt in the month below."),
+            field("windmonth", "... arriving in month", suffix="", value="6", fmin="1", fmax="120", step="1"),
+        ]),
+        results="\n".join([
+            hero("Avalanche saves"),
+            stats(("Avalanche: debt-free in", "r-av-time"), ("Snowball: debt-free in", "r-sb-time"), ("Avalanche interest", "r-av-int"), ("Snowball interest", "r-sb-int")),
+            chart("chart-avsb", "Total debt over time, both strategies"),
+            sched("Payoff order and dates, both strategies"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>Both strategies run the identical budget - all minimums plus your extra (and windfall) - month by month. The only difference is targeting: <strong>avalanche</strong> aims every spare dollar at the highest APR; <strong>snowball</strong> at the smallest balance. When a debt dies, its minimum rolls into the attack - that rolling is where both strategies get their power.</p>
+      <h3>Which should you pick?</h3>
+      <p>Mathematically, avalanche always wins or ties - the number above is its edge on your debts. But the gap is often smaller than people expect, and snowball's early kills are real fuel for the humans actually doing this. Honest rule: if the avalanche edge is under a few hundred dollars, pick whichever keeps you paying. If it is thousands, let math win.</p>
+      <h3>Notes</h3>
+      <p>Assumes fixed APRs, no new charges, constant minimums (card minimums actually shrink with the balance - paying the fixed amount is already a win). If neither strategy finishes, the payments do not cover interest and the results will say so.</p>""",
+    ),
+    # ------------------------------------------------ RSU withholding
+    dict(
+        slug="rsu-withholding",
+        title="RSU withholding shortfall estimator",
+        desc="Employers withhold a flat 22% on vested RSUs - your real rate is usually higher. Estimate the surprise tax bill before the IRS does.",
+        cat="Income &amp; taxes",
+        h1="RSU withholding shortfall",
+        lede="Vested RSUs are taxed like salary, but employers withhold a flat 22% - while your actual marginal rate on that income may be 32-37%. The gap becomes an April surprise. Estimate yours now. Nothing you type leaves this page.",
+        form="\n".join([
+            '''        <div class="field">
+          <label>Filing status</label>
+          <div class="chips" role="radiogroup" aria-label="Filing status">
+            <label><input type="radio" name="status" value="single" checked>Single</label>
+            <label><input type="radio" name="status" value="mfj">Married, joint</label>
+          </div>
+        </div>''',
+            field("salary", "Salary &amp; other ordinary income (before RSUs)", prefix="$", value="180000", fmin="0", fmax="10000000", step="5000",
+                  slider=("50000", "800000", "5000")),
+            field("rsu", "RSU value vesting this year", prefix="$", value="80000", fmin="0", fmax="20000000", step="2500",
+                  help_="Shares x price at each vest. It is W-2 income the moment it vests - whether or not you sell."),
+            field("staterate", "State marginal rate", suffix="%", value="5", fmin="0", fmax="14", step="0.5",
+                  help_="States under-withhold on RSUs too - the <a href=\"take-home-pay.html\">tax tool</a> shows yours."),
+            field("statewh", "State supplemental withholding", suffix="%", value="5", fmin="0", fmax="15", step="0.5"),
+        ]),
+        results="\n".join([
+            hero("Estimated shortfall at filing"),
+            stats(("Tax on the RSUs (fed+state)", "r-fedtax"), ("Withheld (fed+state)", "r-withheld"), ("Real marginal rate on RSUs", "r-eff"), ("Set aside per $10k vest", "r-setaside")),
+            chart("chart-rsu", "Your RSU dollars: withheld vs. actually owed"),
+            sched("The arithmetic"),
+        ]),
+        prose="""      <h2>Why the shortfall exists</h2>
+      <p>The IRS classifies RSU vests as "supplemental wages," withheld at a flat <strong>22%</strong> (37% only on supplemental income past $1M). But the vest stacks on top of your salary - so its real marginal rate is whatever bracket your salary already reached: 24%, 32%, 35%. The calculator computes the actual 2026-bracket tax on your stacked income and subtracts what the flat rate withholds - federal and state.</p>
+      <h3>What to do about it</h3>
+      <p>Three fixes, in order of ease: sell enough shares at each vest and park the set-aside figure above; file a new W-4 adding extra withholding per paycheck; or pay quarterly estimates. And know the <strong>safe harbor</strong>: pay in at least 110% of last year's total tax (100% if AGI under $150k) and you owe no penalty regardless of the shortfall - the balance is simply due in April.</p>
+      <h3>ESPP, while you're here</h3>
+      <p>ESPP discounts are also ordinary income and typically have <em>zero</em> withholding - the same trap, smaller dollars. Add your expected discount income to the RSU field for a combined estimate.</p>
+      <h3>Notes</h3>
+      <p>Uses 2026 federal brackets and the standard deduction; Additional Medicare (0.9% over $200k/$250k) included. Capital gains after the vest are a separate, second tax event - the vest itself is pure ordinary income.</p>""",
+    ),
+]
+
+
 def build():
     outdir = ROOT / "tools"
     outdir.mkdir(exist_ok=True)

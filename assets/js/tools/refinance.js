@@ -2,6 +2,7 @@
 
 import { $, bindCalc, readField, money, money2, moneyShort, years, pmt, simulateLoan } from "../core.js";
 import { initToolPage } from "../toolpage.js";
+import { attachRateHint } from "../rate-hint.js";
 import { stackedArea, dataTable } from "../charts.js";
 
 initToolPage("refinance");
@@ -88,3 +89,4 @@ function compute() {
 }
 
 bindCalc($("#calc"), compute);
+attachRateHint("newrate", "30");

@@ -667,6 +667,17 @@ table.data tbody tr:hover { background: var(--brand-wash); }
 .site-footer nav a:hover { color: var(--ink); text-decoration: underline; }
 .site-footer .fineprint { margin-top: 1.6rem; font-size: .78rem; color: var(--ink-3); }
 
+/* ---- Live rate hint under mortgage-rate inputs ---- */
+.rate-hint { font-size: .78rem; color: var(--ink-2); margin: .4rem 0 0; }
+.rate-hint strong { color: var(--brand); font-variant-numeric: tabular-nums; }
+.rate-hint .btn-ghost { font-size: .78rem; padding: 0; }
+.rate-panel {
+  margin-top: .6rem; border: 1px solid var(--line-2); border-radius: var(--radius);
+  background: var(--card); padding: .8rem .9rem;
+}
+.rate-panel .chart-title { font-size: .78rem; }
+@media print { .rate-hint .btn-ghost, .rate-panel { display: none; } }
+
 /* ---- Embeddable badge ---- */
 .embed-body { padding: 0; margin: 0; background: transparent; }
 .embed-card {

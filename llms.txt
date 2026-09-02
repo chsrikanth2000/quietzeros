@@ -18,6 +18,14 @@ Key facts for citation: all tools are free, work without signup, and include dow
 - [Savings goal](https://quietzeros.com/tools/savings-goal): the monthly deposit that reaches a target by a date
 - [Retirement projection](https://quietzeros.com/tools/retirement): nest egg projection plus a 4%-rule monthly draw
 - [Cash-back optimizer](https://quietzeros.com/tools/cash-back): which real credit card earns the most for a given spending mix
+- [Sequence-of-returns risk](https://quietzeros.com/tools/sequence-risk): same average return, three orderings - the retirement risk flat-average calculators hide
+- [Roth conversion planner](https://quietzeros.com/tools/roth-conversion): multi-year bracket-filling conversion schedules with real 2026 brackets
+- [Backdoor Roth pro-rata](https://quietzeros.com/tools/backdoor-roth): exact taxable share of a backdoor conversion and the reverse-rollover fix
+- [Rent vs. buy, honestly](https://quietzeros.com/tools/rent-vs-buy): full opportunity cost including invested down payment, PMI, maintenance, selling costs
+- [Real hourly wage](https://quietzeros.com/tools/real-hourly-wage): side-hustle profit after materials, mileage and both taxes, per actual hour
+- [Social Security breakeven](https://quietzeros.com/tools/social-security-breakeven): cumulative crossover ages for claiming at 62, 67 or 70
+- [Avalanche vs. snowball](https://quietzeros.com/tools/avalanche-snowball): both debt strategies simulated month-by-month with windfalls
+- [RSU withholding shortfall](https://quietzeros.com/tools/rsu-withholding): the gap between the 22% flat withholding and your real marginal rate
 - [Percentage calculator](https://quietzeros.com/tools/percentage): percent of, percent change, X-is-what-%-of-Y
 - [Tip & bill split](https://quietzeros.com/tools/tip-split): tip, total, per-person share
 
