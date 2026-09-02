@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qz-comments.chsrikanth2000.workers.dev https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
+  <title>Refinance calculator — Quiet Zeros</title>
+  <meta name="description" content="Should you refinance? Break-even month on closing costs, new payment, lifetime cost difference, and the keep-your-old-payment shortcut — computed privately in your browser.">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="../assets/js/theme.js"></script>
+  <link rel="canonical" href="https://quietzeros.com/tools/refinance.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Quiet Zeros">
+  <meta property="og:title" content="Refinance calculator">
+  <meta property="og:description" content="Should you refinance? Break-even month on closing costs, new payment, lifetime cost difference, and the keep-your-old-payment shortcut — computed privately in your browser.">
+  <meta property="og:url" content="https://quietzeros.com/tools/refinance.html">
+  <meta property="og:image" content="https://quietzeros.com/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#12523a">
+  <link rel="preload" href="../assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Refinance calculator","url":"https://quietzeros.com/tools/refinance.html","description":"Should you refinance? Break-even month on closing costs, new payment, lifetime cost difference, and the keep-your-old-payment shortcut — computed privately in your browser.","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5224815108212174" crossorigin="anonymous"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="wordmark" href="../index.html" aria-label="Quiet Zeros home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="4.6" ry="6.4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Quiet Zeros
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="../index.html">Calculators</a>
+        <a href="../downloads.html">Excel templates</a>
+        <a href="../about.html">About</a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <div class="tool-head">
+      <p class="crumbs"><a href="../index.html">Calculators</a> / Home &amp; loans</p>
+      <h1>Refinance calculator</h1>
+      <p class="lede">A lower rate isn't automatically a win — closing costs and a reset clock can eat it. This shows the break-even month and the honest lifetime difference. Nothing you type leaves this page.</p>
+    </div>
+
+    <form class="calc" id="calc" autocomplete="off" novalidate>
+      <div class="calc-inputs">
+        <div class="field">
+          <label for="balance">Current loan balance</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="balance" type="number" inputmode="decimal" value="320000" min="1000" max="20000000" step="1000"></div>
+          <input type="range" data-pair="balance" min="50000" max="1200000" step="5000" value="320000" aria-label="Current loan balance slider">
+          <p class="err">Enter $1,000 to $20,000,000.</p>
+        </div>
+        <div class="field">
+          <label for="rate">Current interest rate</label>
+          <div class="input-wrap"><input id="rate" type="number" inputmode="decimal" value="6.9" min="0.1" max="25" step="0.125"><span class="affix">%</span></div>
+          <p class="err">Enter 0.1 to 25%.</p>
+        </div>
+        <div class="field">
+          <label for="remyears">Years left on current loan</label>
+          <div class="input-wrap"><input id="remyears" type="number" inputmode="decimal" value="26" min="1" max="40" step="0.5"><span class="affix">yrs</span></div>
+          <p class="err">Enter 1 to 40 years.</p>
+        </div>
+        <div class="field">
+          <label for="newrate">New interest rate</label>
+          <div class="input-wrap"><input id="newrate" type="number" inputmode="decimal" value="5.6" min="0.1" max="25" step="0.125"><span class="affix">%</span></div>
+          <p class="help">Refinancing usually starts making sense around 0.75–1% below your current rate.</p>
+          <p class="err">Enter 0.1 to 25%.</p>
+        </div>
+        <div class="field">
+          <label for="newterm">New loan term</label>
+          <div class="input-wrap">
+            <select id="newterm" aria-label="New loan term">
+              <option value="30" selected>30 years</option>
+              <option value="20">20 years</option>
+              <option value="15">15 years</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="closing">Closing costs</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="closing" type="number" inputmode="decimal" value="6000" min="0" max="200000" step="250"></div>
+          <p class="help">Typically 2–6% of the loan: origination, appraisal, title, recording.</p>
+          <p class="err">Enter $0 to $200,000.</p>
+        </div>
+        <div class="field">
+          <label>Roll closing costs into the new loan?</label>
+          <div class="chips" role="radiogroup" aria-label="Roll in closing costs">
+            <label><input type="radio" name="rollin" value="no" checked>No — pay upfront</label>
+            <label><input type="radio" name="rollin" value="yes">Yes — finance them</label>
+          </div>
+        </div>
+        <div class="calc-actions"><button class="btn-ghost" type="reset" data-reset>Reset to defaults</button></div>
+      </div>
+
+      <div class="calc-results">
+        <div class="hero-figure">
+          <p class="label">Monthly payment change</p>
+          <p class="value" id="r-hero" aria-live="polite">—</p>
+        </div>
+        <p class="interpret" id="r-interpret"></p>
+        <div class="stat-row">
+          <div class="stat"><p class="k">New payment</p><p class="v" id="r-newpay">—</p></div>
+          <div class="stat"><p class="k">Break-even</p><p class="v" id="r-breakeven">—</p></div>
+          <div class="stat"><p class="k">Lifetime difference</p><p class="v" id="r-lifetime">—</p></div>
+          <div class="stat"><p class="k">Keep old payment → paid off in</p><p class="v" id="r-samepay">—</p></div>
+        </div>
+        <div class="chart-block">
+          <p class="chart-title">Total money out the door — staying put vs. refinancing</p>
+          <div class="chart" id="chart-cost"></div>
+        </div>
+        <details class="sched">
+          <summary>Remaining balance by year, old vs. new</summary>
+          <div id="sched-table"></div>
+        </details>
+        <p id="excel-chip"></p>
+      </div>
+    </form>
+
+    <aside class="ad-slot" aria-label="Advertisement">
+      <span class="ad-tag">Advertisement</span>
+      <span class="ad-body">Ad space. A small number of ads like this keep Quiet Zeros free — <a href="../about.html#ads">here's how that works</a>.</span>
+    </aside>
+
+    <article class="prose">
+      <h2>How this is calculated</h2>
+      <p>Both paths are simulated month by month. Staying put means your current payment at your current rate until the balance hits zero. Refinancing means closing costs (upfront, or added to the balance if you roll them in), then the new payment at the new rate.</p>
+      <p><strong>Break-even</strong> is the month the refinance's cumulative cost drops below the old loan's — before it, the refinance is behind; after it, every month is savings. If you might sell or move before break-even, refinancing loses money.</p>
+      <h3>The term-reset trap, and the escape</h3>
+      <p>Refinancing 26 remaining years into a fresh 30-year loan lowers the payment partly by adding four years of payments — the lifetime-difference number accounts for that honestly, which is why a lower payment can still show a negative lifetime result. The escape: refinance to the lower rate but <strong>keep paying your old payment</strong>. The "keep old payment" figure shows how fast the loan dies then — usually years earlier than your current path, with the rate cut doing all the work.</p>
+      <h3>Notes</h3>
+      <p>Assumes fixed rates and no prepayment penalties. Cash-out refinancing, points, and rate-buydown trade-offs aren't modeled. Tax effects of mortgage interest aren't included — with the standard deduction this high, they rarely change the answer.</p>
+    </article>
+
+    <section class="related">
+      <h2>Related tools</h2>
+      <ul class="related-list" id="related-tools"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <p class="disclosure"><strong>Free, and honest about why.</strong> Quiet Zeros is supported by a small number of clearly labeled ads — never inside a calculator, never disguised as content. Your numbers stay on your device.</p>
+        <nav aria-label="Footer">
+          <a href="../index.html">Calculators</a>
+          <a href="../downloads.html">Excel templates</a>
+          <a href="../best-accounts.html">Accounts &amp; cards</a>
+          <a href="../about.html">About</a>
+          <a href="../privacy.html">Privacy</a>
+          <a href="../terms.html">Terms</a>
+        </nav>
+      </div>
+      <p class="fineprint">© <span data-year>2026</span> Quiet Zeros. Results are estimates for planning, not financial advice.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="../assets/js/tools/refinance.js"></script>
+</body>
+</html>

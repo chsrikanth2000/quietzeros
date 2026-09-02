@@ -18,6 +18,24 @@ export const TOOLS = [
     excel: "mortgage-amortization.xlsx",
   },
   {
+    slug: "mortgage-lab",
+    name: "Mortgage Lab",
+    desc: "Stack extra payments, a recast, a refinance and a HELOC on one timeline — see what each move is worth.",
+    cat: "Home & loans",
+  },
+  {
+    slug: "mortgage-payoff",
+    name: "Mortgage payoff planner",
+    desc: "Extra monthly payments, yearly bonuses and lump sums — watch the payoff date move.",
+    cat: "Home & loans",
+  },
+  {
+    slug: "refinance",
+    name: "Refinance calculator",
+    desc: "Break-even on closing costs, honest lifetime difference, and the keep-your-old-payment trick.",
+    cat: "Home & loans",
+  },
+  {
     slug: "loan",
     name: "Loan calculator",
     desc: "Auto, personal or student loans: payment, total interest, and payoff schedule.",

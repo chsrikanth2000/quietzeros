@@ -1,0 +1,8 @@
+name = "qz-comments"
+main = "worker.js"
+compatibility_date = "2026-08-01"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "qz-comments"
+database_id = "149e3201-fc30-4a62-9116-6244fdac5294"

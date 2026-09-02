@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qz-comments.chsrikanth2000.workers.dev https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
+  <title>Mortgage payoff calculator — Quiet Zeros</title>
+  <meta name="description" content="Model extra monthly payments, yearly bonuses and one-time lump sums on your mortgage — see the payoff date move and the interest saved. Private, in-browser.">
+  <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="../assets/css/main.css">
+  <script src="../assets/js/theme.js"></script>
+  <link rel="canonical" href="https://quietzeros.com/tools/mortgage-payoff.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Quiet Zeros">
+  <meta property="og:title" content="Mortgage payoff calculator">
+  <meta property="og:description" content="Model extra monthly payments, yearly bonuses and one-time lump sums on your mortgage — see the payoff date move and the interest saved. Private, in-browser.">
+  <meta property="og:url" content="https://quietzeros.com/tools/mortgage-payoff.html">
+  <meta property="og:image" content="https://quietzeros.com/assets/img/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="theme-color" content="#12523a">
+  <link rel="preload" href="../assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
+  <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"Mortgage payoff calculator","url":"https://quietzeros.com/tools/mortgage-payoff.html","description":"Model extra monthly payments, yearly bonuses and one-time lump sums on your mortgage — see the payoff date move and the interest saved. Private, in-browser.","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5224815108212174" crossorigin="anonymous"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header">
+    <div class="wrap">
+      <a class="wordmark" href="../index.html" aria-label="Quiet Zeros home">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="11" fill="none" stroke="currentColor" stroke-width="1.6"/><ellipse cx="12" cy="12" rx="4.6" ry="6.4" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+        Quiet Zeros
+      </a>
+      <nav class="site-nav" aria-label="Site">
+        <a href="../index.html">Calculators</a>
+        <a href="../downloads.html">Excel templates</a>
+        <a href="../about.html">About</a>
+        <button class="theme-toggle" type="button" aria-label="Toggle dark mode">
+          <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"/></svg>
+          <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2m0 16v2M4.9 4.9l1.4 1.4m11.4 11.4 1.4 1.4M2 12h2m16 0h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main" class="wrap">
+    <div class="tool-head">
+      <p class="crumbs"><a href="../index.html">Calculators</a> / Home &amp; loans</p>
+      <h1>Mortgage payoff planner</h1>
+      <p class="lede">Point extra money at your mortgage — a monthly amount, a yearly bonus, a lump sum in year three — and watch the payoff date move. Nothing you type leaves this page.</p>
+    </div>
+
+    <form class="calc" id="calc" autocomplete="off" novalidate>
+      <div class="calc-inputs">
+        <div class="field">
+          <label for="amount">Original loan amount</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="amount" type="number" inputmode="decimal" value="380000" min="1000" max="20000000" step="1000"></div>
+          <input type="range" data-pair="amount" min="50000" max="1500000" step="5000" value="380000" aria-label="Original loan amount slider">
+          <p class="err">Enter $1,000 to $20,000,000.</p>
+        </div>
+        <div class="field">
+          <label for="rate">Interest rate (APR)</label>
+          <div class="input-wrap"><input id="rate" type="number" inputmode="decimal" value="6.5" min="0" max="25" step="0.125"><span class="affix">%</span></div>
+          <p class="err">Enter 0 to 25%.</p>
+        </div>
+        <div class="field">
+          <label for="term">Loan term</label>
+          <div class="input-wrap">
+            <select id="term" aria-label="Loan term">
+              <option value="30" selected>30 years</option>
+              <option value="20">20 years</option>
+              <option value="15">15 years</option>
+              <option value="10">10 years</option>
+            </select>
+          </div>
+        </div>
+        <div class="field">
+          <label for="paid">Years already paid</label>
+          <div class="input-wrap"><input id="paid" type="number" inputmode="decimal" value="0" min="0" max="39" step="0.5"><span class="affix">yrs</span></div>
+          <p class="help">Zero for a new loan. We compute today's balance from this.</p>
+          <p class="err">Enter 0 to 39 years.</p>
+        </div>
+        <div class="field">
+          <label for="extra">Extra every month</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="extra" type="number" inputmode="decimal" value="200" min="0" max="100000" step="25"></div>
+          <input type="range" data-pair="extra" min="0" max="2000" step="25" value="200" aria-label="Extra every month slider">
+        </div>
+        <div class="field">
+          <label for="extrayr">Extra once a year (bonus, tax refund)</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="extrayr" type="number" inputmode="decimal" value="0" min="0" max="1000000" step="100"></div>
+        </div>
+        <div class="field">
+          <label for="lump1">One-time lump sum</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="lump1" type="number" inputmode="decimal" value="0" min="0" max="10000000" step="500"></div>
+        </div>
+        <div class="field">
+          <label for="lump1yr">… paid in year</label>
+          <div class="input-wrap"><input id="lump1yr" type="number" inputmode="decimal" value="2" min="1" max="40" step="1"><span class="affix">yr</span></div>
+        </div>
+        <div class="field">
+          <label for="lump2">Second lump sum</label>
+          <div class="input-wrap"><span class="affix">$</span><input id="lump2" type="number" inputmode="decimal" value="0" min="0" max="10000000" step="500"></div>
+        </div>
+        <div class="field">
+          <label for="lump2yr">… paid in year</label>
+          <div class="input-wrap"><input id="lump2yr" type="number" inputmode="decimal" value="5" min="1" max="40" step="1"><span class="affix">yr</span></div>
+        </div>
+        <div class="calc-actions"><button class="btn-ghost" type="reset" data-reset>Reset to defaults</button></div>
+      </div>
+
+      <div class="calc-results">
+        <div class="hero-figure">
+          <p class="label">Paid off in</p>
+          <p class="value" id="r-hero" aria-live="polite">—</p>
+        </div>
+        <p class="interpret" id="r-interpret"></p>
+        <div class="stat-row">
+          <div class="stat"><p class="k">Interest saved</p><p class="v" id="r-saved">—</p></div>
+          <div class="stat"><p class="k">Sooner by</p><p class="v" id="r-sooner">—</p></div>
+          <div class="stat"><p class="k">Interest with this plan</p><p class="v" id="r-interest">—</p></div>
+        </div>
+        <div class="chart-block">
+          <p class="chart-title">Balance over time — your plan vs. minimum payments</p>
+          <div class="chart" id="chart-balance"></div>
+        </div>
+        <div class="chart-block">
+          <p class="chart-title">What different monthly extras would do</p>
+          <div id="cmp-table"></div>
+        </div>
+        <details class="sched">
+          <summary>Balance by year (with your plan)</summary>
+          <div id="sched-table"></div>
+        </details>
+        <p id="excel-chip"></p>
+      </div>
+    </form>
+
+    <aside class="ad-slot" aria-label="Advertisement">
+      <span class="ad-tag">Advertisement</span>
+      <span class="ad-body">Ad space. A small number of ads like this keep Quiet Zeros free — <a href="../about.html#ads">here's how that works</a>.</span>
+    </aside>
+
+    <article class="prose">
+      <h2>How this is calculated</h2>
+      <p>The simulator runs your loan month by month: interest accrues on the balance, your payment lands, and any extras — the monthly amount, the once-a-year bonus, the lump sums in the years you chose — go straight to principal.</p>
+      <p class="formula">new balance = balance × (1 + rate/12) − payment − extras due that month</p>
+      <h3>Why extras punch above their weight</h3>
+      <p>A dollar of principal paid today stops accruing interest for every remaining month of the loan. Early extras are therefore worth far more than late ones — a $10,000 lump sum in year 2 typically saves several times what the same sum saves in year 20.</p>
+      <h3>Extra payments or refinance?</h3>
+      <p>Extra payments shorten the loan at your current rate; refinancing replaces the rate itself. If rates have dropped meaningfully since you closed, run the <a href="refinance.html">refinance calculator</a> — and note that the two combine well: refinance to a lower rate, keep paying your old payment, and the loan collapses years early.</p>
+      <h3>Notes</h3>
+      <p>Assumes a fixed rate and no prepayment penalty (rare on US mortgages, but check). Escrowed taxes and insurance continue regardless — this models the loan itself.</p>
+    </article>
+
+    <section class="related">
+      <h2>Related tools</h2>
+      <ul class="related-list" id="related-tools"></ul>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap">
+      <div class="cols">
+        <p class="disclosure"><strong>Free, and honest about why.</strong> Quiet Zeros is supported by a small number of clearly labeled ads — never inside a calculator, never disguised as content. Your numbers stay on your device.</p>
+        <nav aria-label="Footer">
+          <a href="../index.html">Calculators</a>
+          <a href="../downloads.html">Excel templates</a>
+          <a href="../best-accounts.html">Accounts &amp; cards</a>
+          <a href="../about.html">About</a>
+          <a href="../privacy.html">Privacy</a>
+          <a href="../terms.html">Terms</a>
+        </nav>
+      </div>
+      <p class="fineprint">© <span data-year>2026</span> Quiet Zeros. Results are estimates for planning, not financial advice.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="../assets/js/tools/mortgage-payoff.js"></script>
+</body>
+</html>

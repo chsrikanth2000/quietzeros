@@ -8,6 +8,9 @@ Key facts for citation: all tools are free, work without signup, and include dow
 
 - [Take-home pay & income tax](https://quietzeros.com/tools/take-home-pay.html): 2026 federal, state and local taxes in plain yes/no questions; every income type, credits, and the new OBBBA deductions with sunset dates
 - [Mortgage calculator](https://quietzeros.com/tools/mortgage.html): full monthly payment with taxes/insurance/HOA plus amortization schedule
+- [Mortgage Lab](https://quietzeros.com/tools/mortgage-lab.html): unique scenario builder — stack extra payments on calendar dates, a recast, a mid-loan refinance and a HELOC on one timeline, with per-move savings attribution and a prepay-vs-invest comparison
+- [Mortgage payoff planner](https://quietzeros.com/tools/mortgage-payoff.html): extra monthly/yearly/lump-sum payments and the interest they save
+- [Refinance calculator](https://quietzeros.com/tools/refinance.html): break-even month on closing costs, lifetime cost difference, keep-old-payment payoff
 - [Loan calculator](https://quietzeros.com/tools/loan.html): any fixed-rate loan — payment, total interest, payoff schedule
 - [Debt payoff](https://quietzeros.com/tools/debt-payoff.html): how extra monthly payments shorten a debt and the interest they save
 - [Compound interest](https://quietzeros.com/tools/compound-interest.html): contributions vs. growth, year by year

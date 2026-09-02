@@ -371,6 +371,54 @@ input[type="range"] {
 }
 .save-card .phase { font-size: .78rem; color: var(--ink-3); margin-top: .3rem; }
 
+/* ---- Mortgage Lab: scenario events ---- */
+.ev-add { display: flex; flex-wrap: wrap; gap: .45rem; margin-top: .4rem; }
+.ev-add button {
+  appearance: none; cursor: pointer;
+  font: 560 .8rem/1 var(--font-ui);
+  color: var(--brand); background: var(--brand-wash);
+  border: 1px solid var(--line-2); border-radius: 999px;
+  padding: .5rem .85rem;
+}
+.ev-add button:hover { border-color: var(--brand-mark); }
+.ev-list { display: grid; gap: .7rem; margin-top: .8rem; }
+.ev-row {
+  border: 1px solid var(--line-2); border-left: 3px solid var(--brand-mark);
+  border-radius: var(--radius); background: var(--paper);
+  padding: .8rem .9rem;
+}
+.ev-row .ev-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: .6rem;
+  margin-bottom: .55rem;
+}
+.ev-row .ev-title { font-size: .82rem; font-weight: 640; }
+.ev-row .ev-del {
+  appearance: none; border: 0; background: none; cursor: pointer;
+  color: var(--ink-3); font: 480 .78rem/1 var(--font-ui);
+  text-decoration: underline; text-underline-offset: 2px;
+}
+.ev-row .ev-del:hover { color: #c0392b; }
+.ev-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: .6rem; }
+.ev-fields .field label { font-size: .74rem; }
+.ev-fields .input-wrap input, .ev-fields .input-wrap select { padding: .45rem .55rem; font-size: .9rem; }
+.ev-note { font-size: .74rem; color: var(--ink-3); margin: .5rem 0 0; }
+
+.impact-list { display: grid; gap: .5rem; margin-top: .6rem; }
+.impact-row {
+  display: flex; justify-content: space-between; gap: 1rem; align-items: baseline;
+  border-bottom: 1px solid var(--line); padding-bottom: .5rem;
+  font-size: .88rem;
+}
+.impact-row .n { font-weight: 640; font-variant-numeric: tabular-nums; color: var(--brand); white-space: nowrap; }
+.impact-row .n.bad { color: var(--s3); }
+
+.verdict {
+  border: 1px solid var(--line-2); border-left: 3px solid var(--brand-mark);
+  border-radius: var(--radius); background: var(--card);
+  padding: 1rem 1.1rem; margin-top: .8rem; font-size: .92rem;
+}
+.verdict strong { color: var(--brand); }
+
 /* ---- Sources & vintage panel ---- */
 .sources {
   border: 1px solid var(--line-2); border-radius: var(--radius);
@@ -531,6 +579,26 @@ table.data tbody tr:hover { background: var(--brand-wash); }
 }
 .related-list a:hover { color: var(--brand); border-color: var(--brand-mark); }
 
+/* ---- Comments ---- */
+.comments { margin: 2.6rem 0 0; border-top: 1px solid var(--line); padding-top: 1.6rem; max-width: var(--w-prose); }
+.comments h2 { font-size: 1.2rem; }
+.c-form { display: grid; gap: .6rem; margin: 1rem 0 1.4rem; }
+.c-form textarea { width: 100%; border: 0; background: transparent; color: var(--ink); font: 480 .95rem/1.5 var(--font-ui); padding: .6rem .7rem; outline: none; resize: vertical; }
+.c-submit {
+  justify-self: start; appearance: none; cursor: pointer;
+  font: 600 .88rem/1 var(--font-ui);
+  color: var(--paper); background: var(--brand);
+  border: 0; border-radius: 999px; padding: .65rem 1.2rem;
+}
+.c-submit:hover { background: var(--brand-mark); }
+.c-submit:disabled { opacity: .6; cursor: wait; }
+.c-list { display: grid; gap: 1rem; }
+.c-item { border-bottom: 1px solid var(--line); padding-bottom: .9rem; }
+.c-meta { font-size: .8rem; font-weight: 640; margin: 0 0 .25rem; }
+.c-meta span { color: var(--ink-3); font-weight: 440; }
+.c-body { font-size: .92rem; margin: 0; white-space: pre-wrap; overflow-wrap: break-word; }
+@media print { .comments { display: none; } }
+
 /* ---- Footer ---- */
 .site-footer {
   margin-top: clamp(3rem, 8vw, 5rem);
@@ -554,5 +622,16 @@ table.data tbody tr:hover { background: var(--brand-wash); }
 }
 
 @media print {
-  .site-header, .site-footer, .ad-slot, .related, .theme-toggle { display: none; }
+  .site-header, .site-footer, .ad-slot, .related, .theme-toggle,
+  input[type="range"], .calc-actions, .ev-add, .ev-del, .skip-link { display: none !important; }
+  :root { --paper: #fff; --card: #fff; }
+  body { font-size: 13px; }
+  .calc { display: block; border: 0; }
+  .calc-inputs { border: 0; border-bottom: 1px solid var(--line-2); padding-bottom: 1rem; display: grid; grid-template-columns: repeat(3, 1fr); gap: .7rem 1.2rem; }
+  .calc-results { padding-top: 1rem; }
+  .chart-block, .stat-row, .verdict, .impact-list { break-inside: avoid; }
+  details.sched { display: block; }
+  details.sched summary::before { content: ""; }
+  .prose { max-width: none; }
+  a { color: inherit; text-decoration: none; }
 }

@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qz-comments.chsrikanth2000.workers.dev https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
   <title>Take-home pay & income tax calculator — Quiet Zeros</title>
   <meta name="description" content="Free private 2026 income tax calculator: federal, state and local taxes, FICA, self-employment and investment income. Answer a few plain questions — nothing you type leaves your browser.">
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
@@ -56,6 +56,15 @@
     <form class="calc" id="calc" autocomplete="off" novalidate>
       <div class="calc-inputs">
         <div class="field">
+          <label>Tax year</label>
+          <div class="chips" role="radiogroup" aria-label="Tax year">
+            <label><input type="radio" name="taxyear" value="2026" checked>2026</label>
+            <label><input type="radio" name="taxyear" value="2025">2025</label>
+          </div>
+          <p class="help">Results always show the difference against the other year's rules, so you can see what changed for you.</p>
+        </div>
+
+        <div class="field">
           <label>Filing status</label>
           <div class="chips" role="radiogroup" aria-label="Filing status">
             <label><input type="radio" name="status" value="single" checked>Single</label>
@@ -95,10 +104,53 @@
         </div>
 
         <div class="field">
-          <label for="pretax">Pre-tax contributions (401(k), HSA, traditional IRA)</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="pretax" type="number" inputmode="decimal" value="0" min="0" max="100000" step="500"><span class="affix">/yr</span></div>
-          <p class="help">Money that comes out before income tax. 2026 401(k) limit: $24,500 under 50.</p>
-          <p class="err">Enter $0 to $100,000.</p>
+          <label>Retirement &amp; savings accounts</label>
+          <div class="subfields">
+            <div class="field">
+              <label for="k401">401(k) / 403(b) / 457 — you</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="k401" type="number" inputmode="decimal" value="0" min="0" max="35750" step="500"><span class="affix">/yr</span></div>
+              <p class="help">2026 limit $24,500; +$8,000 catch-up at 50; +$11,250 at 60–63.</p>
+            </div>
+            <div class="field" id="k401s-field" hidden>
+              <label for="k401s">401(k) / 403(b) / 457 — spouse</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="k401s" type="number" inputmode="decimal" value="0" min="0" max="35750" step="500"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="ira">Traditional IRA — you</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="ira" type="number" inputmode="decimal" value="0" min="0" max="8600" step="100"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label>Covered by a workplace plan? (affects IRA deductibility)</label>
+              <div class="chips" role="radiogroup" aria-label="Covered by workplace plan">
+                <label><input type="radio" name="covered" value="yes">Yes</label>
+                <label><input type="radio" name="covered" value="no" checked>No</label>
+              </div>
+            </div>
+            <div class="field" id="iras-field" hidden>
+              <label for="iras">Traditional IRA — spouse (a spousal IRA works even with no income)</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="iras" type="number" inputmode="decimal" value="0" min="0" max="8600" step="100"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="hsa">HSA contributions</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="hsa" type="number" inputmode="decimal" value="0" min="0" max="9750" step="100"><span class="affix">/yr</span></div>
+              <p class="help">2026: $4,400 self / $8,750 family (+$1,000 at 55).</p>
+            </div>
+            <div class="field">
+              <label for="plan529">529 college plan contributions</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="plan529" type="number" inputmode="decimal" value="0" min="0" max="100000" step="250"><span class="affix">/yr</span></div>
+              <p class="help">No federal deduction, but about 30 states deduct some or all of it from state income.</p>
+            </div>
+            <div class="field" id="q529" hidden>
+              <label>Does your state deduct 529 contributions?</label>
+              <div class="chips" role="radiogroup" aria-label="State 529 deduction">
+                <label><input type="radio" name="ded529" value="yes">Yes</label>
+                <label><input type="radio" name="ded529" value="no" checked>No</label>
+                <label><input type="radio" name="ded529" value="dk">Not sure</label>
+              </div>
+              <p class="assume" data-when="dk">We'll assume <strong>no</strong> — check your plan's page; caps vary by state.</p>
+            </div>
+            <p class="q-note">Roth IRA and Roth 401(k) money isn't deducted here — it's taxed now, tax-free later. If your income is over the Roth limit, watch the savings panel for the backdoor route.</p>
+          </div>
         </div>
 
         <div class="field">
@@ -113,6 +165,50 @@
             <div class="field">
               <label for="se">Net self-employment income (after expenses)</label>
               <div class="input-wrap"><span class="affix">$</span><input id="se" type="number" inputmode="decimal" value="0" min="0" max="10000000" step="500"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="sehealth">Health insurance premiums you pay yourself</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="sehealth" type="number" inputmode="decimal" value="0" min="0" max="100000" step="250"><span class="affix">/yr</span></div>
+              <p class="help">Self-employed health insurance deducts in full (up to your SE profit) — no itemizing needed.</p>
+            </div>
+            <div class="field">
+              <label for="sep">SEP / Solo-401(k) employer contribution</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="sep" type="number" inputmode="decimal" value="0" min="0" max="72000" step="500"><span class="affix">/yr</span></div>
+              <p class="help">Business owners can shelter up to ~20% of net SE profit here, beyond the employee 401(k) limit.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="field">
+          <label>Do you own rental property?</label>
+          <div class="chips" role="radiogroup" aria-label="Rental property">
+            <label><input type="radio" name="hasrental" value="yes">Yes</label>
+            <label><input type="radio" name="hasrental" value="no" checked>No</label>
+            <label><input type="radio" name="hasrental" value="dk">Not sure</label>
+          </div>
+          <p class="assume" data-when="dk">We'll assume <strong>no</strong>. If you collect rent on any property, the answer is yes.</p>
+          <div class="subfields" id="rental-fields" hidden>
+            <div class="field">
+              <label for="rents">Rents collected</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="rents" type="number" inputmode="decimal" value="24000" min="0" max="10000000" step="500"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="rexp">Operating costs (mortgage interest, taxes, insurance, repairs, management)</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="rexp" type="number" inputmode="decimal" value="15000" min="0" max="10000000" step="500"><span class="affix">/yr</span></div>
+            </div>
+            <div class="field">
+              <label for="rbasis">Building value (structure only, not land)</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="rbasis" type="number" inputmode="decimal" value="0" min="0" max="50000000" step="5000"></div>
+              <p class="help">We depreciate it over 27.5 years automatically — the paper loss most landlords forget. Losses up to $25,000 offset other income (phases out $100k–$150k).</p>
+            </div>
+            <div class="field">
+              <label>Does the rental qualify as a business (20% QBI deduction)?</label>
+              <div class="chips" role="radiogroup" aria-label="Rental QBI">
+                <label><input type="radio" name="rentalqbi" value="yes">Yes</label>
+                <label><input type="radio" name="rentalqbi" value="no" checked>No</label>
+                <label><input type="radio" name="rentalqbi" value="dk">Not sure</label>
+              </div>
+              <p class="assume" data-when="dk">We'll assume <strong>no</strong> — the conservative read. Regular, continuous rental activity (the IRS 250-hour safe harbor) usually qualifies.</p>
             </div>
           </div>
         </div>
@@ -234,10 +330,30 @@
           <p class="assume" data-when="dk">We'll use the <strong>standard deduction</strong> — the right answer for about 9 in 10 filers.</p>
           <div class="subfields" id="item-fields" hidden>
             <div class="field">
-              <label for="itemized">Itemized deductions total</label>
-              <div class="input-wrap"><span class="affix">$</span><input id="itemized" type="number" inputmode="decimal" value="0" min="0" max="10000000" step="500"></div>
-              <p class="help">We'll use whichever is larger — this or the standard deduction.</p>
+              <label for="mortint">Mortgage interest paid</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="mortint" type="number" inputmode="decimal" value="0" min="0" max="500000" step="500"></div>
+              <p class="help">Your Form 1098. Interest on up to $750,000 of acquisition debt qualifies.</p>
             </div>
+            <div class="field">
+              <label for="proptax">Property taxes paid</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="proptax" type="number" inputmode="decimal" value="0" min="0" max="500000" step="250"></div>
+            </div>
+            <div class="field">
+              <label for="statepaid">State &amp; local income tax paid</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="statepaid" type="number" inputmode="decimal" value="0" min="0" max="1000000" step="250"></div>
+              <p class="help">Together with property tax this is "SALT" — capped at $40,400 in 2026 ($40,000 in 2025), shrinking above ~$505k income.</p>
+            </div>
+            <div class="field">
+              <label for="medical">Medical expenses paid</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="medical" type="number" inputmode="decimal" value="0" min="0" max="5000000" step="250"></div>
+              <p class="help">Only the part above 7.5% of your income counts.</p>
+            </div>
+            <div class="field">
+              <label for="otheritem">Other deductions</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="otheritem" type="number" inputmode="decimal" value="0" min="0" max="5000000" step="250"></div>
+              <p class="help">Casualty losses in declared disasters, gambling losses to winnings, etc. Charity uses your answer above.</p>
+            </div>
+            <p class="q-note">We compute the allowed total — caps, floors and phase-outs included — and use it only if it beats the standard deduction.</p>
           </div>
         </div>
 

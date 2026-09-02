@@ -4,10 +4,12 @@
 
 import { $, el, initChrome } from "./core.js";
 import { TOOLS } from "./registry.js";
+import { initComments } from "./comments.js";
 
 export function initToolPage(slug) {
   initChrome();
   const me = TOOLS.find((t) => t.slug === slug);
+  initComments(slug);
 
   const rel = $("#related-tools");
   if (rel) {

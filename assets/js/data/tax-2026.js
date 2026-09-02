@@ -99,6 +99,48 @@ export const STATES = {
   WY: { name: "Wyoming", t: "n" },
 };
 
+/* TAX YEAR 2025 federal parameters — Rev. Proc. 2024-40 as amended by OBBBA
+   (which retroactively raised the 2025 standard deduction and set the $2,200 CTC).
+   Used for the past-vs-present comparison; same structure as FED. */
+export const FED2025 = {
+  brackets: {
+    single: [[10, 0], [12, 11925], [22, 48475], [24, 103350], [32, 197300], [35, 250525], [37, 626350]],
+    mfj:    [[10, 0], [12, 23850], [22, 96950], [24, 206700], [32, 394600], [35, 501050], [37, 751600]],
+    mfs:    [[10, 0], [12, 11925], [22, 48475], [24, 103350], [32, 197300], [35, 250525], [37, 375800]],
+    hoh:    [[10, 0], [12, 17000], [22, 64850], [24, 103350], [32, 197300], [35, 250500], [37, 626350]],
+  },
+  standardDeduction: { single: 15750, mfj: 31500, mfs: 15750, hoh: 23625 },
+  extra65: { married: 1600, unmarried: 2000 },
+  seniorBonus: { amount: 6000, phaseoutStart: { single: 75000, mfs: 75000, hoh: 75000, mfj: 150000 }, phaseoutRate: 0.06 },
+  ltcg: {
+    zeroMax:    { single: 48350, mfj: 96700, mfs: 48350, hoh: 64750 },
+    fifteenMax: { single: 533400, mfj: 600050, mfs: 300000, hoh: 566700 },
+  },
+  fica: {
+    ssWageBase: 176100, ssRate: 6.2, medicareRate: 1.45,
+    addlMedicareRate: 0.9,
+    addlMedicareThreshold: { single: 200000, hoh: 200000, mfj: 250000, mfs: 125000 },
+  },
+  se: { factor: 0.9235, ssRate: 12.4, medicareRate: 2.9 },
+  ctc: { perChild: 2200, phaseoutStart: { mfj: 400000, single: 200000, mfs: 200000, hoh: 200000 }, per1000: 50 },
+  niit: { rate: 3.8, threshold: { single: 200000, hoh: 200000, mfj: 250000, mfs: 125000 } },
+};
+
+/* Itemized-deduction machinery (per year where it differs). */
+export const ITEMIZED = {
+  2026: { saltCap: 40400, saltPhaseStart: 505000, saltFloor: 10000, saltPhaseRate: 0.30,
+          charityAGIFloor: 0.005, charityCashCapAGI: 0.60, medicalFloorAGI: 0.075 },
+  2025: { saltCap: 40000, saltPhaseStart: 500000, saltFloor: 10000, saltPhaseRate: 0.30,
+          charityAGIFloor: 0, charityCashCapAGI: 0.60, medicalFloorAGI: 0.075 },
+};
+
+/* Rental (Schedule E): the active-participation loss allowance. */
+export const RENTAL = { lossAllowanceMax: 25000, phaseStart: 100000, phaseEnd: 150000 };
+
+/* QBI thresholds for 2025 (2026 lives in SAVE.qbi). */
+export const QBI2025 = { threshold: { single: 197300, hoh: 197300, mfs: 197300, mfj: 394600 },
+                         phaseEnd: { single: 272300, hoh: 272300, mfs: 272300, mfj: 544600 } };
+
 /* Savings provisions for 2026 — IRS Notice 2025-67 (retirement),
    Rev. Proc. 2025-19 (HSA), OBBBA P.L. 119-21 (new deductions; caps not indexed).
    sunset: last tax year the provision exists (null = permanent). */
@@ -114,6 +156,13 @@ export const SAVE = {
     ira: 7500, iraCatchup50: 1100,
     solo401kSepTotal: 72000,
     saversCredit: { ceiling: { mfj: 80500, hoh: 60375, single: 40250, mfs: 40250 }, maxContribution: 2000 },
+    // Traditional-IRA deductibility MAGI phase-outs (2026)
+    tradIRAPhase: {
+      coveredSelf: { single: [81000, 91000], hoh: [81000, 91000], mfj: [129000, 149000], mfs: [0, 10000] },
+      spouseCovered: [242000, 252000], // you not covered, spouse is (MFJ)
+    },
+    // Roth-IRA contribution MAGI phase-outs (2026) — past these, the backdoor is the route
+    rothPhase: { single: [153000, 168000], hoh: [153000, 168000], mfj: [242000, 252000], mfs: [0, 10000] },
   },
   hsa: { self: 4400, family: 8750, catchup55: 1000 },
   depCareFSA: { limit: 7500, mfs: 3750 },

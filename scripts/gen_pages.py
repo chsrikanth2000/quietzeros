@@ -13,7 +13,7 @@ SHELL = """<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; base-uri 'none'; form-action 'none'">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self' https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep2.adtrafficquality.google https://fundingchoicesmessages.google.com https://www.googletagservices.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self' https://qz-comments.chsrikanth2000.workers.dev https://challenges.cloudflare.com https://pagead2.googlesyndication.com https://ep1.adtrafficquality.google https://csi.gstatic.com https://fundingchoicesmessages.google.com; frame-src https://challenges.cloudflare.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://ep2.adtrafficquality.google https://www.google.com https://fundingchoicesmessages.google.com; base-uri 'none'; form-action 'none'">
   <title>__TITLE__ — Quiet Zeros</title>
   <meta name="description" content="__DESC__">
   <link rel="icon" href="../assets/img/favicon.svg" type="image/svg+xml">
@@ -33,6 +33,7 @@ SHELL = """<!doctype html>
   <link rel="preload" href="../assets/fonts/fraunces-var.woff2" as="font" type="font/woff2" crossorigin>
   <link rel="preload" href="../assets/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin>
   <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"__TITLE__","url":"https://quietzeros.com/tools/__SLUG__.html","description":"__DESC__","applicationCategory":"FinanceApplication","operatingSystem":"Any","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-5224815108212174" crossorigin="anonymous"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -382,6 +383,118 @@ TOOLS = [
       <p>Per-person amounts round up to the cent, so the group never comes up short — at worst the server gets a few extra cents.</p>
       <h3>Tip on pre-tax or post-tax?</h3>
       <p>Convention (and most etiquette guides) says the pre-tax subtotal, but tipping on the post-tax total is common and slightly more generous. If you want pre-tax, just type the subtotal as the bill.</p>""",
+    ),
+]
+
+
+TOOLS += [
+    # ------------------------------------------------- mortgage-payoff
+    dict(
+        slug="mortgage-payoff",
+        title="Mortgage payoff calculator",
+        desc="Model extra monthly payments, yearly bonuses and one-time lump sums on your mortgage — see the payoff date move and the interest saved. Private, in-browser.",
+        cat="Home &amp; loans",
+        h1="Mortgage payoff planner",
+        lede="Point extra money at your mortgage — a monthly amount, a yearly bonus, a lump sum in year three — and watch the payoff date move. Nothing you type leaves this page.",
+        form="\n".join([
+            field("amount", "Original loan amount", prefix="$", value="380000", fmin="1000", fmax="20000000", step="1000",
+                  slider=("50000", "1500000", "5000"), err="Enter $1,000 to $20,000,000."),
+            field("rate", "Interest rate (APR)", suffix="%", value="6.5", fmin="0", fmax="25", step="0.125",
+                  err="Enter 0 to 25%."),
+            '''        <div class="field">
+          <label for="term">Loan term</label>
+          <div class="input-wrap">
+            <select id="term" aria-label="Loan term">
+              <option value="30" selected>30 years</option>
+              <option value="20">20 years</option>
+              <option value="15">15 years</option>
+              <option value="10">10 years</option>
+            </select>
+          </div>
+        </div>''',
+            field("paid", "Years already paid", suffix="yrs", value="0", fmin="0", fmax="39", step="0.5",
+                  help_="Zero for a new loan. We compute today's balance from this.",
+                  err="Enter 0 to 39 years."),
+            field("extra", "Extra every month", prefix="$", value="200", fmin="0", fmax="100000", step="25",
+                  slider=("0", "2000", "25")),
+            field("extrayr", "Extra once a year (bonus, tax refund)", prefix="$", value="0", fmin="0", fmax="1000000", step="100"),
+            field("lump1", "One-time lump sum", prefix="$", value="0", fmin="0", fmax="10000000", step="500"),
+            field("lump1yr", "… paid in year", suffix="yr", value="2", fmin="1", fmax="40", step="1"),
+            field("lump2", "Second lump sum", prefix="$", value="0", fmin="0", fmax="10000000", step="500"),
+            field("lump2yr", "… paid in year", suffix="yr", value="5", fmin="1", fmax="40", step="1"),
+        ]),
+        results="\n".join([
+            hero("Paid off in"),
+            stats(("Interest saved", "r-saved"), ("Sooner by", "r-sooner"), ("Interest with this plan", "r-interest")),
+            chart("chart-balance", "Balance over time — your plan vs. minimum payments"),
+            '''        <div class="chart-block">
+          <p class="chart-title">What different monthly extras would do</p>
+          <div id="cmp-table"></div>
+        </div>''',
+            sched("Balance by year (with your plan)"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>The simulator runs your loan month by month: interest accrues on the balance, your payment lands, and any extras — the monthly amount, the once-a-year bonus, the lump sums in the years you chose — go straight to principal.</p>
+      <p class="formula">new balance = balance × (1 + rate/12) − payment − extras due that month</p>
+      <h3>Why extras punch above their weight</h3>
+      <p>A dollar of principal paid today stops accruing interest for every remaining month of the loan. Early extras are therefore worth far more than late ones — a $10,000 lump sum in year 2 typically saves several times what the same sum saves in year 20.</p>
+      <h3>Extra payments or refinance?</h3>
+      <p>Extra payments shorten the loan at your current rate; refinancing replaces the rate itself. If rates have dropped meaningfully since you closed, run the <a href="refinance.html">refinance calculator</a> — and note that the two combine well: refinance to a lower rate, keep paying your old payment, and the loan collapses years early.</p>
+      <h3>Notes</h3>
+      <p>Assumes a fixed rate and no prepayment penalty (rare on US mortgages, but check). Escrowed taxes and insurance continue regardless — this models the loan itself.</p>""",
+    ),
+    # ------------------------------------------------------ refinance
+    dict(
+        slug="refinance",
+        title="Refinance calculator",
+        desc="Should you refinance? Break-even month on closing costs, new payment, lifetime cost difference, and the keep-your-old-payment shortcut — computed privately in your browser.",
+        cat="Home &amp; loans",
+        h1="Refinance calculator",
+        lede="A lower rate isn't automatically a win — closing costs and a reset clock can eat it. This shows the break-even month and the honest lifetime difference. Nothing you type leaves this page.",
+        form="\n".join([
+            field("balance", "Current loan balance", prefix="$", value="320000", fmin="1000", fmax="20000000", step="1000",
+                  slider=("50000", "1200000", "5000"), err="Enter $1,000 to $20,000,000."),
+            field("rate", "Current interest rate", suffix="%", value="6.9", fmin="0.1", fmax="25", step="0.125",
+                  err="Enter 0.1 to 25%."),
+            field("remyears", "Years left on current loan", suffix="yrs", value="26", fmin="1", fmax="40", step="0.5",
+                  err="Enter 1 to 40 years."),
+            field("newrate", "New interest rate", suffix="%", value="5.6", fmin="0.1", fmax="25", step="0.125",
+                  help_="Refinancing usually starts making sense around 0.75–1% below your current rate.",
+                  err="Enter 0.1 to 25%."),
+            '''        <div class="field">
+          <label for="newterm">New loan term</label>
+          <div class="input-wrap">
+            <select id="newterm" aria-label="New loan term">
+              <option value="30" selected>30 years</option>
+              <option value="20">20 years</option>
+              <option value="15">15 years</option>
+            </select>
+          </div>
+        </div>''',
+            field("closing", "Closing costs", prefix="$", value="6000", fmin="0", fmax="200000", step="250",
+                  help_="Typically 2–6% of the loan: origination, appraisal, title, recording.",
+                  err="Enter $0 to $200,000."),
+            '''        <div class="field">
+          <label>Roll closing costs into the new loan?</label>
+          <div class="chips" role="radiogroup" aria-label="Roll in closing costs">
+            <label><input type="radio" name="rollin" value="no" checked>No — pay upfront</label>
+            <label><input type="radio" name="rollin" value="yes">Yes — finance them</label>
+          </div>
+        </div>''',
+        ]),
+        results="\n".join([
+            hero("Monthly payment change"),
+            stats(("New payment", "r-newpay"), ("Break-even", "r-breakeven"), ("Lifetime difference", "r-lifetime"), ("Keep old payment → paid off in", "r-samepay")),
+            chart("chart-cost", "Total money out the door — staying put vs. refinancing"),
+            sched("Remaining balance by year, old vs. new"),
+        ]),
+        prose="""      <h2>How this is calculated</h2>
+      <p>Both paths are simulated month by month. Staying put means your current payment at your current rate until the balance hits zero. Refinancing means closing costs (upfront, or added to the balance if you roll them in), then the new payment at the new rate.</p>
+      <p><strong>Break-even</strong> is the month the refinance's cumulative cost drops below the old loan's — before it, the refinance is behind; after it, every month is savings. If you might sell or move before break-even, refinancing loses money.</p>
+      <h3>The term-reset trap, and the escape</h3>
+      <p>Refinancing 26 remaining years into a fresh 30-year loan lowers the payment partly by adding four years of payments — the lifetime-difference number accounts for that honestly, which is why a lower payment can still show a negative lifetime result. The escape: refinance to the lower rate but <strong>keep paying your old payment</strong>. The "keep old payment" figure shows how fast the loan dies then — usually years earlier than your current path, with the rate cut doing all the work.</p>
+      <h3>Notes</h3>
+      <p>Assumes fixed rates and no prepayment penalties. Cash-out refinancing, points, and rate-buydown trade-offs aren't modeled. Tax effects of mortgage interest aren't included — with the standard deduction this high, they rarely change the answer.</p>""",
     ),
 ]
 

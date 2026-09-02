@@ -120,6 +120,10 @@ export function initChrome() {
   });
   const yearEl = $("[data-year]");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
+  // printed reports should include collapsed schedules
+  window.addEventListener("beforeprint", () => {
+    for (const d of document.querySelectorAll("details")) d.setAttribute("open", "");
+  });
 }
 
 /* ---- Amortization math (shared by several tools) ---- */
@@ -129,6 +133,33 @@ export function pmt(P, annualRatePct, months) {
   if (months <= 0) return 0;
   if (i === 0) return P / months;
   return P * (i / (1 - Math.pow(1 + i, -months)));
+}
+
+/** Flexible month-by-month loan simulation.
+    opts: { extraMonthly, extraYearly (applied every 12th month),
+            lumps: [{ month, amount }] (one-time principal payments) }
+    Returns { months, totalInterest, balances } — balances[m] = balance after month m. */
+export function simulateLoan(balance, annualRatePct, basePayment, opts = {}) {
+  const i = annualRatePct / 100 / 12;
+  const extraM = opts.extraMonthly || 0;
+  const extraY = opts.extraYearly || 0;
+  const lumps = opts.lumps || [];
+  let bal = balance, m = 0, totalInterest = 0;
+  const balances = [balance];
+  const cap = 12 * 100;
+  if (basePayment + extraM <= balance * i && extraY <= 0 && !lumps.length) return null;
+  while (bal > 0.005 && m < cap) {
+    m++;
+    const interest = bal * i;
+    totalInterest += interest;
+    let pay = basePayment + extraM;
+    if (m % 12 === 0) pay += extraY;
+    for (const l of lumps) if (l.month === m) pay += l.amount;
+    bal = Math.max(0, bal + interest - pay);
+    balances.push(bal);
+  }
+  if (bal > 0.005) return null; // never pays off within 100 years
+  return { months: m, totalInterest, balances };
 }
 
 /** Month-by-month schedule; extra = additional principal per month.
