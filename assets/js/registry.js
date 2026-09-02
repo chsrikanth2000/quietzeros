@@ -42,12 +42,6 @@ export const TOOLS = [
     cat: "Home & loans",
   },
   {
-    slug: "mortgage-payoff",
-    name: "Mortgage payoff planner",
-    desc: "Extra monthly payments, yearly bonuses and lump sums — watch the payoff date move.",
-    cat: "Home & loans",
-  },
-  {
     slug: "refinance",
     name: "Refinance calculator",
     desc: "Break-even on closing costs, honest lifetime difference, and the keep-your-old-payment trick.",
@@ -73,13 +67,6 @@ export const TOOLS = [
     desc: "Auto, personal or student loans: payment, total interest, and payoff schedule.",
     cat: "Home & loans",
     excel: "loan-amortization.xlsx",
-  },
-  {
-    slug: "debt-payoff",
-    name: "Debt payoff",
-    desc: "See how extra monthly payments shorten a debt and how much interest they save.",
-    cat: "Home & loans",
-    excel: "debt-payoff-planner.xlsx",
   },
   {
     slug: "compound-interest",

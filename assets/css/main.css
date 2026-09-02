@@ -322,6 +322,18 @@ input[type="range"] {
   font-family: var(--font-ui); font-weight: 660;
   font-size: clamp(2.2rem, 5vw, 3rem); line-height: 1.1;
   letter-spacing: -0.02em; color: var(--ink);
+  transition: color .5s ease;
+}
+@keyframes qz-bump {
+  0%   { transform: scale(1); color: var(--ink); }
+  30%  { transform: scale(1.035); color: var(--brand-mark); }
+  100% { transform: scale(1); color: var(--ink); }
+}
+.hero-figure .value.bump { animation: qz-bump .55s ease; }
+.stat .v { transition: color .4s ease; }
+.stat .v.bump { color: var(--brand-mark); }
+@media (prefers-reduced-motion: reduce) {
+  .hero-figure .value.bump { animation: none; }
 }
 .hero-figure .value small { font-size: .45em; font-weight: 520; color: var(--ink-2); letter-spacing: 0; }
 .interpret { color: var(--ink-2); font-size: .95rem; max-width: 52ch; margin: .5rem 0 0; }

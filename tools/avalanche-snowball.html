@@ -93,13 +93,22 @@
           <input type="range" data-pair="extra" min="0" max="2000" step="25" value="300" aria-label="Extra toward debt each month (strategy money) slider">
         </div>
         <div class="field">
+          <label>Expecting a windfall (refund, bonus)?</label>
+          <div class="chips" role="radiogroup" aria-label="Windfall">
+            <label><input type="radio" name="haswind" value="no" checked>No</label>
+            <label><input type="radio" name="haswind" value="yes">Yes</label>
+          </div>
+          <div class="subfields" id="wind-fields" hidden>
+        <div class="field">
           <label for="windfall">One-time windfall</label>
-          <div class="input-wrap"><span class="affix">$</span><input id="windfall" type="number" inputmode="decimal" value="0" min="0" max="1000000" step="250"></div>
-          <p class="help">Tax refund, bonus - applied to the strategy's target in the month below.</p>
+          <div class="input-wrap"><span class="affix">$</span><input id="windfall" type="number" inputmode="decimal" value="2000" min="0" max="1000000" step="250"></div>
+          <p class="help">Applied to the strategy's target in the month below.</p>
         </div>
         <div class="field">
           <label for="windmonth">... arriving in month</label>
           <div class="input-wrap"><input id="windmonth" type="number" inputmode="decimal" value="6" min="1" max="120" step="1"></div>
+        </div>
+          </div>
         </div>
         <div class="calc-actions"><button class="btn-ghost" type="reset" data-reset>Reset to defaults</button></div>
       </div>

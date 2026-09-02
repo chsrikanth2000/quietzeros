@@ -195,45 +195,9 @@ TOOLS = [
       <p class="formula">M = P × [ i (1 + i)ⁿ ] / [ (1 + i)ⁿ − 1 ] &nbsp;— <code>P</code> is the amount borrowed, <code>i</code> the monthly rate (APR ÷ 12), <code>n</code> the number of payments.</p>
       <p>Every payment is the same size, but its makeup shifts: interest is charged on the remaining balance, so early payments are interest-heavy and the last ones are nearly all principal.</p>
       <h3>Reading the total</h3>
-      <p>The stacked bar shows the loan the way lenders rarely present it: the amount you borrowed next to the interest you'll hand over. On a long term, interest can rival the principal — shortening the term or paying extra principal (see the <a href="debt-payoff.html">debt payoff tool</a>) are the two levers that shrink it.</p>
+      <p>The stacked bar shows the loan the way lenders rarely present it: the amount you borrowed next to the interest you'll hand over. On a long term, interest can rival the principal — shortening the term or paying extra principal (see the <a href="avalanche-snowball.html">debt payoff tool</a>) are the two levers that shrink it.</p>
       <h3>Notes</h3>
       <p>This assumes a simple amortizing loan with no fees, no compounding tricks, and payments made on time. Origination fees and precomputed-interest loans will differ — check the loan agreement's APR and total-of-payments disclosure.</p>""",
-    ),
-    # ------------------------------------------------------- debt-payoff
-    dict(
-        slug="debt-payoff",
-        title="Debt payoff calculator",
-        desc="See how extra monthly payments shorten a credit card or loan and how much interest they save. Private — runs entirely in your browser.",
-        cat="Home &amp; loans",
-        h1="Debt payoff",
-        lede="Point a little extra money at a balance and watch the payoff date move. Nothing you type leaves this page.",
-        form="\n".join([
-            field("balance", "Current balance", prefix="$", value="8000", fmin="1", fmax="5000000", step="100",
-                  slider=("500", "50000", "100"), err="Enter a balance between $1 and $5,000,000."),
-            field("rate", "Interest rate (APR)", suffix="%", value="22", fmin="0", fmax="60", step="0.1",
-                  help_="Credit cards commonly run 18–28% APR.",
-                  err="Enter a rate between 0 and 60%."),
-            field("payment", "Monthly payment", prefix="$", value="250", fmin="1", fmax="100000", step="10",
-                  err="Enter a payment between $1 and $100,000."),
-            field("extra", "Extra per month", prefix="$", value="100", fmin="0", fmax="100000", step="10",
-                  help_="Anything above the regular payment goes straight to principal.",
-                  err="Enter $0 to $100,000."),
-        ]),
-        results="\n".join([
-            hero("Debt-free in"),
-            stats(("Interest paid", "r-interest"), ("Interest saved", "r-saved"), ("Paid off sooner by", "r-sooner")),
-            chart("chart-balance", "Balance over time — with and without the extra payment"),
-            sched("Balance by year (with extra payment)"),
-        ]),
-        prose="""      <h2>How this is calculated</h2>
-      <p>Each month the balance grows by one month of interest (APR ÷ 12), then shrinks by your payment. The simulation runs month by month until the balance hits zero — once with your regular payment, once with the extra added — and compares the two.</p>
-      <p class="formula">new balance = balance × (1 + APR/12) − payment</p>
-      <h3>Why small extras work so hard</h3>
-      <p>Every extra dollar goes entirely to principal, and principal you remove today stops accruing interest for every remaining month. That's why $100 extra on a 22% card often saves multiples of itself.</p>
-      <h3>If the payoff time says "never"</h3>
-      <p>A payment smaller than the first month's interest means the balance grows instead of shrinking. The calculator will warn you and show the minimum payment that makes progress.</p>
-      <h3>Notes</h3>
-      <p>Assumes a fixed APR, no new charges, and no fees. Cards compound daily in practice; monthly compounding is a close, slightly optimistic approximation.</p>""",
     ),
     # -------------------------------------------------- compound-interest
     dict(
@@ -396,61 +360,6 @@ TOOLS = [
 
 
 TOOLS += [
-    # ------------------------------------------------- mortgage-payoff
-    dict(
-        slug="mortgage-payoff",
-        title="Mortgage payoff calculator",
-        desc="Model extra monthly payments, yearly bonuses and one-time lump sums on your mortgage — see the payoff date move and the interest saved. Private, in-browser.",
-        cat="Home &amp; loans",
-        h1="Mortgage payoff planner",
-        lede="Point extra money at your mortgage — a monthly amount, a yearly bonus, a lump sum in year three — and watch the payoff date move. Nothing you type leaves this page.",
-        form="\n".join([
-            field("amount", "Original loan amount", prefix="$", value="380000", fmin="1000", fmax="20000000", step="1000",
-                  slider=("50000", "1500000", "5000"), err="Enter $1,000 to $20,000,000."),
-            field("rate", "Interest rate (APR)", suffix="%", value="6.5", fmin="0", fmax="25", step="0.125",
-                  err="Enter 0 to 25%."),
-            '''        <div class="field">
-          <label for="term">Loan term</label>
-          <div class="input-wrap">
-            <select id="term" aria-label="Loan term">
-              <option value="30" selected>30 years</option>
-              <option value="20">20 years</option>
-              <option value="15">15 years</option>
-              <option value="10">10 years</option>
-            </select>
-          </div>
-        </div>''',
-            field("paid", "Years already paid", suffix="yrs", value="0", fmin="0", fmax="39", step="0.5",
-                  help_="Zero for a new loan. We compute today's balance from this.",
-                  err="Enter 0 to 39 years."),
-            field("extra", "Extra every month", prefix="$", value="200", fmin="0", fmax="100000", step="25",
-                  slider=("0", "2000", "25")),
-            field("extrayr", "Extra once a year (bonus, tax refund)", prefix="$", value="0", fmin="0", fmax="1000000", step="100"),
-            field("lump1", "One-time lump sum", prefix="$", value="0", fmin="0", fmax="10000000", step="500"),
-            field("lump1yr", "… paid in year", suffix="yr", value="2", fmin="1", fmax="40", step="1"),
-            field("lump2", "Second lump sum", prefix="$", value="0", fmin="0", fmax="10000000", step="500"),
-            field("lump2yr", "… paid in year", suffix="yr", value="5", fmin="1", fmax="40", step="1"),
-        ]),
-        results="\n".join([
-            hero("Paid off in"),
-            stats(("Interest saved", "r-saved"), ("Sooner by", "r-sooner"), ("Interest with this plan", "r-interest")),
-            chart("chart-balance", "Balance over time — your plan vs. minimum payments"),
-            '''        <div class="chart-block">
-          <p class="chart-title">What different monthly extras would do</p>
-          <div id="cmp-table"></div>
-        </div>''',
-            sched("Balance by year (with your plan)"),
-        ]),
-        prose="""      <h2>How this is calculated</h2>
-      <p>The simulator runs your loan month by month: interest accrues on the balance, your payment lands, and any extras — the monthly amount, the once-a-year bonus, the lump sums in the years you chose — go straight to principal.</p>
-      <p class="formula">new balance = balance × (1 + rate/12) − payment − extras due that month</p>
-      <h3>Why extras punch above their weight</h3>
-      <p>A dollar of principal paid today stops accruing interest for every remaining month of the loan. Early extras are therefore worth far more than late ones — a $10,000 lump sum in year 2 typically saves several times what the same sum saves in year 20.</p>
-      <h3>Extra payments or refinance?</h3>
-      <p>Extra payments shorten the loan at your current rate; refinancing replaces the rate itself. If rates have dropped meaningfully since you closed, run the <a href="refinance.html">refinance calculator</a> — and note that the two combine well: refinance to a lower rate, keep paying your old payment, and the loan collapses years early.</p>
-      <h3>Notes</h3>
-      <p>Assumes a fixed rate and no prepayment penalty (rare on US mortgages, but check). Escrowed taxes and insurance continue regardless — this models the loan itself.</p>""",
-    ),
     # ------------------------------------------------------ refinance
     dict(
         slug="refinance",
@@ -767,9 +676,18 @@ TOOLS += [
         </div>''',
             field("extra", "Extra toward debt each month (strategy money)", prefix="$", value="300", fmin="0", fmax="100000", step="25",
                   slider=("0", "2000", "25")),
-            field("windfall", "One-time windfall", prefix="$", value="0", fmin="0", fmax="1000000", step="250",
-                  help_="Tax refund, bonus - applied to the strategy's target in the month below."),
+            '''        <div class="field">
+          <label>Expecting a windfall (refund, bonus)?</label>
+          <div class="chips" role="radiogroup" aria-label="Windfall">
+            <label><input type="radio" name="haswind" value="no" checked>No</label>
+            <label><input type="radio" name="haswind" value="yes">Yes</label>
+          </div>
+          <div class="subfields" id="wind-fields" hidden>''',
+            field("windfall", "One-time windfall", prefix="$", value="2000", fmin="0", fmax="1000000", step="250",
+                  help_="Applied to the strategy's target in the month below."),
             field("windmonth", "... arriving in month", suffix="", value="6", fmin="1", fmax="120", step="1"),
+            '''          </div>
+        </div>''',
         ]),
         results="\n".join([
             hero("Debt-free in"),

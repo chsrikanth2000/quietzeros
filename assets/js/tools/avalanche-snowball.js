@@ -14,6 +14,9 @@ function chipValue(name) {
 for (const r of $$('input[name="strategy"]')) {
   r.addEventListener("change", () => { $("#focus-fields").hidden = chipValue("strategy") !== "focus"; });
 }
+for (const r of $$('input[name="haswind"]')) {
+  r.addEventListener("change", () => { $("#wind-fields").hidden = chipValue("haswind") !== "yes"; });
+}
 
 /* ---- dynamic loan rows ---- */
 let nextLoanId = 1;
@@ -138,7 +141,7 @@ function compute() {
     focusIdx: Number($("#focusdebt").value),
     roll: chipValue("roll") === "yes",
     extra: readField($("#extra")),
-    windfall: readField($("#windfall")),
+    windfall: chipValue("haswind") === "yes" ? readField($("#windfall")) : 0,
     windMonth: Math.round(readField($("#windmonth"))),
   };
   const strategy = chipValue("strategy");

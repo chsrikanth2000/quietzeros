@@ -51,6 +51,7 @@ wireChips("hasgive", "give-fields");
 wireChips("hasrental", "rental-fields");
 wireChips("rentalqbi", null);
 wireChips("ded529", null);
+wireChips("hasaccts", "accts-fields");
 
 function updateSpouseUI() {
   const mfj = chipValue("status") === "mfj";
@@ -143,6 +144,7 @@ function stateBrackets(st, status) {
 }
 
 function gatherInputs() {
+  const accts = chipValue("hasaccts") === "yes";
   const inv = chipValue("hasinv") === "yes";
   const hasTips = chipValue("hastips") === "yes";
   const hasLoans = chipValue("hasloans") === "yes";
@@ -151,9 +153,9 @@ function gatherInputs() {
     year: Number(chipValue("taxyear")) || 2026,
     status: chipValue("status"),
     wages: readField($("#wages")),
-    k401: readField($("#k401")), k401s: readField($("#k401s")),
-    ira: readField($("#ira")), iras: readField($("#iras")),
-    hsa: readField($("#hsa")), plan529: readField($("#plan529")),
+    k401: accts ? readField($("#k401")) : 0, k401s: accts ? readField($("#k401s")) : 0,
+    ira: accts ? readField($("#ira")) : 0, iras: accts ? readField($("#iras")) : 0,
+    hsa: accts ? readField($("#hsa")) : 0, plan529: accts ? readField($("#plan529")) : 0,
     covered: chipValue("covered") === "yes",
     ded529: chipValue("ded529") === "yes",
     se: chipValue("hasse") === "yes" ? readField($("#se")) : 0,

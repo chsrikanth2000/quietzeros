@@ -124,8 +124,14 @@
         </div>
 
         <div class="field">
-          <label>Retirement &amp; savings accounts</label>
-          <div class="subfields">
+          <label>Do you put money into retirement or savings accounts?</label>
+          <div class="chips" role="radiogroup" aria-label="Retirement accounts">
+            <label><input type="radio" name="hasaccts" value="yes">Yes</label>
+            <label><input type="radio" name="hasaccts" value="no" checked>No</label>
+            <label><input type="radio" name="hasaccts" value="dk">Not sure</label>
+          </div>
+          <p class="assume" data-when="dk">We'll assume <strong>no</strong>. 401(k), IRA, HSA and 529 contributions all lower some tax — answer yes to model them.</p>
+          <div class="subfields" id="accts-fields" hidden>
             <div class="field">
               <label for="k401">401(k) / 403(b) / 457 — you</label>
               <div class="input-wrap"><span class="affix">$</span><input id="k401" type="number" inputmode="decimal" value="0" min="0" max="35750" step="500"><span class="affix">/yr</span></div>

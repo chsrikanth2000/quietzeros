@@ -152,6 +152,21 @@ export function initChrome() {
   document.addEventListener("click", () => {
     for (const b of document.querySelectorAll('.info-btn[aria-expanded="true"]')) b.setAttribute("aria-expanded", "false");
   });
+
+  // result numbers pop briefly when they change — quiet feedback that
+  // the answer just updated
+  const bumpTargets = document.querySelectorAll(".hero-figure .value, .stat .v");
+  for (const t of bumpTargets) {
+    let last = t.textContent;
+    new MutationObserver(() => {
+      if (t.textContent === last) return;
+      last = t.textContent;
+      t.classList.remove("bump");
+      void t.offsetWidth; // restart the animation
+      t.classList.add("bump");
+      setTimeout(() => t.classList.remove("bump"), 600);
+    }).observe(t, { childList: true, characterData: true, subtree: true });
+  }
 }
 
 /* ---- Amortization math (shared by several tools) ---- */
