@@ -334,10 +334,12 @@ input[type="range"] {
 .stat {
   border: 1px solid var(--line); border-radius: var(--radius);
   padding: .8rem .9rem;
+  display: flex; flex-direction: column;
 }
-.stat .k { font-size: .74rem; color: var(--ink-3); font-weight: 540; letter-spacing: .02em; }
+.stat .k { font-size: .74rem; color: var(--ink-3); font-weight: 540; letter-spacing: .02em; margin: 0; }
 .stat .v {
-  font-size: 1.18rem; font-weight: 620; margin-top: .2rem;
+  font-size: 1.18rem; font-weight: 620;
+  margin: auto 0 0; padding-top: .35rem; /* values bottom-align across the row */
   font-variant-numeric: tabular-nums; letter-spacing: -0.01em;
 }
 
