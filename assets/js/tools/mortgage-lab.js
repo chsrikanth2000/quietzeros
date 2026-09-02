@@ -339,15 +339,19 @@ function compute() {
   if (helocOn) heloc = simulateHeloc(readField($("#hamount")), readField($("#hrate")), readField($("#hio")), readField($("#hrepay")));
 
   const span = Math.max(base.months, plan.months, heloc ? heloc.balances.length - 1 : 0);
+  // sample resolution adapts to the horizon: a loan with only a few months or
+  // years left would otherwise collapse to 0-1 yearly points and render blank
+  const step = span <= 24 ? 3 : span <= 96 ? 6 : 12;
   const xs = [], sPlan = [], sBase = [], sHouse = [];
-  for (let y = 0; y * 12 <= span; y++) {
-    const mi = y * 12;
-    xs.push(y === 0 ? "Now" : monthIndexToLabel(mi).slice(-4));
+  const pushPoint = (mi) => {
+    xs.push(mi === 0 ? "Now" : (step === 12 ? monthIndexToLabel(mi).slice(-4) : monthIndexToLabel(mi)));
     const pb = plan.balances[Math.min(mi, plan.balances.length - 1)];
     sPlan.push(pb);
     sBase.push(base.balances[Math.min(mi, base.balances.length - 1)]);
     if (heloc) sHouse.push(pb + heloc.balances[Math.min(mi, heloc.balances.length - 1)]);
-  }
+  };
+  for (let mi = 0; mi <= span; mi += step) pushPoint(mi);
+  if (span % step !== 0) pushPoint(span); // always land exactly on the payoff month
   const series = [
     { name: "Your plan", values: sPlan },
     { name: "Minimum only", values: sBase },
