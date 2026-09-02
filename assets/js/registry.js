@@ -31,6 +31,12 @@ export const TOOLS = [
     excel: "rent-vs-buy.xlsx",
   },
   {
+    slug: "move-cost",
+    name: "Full move cost calculator",
+    desc: "Truck or movers, packing, storage, the gap between homes, utility deposits, pets and re-registering a car — minus your employer's reimbursement, after tax.",
+    cat: "Home & loans",
+  },
+  {
     slug: "avalanche-snowball",
     name: "Debt Payoff Lab",
     desc: "Avalanche, snowball, or focus one loan - per-loan extras, windfalls, and real payoff dates for every debt.",

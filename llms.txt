@@ -18,6 +18,7 @@ Key facts for citation: all tools are free, work without signup, and include dow
 - [Roth conversion planner](https://quietzeros.com/tools/roth-conversion): multi-year bracket-filling conversion schedules with real 2026 brackets
 - [Backdoor Roth pro-rata](https://quietzeros.com/tools/backdoor-roth): exact taxable share of a backdoor conversion and the reverse-rollover fix
 - [Rent vs. buy, honestly](https://quietzeros.com/tools/rent-vs-buy): full opportunity cost including invested down payment, PMI, maintenance, selling costs
+- [Full move cost calculator](https://quietzeros.com/tools/move-cost): every real one-time cost of relocating — truck or movers priced by weight and distance, packing, storage, the gap between homes, utility deposits, vehicle re-registration, pet relocation — minus the employer reimbursement after tax; links into Take-Home Pay for the separate ongoing state-tax difference
 - [Real hourly wage](https://quietzeros.com/tools/real-hourly-wage): side-hustle profit after materials, mileage and both taxes, per actual hour
 - [Social Security breakeven](https://quietzeros.com/tools/social-security-breakeven): cumulative crossover ages for claiming at 62, 67 or 70
 - [Avalanche vs. snowball](https://quietzeros.com/tools/avalanche-snowball): both debt strategies simulated month-by-month with windfalls

@@ -684,5 +684,20 @@ function compute() {
   ]);
 }
 
+/* ---- deep-link prefill: lets another tool (e.g. the move-cost calculator) hand
+   off context via URL query params, e.g. take-home-pay.html?state=CA&state2=TX
+   — nothing is sent anywhere, this only reads the URL the visitor already has. */
+(() => {
+  const p = new URLSearchParams(location.search);
+  const st1 = (p.get("state") || "").toUpperCase(), st2 = (p.get("state2") || "").toUpperCase();
+  if (STATES[st1]) { stateSel.value = st1; stateTouched = true; }
+  if (STATES[st2]) { state2Sel.value = st2; $("#move-extras").hidden = false; }
+  for (const [param, id] of [["wages", "wages"], ["homeval", "homeval"], ["spendval", "spendval"]]) {
+    const v = p.get(param);
+    if (v && !isNaN(Number(v))) $("#" + id).value = v;
+  }
+  if (STATES[st1]) updateStateUI();
+})();
+
 const run = bindCalc($("#calc"), compute);
 stateSel.addEventListener("change", run);
