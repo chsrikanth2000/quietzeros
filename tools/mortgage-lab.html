@@ -74,7 +74,19 @@
               <option value="30" selected>30 years</option>
               <option value="20">20 years</option>
               <option value="15">15 years</option>
+              <option value="custom">Custom — I already have this loan</option>
             </select>
+          </div>
+          <div class="subfields" id="term-custom-fields" hidden>
+            <div class="field">
+              <label for="termyears">Years remaining</label>
+              <div class="input-wrap"><input id="termyears" type="number" inputmode="decimal" value="23" min="0" max="40" step="1"></div>
+            </div>
+            <div class="field">
+              <label for="termmonths">Plus months</label>
+              <div class="input-wrap"><input id="termmonths" type="number" inputmode="decimal" value="0" min="0" max="11" step="1"></div>
+              <p class="help">Pair this with the current balance above (not the original loan amount) — the payment we compute from balance + rate + remaining term will match your real one.</p>
+            </div>
           </div>
         </div>
 
@@ -122,7 +134,9 @@
             <button type="button" data-add="recur">+ Recurring extra</button>
             <button type="button" data-add="recast">+ Recast</button>
             <button type="button" data-add="refi">+ Refinance</button>
+            <button type="button" id="add-biweekly">+ Switch to biweekly</button>
           </div>
+          <p class="help">Biweekly (half your payment every 2 weeks) works out to one extra full payment a year — the button adds that as a recurring extra so it shows up in the timeline like everything else.</p>
           <div class="ev-list" id="ev-list"></div>
         </div>
 

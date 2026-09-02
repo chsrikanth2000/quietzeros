@@ -141,6 +141,30 @@ function removeEvent(id) {
 }
 for (const b of $$("[data-add]")) b.addEventListener("click", () => addEvent(b.dataset.add));
 
+/** Current term selection in years, honoring the "custom / already have this
+ * loan" option (years + months remaining) alongside the 15/20/30 presets. */
+function currentTermYears() {
+  const v = $("#term").value;
+  if (v === "custom") return readField($("#termyears")) + readField($("#termmonths")) / 12;
+  return Number(v) || 30;
+}
+$("#term").addEventListener("change", () => {
+  $("#term-custom-fields").hidden = $("#term").value !== "custom";
+  if (typeof recompute === "function") recompute();
+});
+for (const id of ["termyears", "termmonths"]) {
+  $("#" + id).addEventListener("input", () => { if (typeof recompute === "function") recompute(); });
+}
+
+$("#add-biweekly").addEventListener("click", () => {
+  const payment = pmt(readField($("#amount")), readField($("#rate")), Math.round(currentTermYears() * 12));
+  addEvent("recur");
+  const newId = events[events.length - 1].id;
+  $(`#ev${newId}-amt`).value = String(Math.round(payment / 12));
+  $(`#ev${newId}-freq`).value = "1";
+  recompute();
+});
+
 $("#start-picker").append(...ymSelects("start", "2026-10", 1990, new Date().getFullYear() + 2).children);
 
 /* ================= simulation ================= */
@@ -252,7 +276,7 @@ function simulateHeloc(amount, ratePct, ioYears, repayYears) {
 function compute() {
   const amount = readField($("#amount"));
   const ratePct = readField($("#rate"));
-  const termYears = readField($("#term")) || 30;
+  const termYears = currentTermYears();
   const invReturn = readField($("#invreturn"));
   const evs = readEvents();
 
@@ -339,6 +363,7 @@ function compute() {
   evs.forEach((e, idx) => {
     const without = simulate(amount, ratePct, termYears, evs.filter((_, j) => j !== idx));
     const saved = without ? (without.totalInterest - plan.totalInterest) : NaN;
+    const monthsCut = without ? without.months - plan.months : NaN;
     let label = {
       extra: `${money(e.amt)} one-time in ${monthIndexToLabel(e.when)}`,
       recur: `${money(e.amt)} extra every ${e.freq === 12 ? "year" : "month"} from ${monthIndexToLabel(e.when)}`,
@@ -355,10 +380,13 @@ function compute() {
       }
       label += be ? ` — breaks even ${monthIndexToLabel(be)}` : " — never breaks even in this plan";
     }
+    const emiNote = Number.isFinite(monthsCut) && monthsCut !== 0
+      ? ` — ${Math.abs(monthsCut)} ${monthsCut > 0 ? "fewer" : "more"} payment${Math.abs(monthsCut) === 1 ? "" : "s"}`
+      : "";
     impact.append(el("div", { class: "impact-row" },
       el("span", {}, label),
       el("span", { class: "n" + (Number.isFinite(saved) && saved < 0 ? " bad" : "") },
-        Number.isFinite(saved) ? `${saved >= 0 ? "saves" : "costs"} ${money(Math.abs(saved))}` : "—")));
+        Number.isFinite(saved) ? `${saved >= 0 ? "saves" : "costs"} ${money(Math.abs(saved))}${emiNote}` : "—")));
 
     // quick-add: keep paying the OLD amount instead of pocketing the lower one
     if (e.type === "refi") {
@@ -434,7 +462,7 @@ function compute() {
 
 function encodeState() {
   const st = {
-    a: readField($("#amount")), r: readField($("#rate")), t: readField($("#term")),
+    a: readField($("#amount")), r: readField($("#rate")), t: currentTermYears(),
     s: readYM("start"), iv: readField($("#invreturn")),
     b: buyOn() ? [readField($("#price")), readField($("#down")), readField($("#ptax")),
                   readField($("#hins")), readField($("#hoafee"))] : null,
@@ -457,7 +485,19 @@ function restoreState() {
   const setNum = (id, v) => { const n = Number(v); if (Number.isFinite(n)) $(id).value = String(n); };
   const setYM = setYMField;
   setNum("#amount", st.a); setNum("#rate", st.r); setNum("#invreturn", st.iv);
-  if ([15, 20, 30].includes(Number(st.t))) $("#term").value = String(Number(st.t));
+  const tYears = Number(st.t);
+  if (Number.isFinite(tYears)) {
+    if ([15, 20, 30].includes(tYears)) {
+      $("#term").value = String(tYears);
+      $("#term-custom-fields").hidden = true;
+    } else if (tYears > 0) {
+      $("#term").value = "custom";
+      $("#term-custom-fields").hidden = false;
+      const y = Math.floor(tYears);
+      $("#termyears").value = String(y);
+      $("#termmonths").value = String(Math.round((tYears - y) * 12));
+    }
+  }
   setYM("start", st.s);
   if (Array.isArray(st.b)) {
     document.querySelector('input[name="buyhome"][value="yes"]').checked = true;
