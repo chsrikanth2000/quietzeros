@@ -8,6 +8,20 @@ import { RENTAL } from "../data/tax-2026.js";
 
 initToolPage("rental-vs-sp500");
 
+function chipVal(name) {
+  const c = document.querySelector(`input[name="${name}"]:checked`);
+  return c ? c.value : "financed";
+}
+function updatePayMethod() {
+  const cash = chipVal("paymethod") === "cash";
+  $("#down").closest(".field").hidden = cash;
+  $("#rate").closest(".field").hidden = cash;
+  $("#term").closest(".field").hidden = cash;
+  $("#down").value = cash ? "100" : "25";
+}
+for (const r of document.querySelectorAll('input[name="paymethod"]')) r.addEventListener("change", updatePayMethod);
+updatePayMethod();
+
 const DEPR_YEARS = 27.5;
 
 /** Passive-loss allowance, same rule the tax tool uses. */

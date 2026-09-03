@@ -668,6 +668,13 @@ TOOLS += [
         form="\n".join([
             field("price", "Property price", prefix="$", value="320000", fmin="10000", fmax="20000000", step="5000",
                   slider=("50000", "1500000", "5000"), err="Enter $10,000 to $20,000,000."),
+            '''        <div class="field">
+          <label>How are you paying for it?</label>
+          <div class="chips" role="radiogroup" aria-label="Payment method">
+            <label><input type="radio" name="paymethod" value="financed" checked>Financed (mortgage)</label>
+            <label><input type="radio" name="paymethod" value="cash">All cash</label>
+          </div>
+        </div>''',
             field("down", "Down payment", suffix="%", value="25", fmin="0", fmax="100", step="1"),
             field("rate", "Mortgage rate", suffix="%", value="6.5", fmin="0.1", fmax="25", step="0.125"),
             field("term", "Loan term", suffix="yrs", value="30", fmin="5", fmax="40", step="1"),
@@ -715,6 +722,8 @@ TOOLS += [
       <p>The property sells at your appreciation rate, minus selling costs and the remaining loan. The gain is split two ways for tax: the depreciation you claimed gets "recaptured" at a flat 25%, and the rest of the gain is taxed at your capital-gains rate - both real IRS rules, not simplifications. Any positive cash flow collected along the way is assumed reinvested in the same index fund (with its own capital-gains tax applied at the end), so a landlord who banks the rent isn't penalized for not having spent it.</p>
       <h3>The honest tilt</h3>
       <p>Real estate wins on leverage (you control a $320,000 asset with a fraction down) and on the depreciation shield; the S&amp;P wins on liquidity, zero maintenance calls, and never needing a new roof at 2am. This tool prices the money; it can't price the phone call from a tenant.</p>
+      <h3>Paying cash instead?</h3>
+      <p>Switch "How are you paying for it?" to all cash and the mortgage disappears from both sides of the math: no debt service, no interest deduction, and your full purchase price counted as invested cash. It's the fair comparison for buyers who aren't financing - leverage is what usually tilts real estate's numbers, so removing it changes the answer more than almost anything else here.</p>
       <h3>Notes</h3>
       <p>Assumes steady occupancy at the stated vacancy rate (not lumpy real turnover), a constant marginal rate, and a sale at the end of the exact holding period. 1031 exchanges (which defer this sale tax entirely) aren't modeled - if you plan to exchange rather than cash out, the property side understates its result.</p>""",
     ),
