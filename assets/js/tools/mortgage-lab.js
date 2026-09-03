@@ -351,40 +351,36 @@ function compute() {
   // sample resolution adapts to the horizon: a loan with only a few months or
   // years left would otherwise collapse to 0-1 yearly points and render blank
   const step = span <= 24 ? 3 : span <= 96 ? 6 : 12;
-  const xs = [], sPlan = [], sBase = [], sHouse = [];
-  const sSaved = [];
+  const xs = [], sPlan = [], sBase = [], sHouse = [], sPlanInt = [], sBaseInt = [];
   const pushPoint = (mi) => {
     xs.push(mi === 0 ? "Now" : (step === 12 ? monthIndexToLabel(mi).slice(-4) : monthIndexToLabel(mi)));
     const pb = plan.balances[Math.min(mi, plan.balances.length - 1)];
     sPlan.push(pb);
     sBase.push(base.balances[Math.min(mi, base.balances.length - 1)]);
     if (heloc) sHouse.push(pb + heloc.balances[Math.min(mi, heloc.balances.length - 1)]);
-    if (evs.length) {
-      const baseInt = base.interestPath[Math.min(mi, base.interestPath.length - 1)];
-      const planInt = plan.interestPath[Math.min(mi, plan.interestPath.length - 1)];
-      sSaved.push(baseInt - planInt);
+    if (evs.length && !heloc) {
+      sPlanInt.push(plan.interestPath[Math.min(mi, plan.interestPath.length - 1)]);
+      sBaseInt.push(base.interestPath[Math.min(mi, base.interestPath.length - 1)]);
     }
   };
   for (let mi = 0; mi <= span; mi += step) pushPoint(mi);
   if (span % step !== 0) pushPoint(span); // always land exactly on the payoff month
+  const showInterest = evs.length > 0 && !heloc;
   const series = [
-    { name: "Your plan", values: sPlan },
-    { name: "Minimum only", values: sBase },
+    { name: "Your plan (balance)", values: sPlan },
+    { name: "Minimum only (balance)", values: sBase },
   ];
   if (heloc) series.push({ name: "Plan + HELOC", values: sHouse });
-  stackedArea($("#chart-balance"), {
-    ariaLabel: "Balance over time", xs, stacked: false, fmt: moneyShort, fmtTip: money, series,
-  });
-
-  // interest saved gets its own chart, not a series mixed into the balance chart --
-  // a $30k savings line would flatten to invisible next to a $400k balance line
-  $("#savings-block").hidden = !evs.length;
-  if (evs.length) {
-    stackedArea($("#chart-savings"), {
-      ariaLabel: "Interest saved over time", xs, stacked: false, fmt: moneyShort, fmtTip: money,
-      series: [{ name: "Interest saved", values: sSaved }],
-    });
+  if (showInterest) {
+    series.push({ name: "Your plan (interest paid)", values: sPlanInt });
+    series.push({ name: "Minimum only (interest paid)", values: sBaseInt });
   }
+  stackedArea($("#chart-balance"), {
+    ariaLabel: "Balance and interest paid over time", xs, stacked: false, fmt: moneyShort, fmtTip: money, series,
+  });
+  $("#balance-note").textContent = showInterest
+    ? `The interest lines keep climbing after "Your plan" is paid off (${monthIndexToLabel(plan.months)}) because "Minimum only" keeps accruing interest until its own payoff (${monthIndexToLabel(base.months)}) — you're not still paying anything after ${monthIndexToLabel(plan.months)}, that's what you avoided.`
+    : "";
 
   // per-event marginal attribution: re-run with each event removed
   const impact = $("#impact");
