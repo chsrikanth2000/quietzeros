@@ -185,10 +185,10 @@ stateSel.addEventListener("change", () => { stateTouched = true; });
       } catch { county = null; /* zip lookup is optional; state default still stands */ }
     }
     const countyDisplay = county && geo.region === "PA"
-      ? county.split(" ").map((w) => w[0] + w.slice(1).toLowerCase()).join(" ") + " county — pick your municipality below"
+      ? county.split(" ").map((w) => w[0] + w.slice(1).toLowerCase()).join(" ") + " County"
       : county;
     const note = el("p", { class: "assume" },
-      `Set to ${STATES[geo.region].name}${countyDisplay ? ` (${countyDisplay})` : ""} from your connection's general location — detected by our own server, stored nowhere. Change it anytime.`);
+      `Set to ${STATES[geo.region].name}${countyDisplay ? ` (${countyDisplay})` : ""} from your connection — nothing stored. Change anytime.`);
     stateSel.closest(".field").append(note);
     if (typeof run === "function") run();
   } catch { /* offline or blocked: the default state stands */ }
@@ -253,14 +253,14 @@ function applyReciprocity(liveCode, liveTax, stateTaxable, status) {
   if (reciprocal) {
     return {
       stateTax: liveTax,
-      note: ` Because ${liveName} and ${workName} have a reciprocal agreement, you owe income tax only to ${liveName} — ask your employer to stop withholding ${workName} tax with an exemption form.`,
+      note: ` ${liveName} and ${workName} have a reciprocal agreement — you owe tax only to ${liveName}. File an exemption form with your employer.`,
     };
   }
   const workTax = bracketTax(stateTaxable, stateBrackets(STATES[workCode], status));
   const total = Math.max(liveTax, workTax);
   return {
     stateTax: total,
-    note: ` ${liveName} and ${workName} don't have a reciprocal agreement, so both states are technically owed tax — but ${liveName} credits what you pay ${workName}, capped at ${liveName}'s own tax on that income. Net effect modeled here: about ${money(total)}, roughly whichever state's rate is higher (this doesn't include any city or county tax ${workName} charges nonresident commuters).`,
+    note: ` No reciprocal agreement between ${liveName} and ${workName} — ${liveName} credits what you pay ${workName}, so you pay about ${money(total)}: whichever state's rate is higher. Doesn't include any local tax ${workName} charges nonresident commuters.`,
   };
 }
 

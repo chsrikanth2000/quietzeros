@@ -39,9 +39,10 @@ function compute() {
   for (let m = 1; m <= horizon * 12; m++) {
     const interest = bal * i;
     const principal = Math.min(mortPay - interest, bal);
+    const actualPI = interest + principal; // drops to 0 once the 30-yr mortgage is paid off
     bal = Math.max(0, bal - principal);
     const pmi = bal / value > 0.8 ? (loan * PMI_RATE) / 12 : 0;
-    const ownCost = mortPay + (value * propTax) / 12 + (value * maint) / 12 + pmi;
+    const ownCost = actualPI + (value * propTax) / 12 + (value * maint) / 12 + pmi;
     const rentCost = rent;
     const diff = ownCost - rentCost;
     rentPort = rentPort * (1 + invest) + Math.max(0, diff);

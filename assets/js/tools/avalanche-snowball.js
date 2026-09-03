@@ -233,7 +233,6 @@ function compute() {
 }
 
 const run = bindCalc($("#calc"), compute);
-// starter loans chosen so avalanche and snowball genuinely differ
+// starter loans chosen so avalanche (highest APR) and snowball (smallest balance) genuinely differ
 addLoan(3000, 5, 60, 0);
 addLoan(9000, 22, 180, 0);
-addLoan(14000, 7.5, 280, 0);

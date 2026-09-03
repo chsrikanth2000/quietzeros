@@ -360,63 +360,6 @@ TOOLS = [
 
 
 TOOLS += [
-    # ------------------------------------------------------ refinance
-    dict(
-        slug="refinance",
-        title="Refinance calculator",
-        desc="Should you refinance? Break-even month on closing costs, new payment, lifetime cost difference, and the keep-your-old-payment shortcut — computed privately in your browser.",
-        cat="Home &amp; loans",
-        h1="Refinance calculator",
-        lede="A lower rate isn't automatically a win — closing costs and a reset clock can eat it. This shows the break-even month and the honest lifetime difference. Nothing you type leaves this page.",
-        form="\n".join([
-            field("balance", "Current loan balance", prefix="$", value="320000", fmin="1000", fmax="20000000", step="1000",
-                  slider=("50000", "1200000", "5000"), err="Enter $1,000 to $20,000,000."),
-            field("rate", "Current interest rate", suffix="%", value="6.9", fmin="0.1", fmax="25", step="0.125",
-                  err="Enter 0.1 to 25%."),
-            field("remyears", "Years left on current loan", suffix="yrs", value="26", fmin="1", fmax="40", step="0.5",
-                  err="Enter 1 to 40 years."),
-            field("newrate", "New interest rate", suffix="%", value="5.6", fmin="0.1", fmax="25", step="0.125",
-                  help_="Refinancing usually starts making sense around 0.75–1% below your current rate.",
-                  err="Enter 0.1 to 25%."),
-            '''        <div class="field">
-          <label for="newterm">New loan term</label>
-          <div class="input-wrap">
-            <select id="newterm" aria-label="New loan term">
-              <option value="30" selected>30 years</option>
-              <option value="20">20 years</option>
-              <option value="15">15 years</option>
-            </select>
-          </div>
-        </div>''',
-            field("closing", "Closing costs", prefix="$", value="6000", fmin="0", fmax="200000", step="250",
-                  help_="Typically 2–6% of the loan: origination, appraisal, title, recording.",
-                  err="Enter $0 to $200,000."),
-            '''        <div class="field">
-          <label>Roll closing costs into the new loan?</label>
-          <div class="chips" role="radiogroup" aria-label="Roll in closing costs">
-            <label><input type="radio" name="rollin" value="no" checked>No — pay upfront</label>
-            <label><input type="radio" name="rollin" value="yes">Yes — finance them</label>
-          </div>
-        </div>''',
-        ]),
-        results="\n".join([
-            hero("Monthly payment change"),
-            stats(("New payment", "r-newpay"), ("Break-even", "r-breakeven"), ("Lifetime difference", "r-lifetime"), ("Keep old payment → paid off in", "r-samepay")),
-            chart("chart-cost", "Total money out the door — staying put vs. refinancing"),
-            sched("Remaining balance by year, old vs. new"),
-        ]),
-        prose="""      <h2>How this is calculated</h2>
-      <p>Both paths are simulated month by month. Staying put means your current payment at your current rate until the balance hits zero. Refinancing means closing costs (upfront, or added to the balance if you roll them in), then the new payment at the new rate.</p>
-      <p><strong>Break-even</strong> is the month the refinance's cumulative cost drops below the old loan's — before it, the refinance is behind; after it, every month is savings. If you might sell or move before break-even, refinancing loses money.</p>
-      <h3>The term-reset trap, and the escape</h3>
-      <p>Refinancing 26 remaining years into a fresh 30-year loan lowers the payment partly by adding four years of payments — the lifetime-difference number accounts for that honestly, which is why a lower payment can still show a negative lifetime result. The escape: refinance to the lower rate but <strong>keep paying your old payment</strong>. The "keep old payment" figure shows how fast the loan dies then — usually years earlier than your current path, with the rate cut doing all the work.</p>
-      <h3>Notes</h3>
-      <p>Assumes fixed rates and no prepayment penalties. Cash-out refinancing, points, and rate-buydown trade-offs aren't modeled. Tax effects of mortgage interest aren't included — with the standard deduction this high, they rarely change the answer.</p>""",
-    ),
-]
-
-
-TOOLS += [
     # ------------------------------------------------ sequence-of-returns
     dict(
         slug="sequence-risk",
@@ -553,7 +496,8 @@ TOOLS += [
             field("rentgrow", "Rent grows at", suffix="%/yr", value="3", fmin="0", fmax="15", step="0.5"),
             field("invest", "Investments would earn", suffix="%/yr", value="7", fmin="0", fmax="20", step="0.5",
                   help_="What the down payment + closing costs + any monthly savings earn if you rent instead."),
-            field("horizon", "How long you would stay", suffix="yrs", value="10", fmin="1", fmax="40", step="1"),
+            field("horizon", "How long you would stay", suffix="yrs", value="10", fmin="1", fmax="100", step="1",
+                  slider=("1", "100", "1")),
         ]),
         results="\n".join([
             hero("After your stay, buying leaves you"),
@@ -708,45 +652,6 @@ TOOLS += [
       <p>A dedicated extra sticks to its loan no matter what - useful for a loan with a co-signer to protect or a promotional rate expiring. Strategy money hunts wherever the strategy points. Most plans work best with everything in strategy money; the option exists because real life has exceptions.</p>
       <h3>Notes</h3>
       <p>Fixed APRs, no new charges, constant minimums. If the budget can't cover interest, the results say so. Payoff dates assume this month is month 1.</p>""",
-    ),
-    # ------------------------------------------------ RSU withholding
-    dict(
-        slug="rsu-withholding",
-        title="RSU withholding shortfall estimator",
-        desc="Employers withhold a flat 22% on vested RSUs - your real rate is usually higher. Estimate the surprise tax bill before the IRS does.",
-        cat="Income &amp; taxes",
-        h1="RSU withholding shortfall",
-        lede="Vested RSUs are taxed like salary, but employers withhold a flat 22% - while your actual marginal rate on that income may be 32-37%. The gap becomes an April surprise. Estimate yours now. Nothing you type leaves this page.",
-        form="\n".join([
-            '''        <div class="field">
-          <label>Filing status</label>
-          <div class="chips" role="radiogroup" aria-label="Filing status">
-            <label><input type="radio" name="status" value="single" checked>Single</label>
-            <label><input type="radio" name="status" value="mfj">Married, joint</label>
-          </div>
-        </div>''',
-            field("salary", "Salary &amp; other ordinary income (before RSUs)", prefix="$", value="180000", fmin="0", fmax="10000000", step="5000",
-                  slider=("50000", "800000", "5000")),
-            field("rsu", "RSU value vesting this year", prefix="$", value="80000", fmin="0", fmax="20000000", step="2500",
-                  help_="Shares x price at each vest. It is W-2 income the moment it vests - whether or not you sell."),
-            field("staterate", "State marginal rate", suffix="%", value="5", fmin="0", fmax="14", step="0.5",
-                  help_="States under-withhold on RSUs too - the <a href=\"take-home-pay.html\">tax tool</a> shows yours."),
-            field("statewh", "State supplemental withholding", suffix="%", value="5", fmin="0", fmax="15", step="0.5"),
-        ]),
-        results="\n".join([
-            hero("Estimated shortfall at filing"),
-            stats(("Tax on the RSUs (fed+state)", "r-fedtax"), ("Withheld (fed+state)", "r-withheld"), ("Real marginal rate on RSUs", "r-eff"), ("Set aside per $10k vest", "r-setaside")),
-            chart("chart-rsu", "Your RSU dollars: withheld vs. actually owed"),
-            sched("The arithmetic"),
-        ]),
-        prose="""      <h2>Why the shortfall exists</h2>
-      <p>The IRS classifies RSU vests as "supplemental wages," withheld at a flat <strong>22%</strong> (37% only on supplemental income past $1M). But the vest stacks on top of your salary - so its real marginal rate is whatever bracket your salary already reached: 24%, 32%, 35%. The calculator computes the actual 2026-bracket tax on your stacked income and subtracts what the flat rate withholds - federal and state.</p>
-      <h3>What to do about it</h3>
-      <p>Three fixes, in order of ease: sell enough shares at each vest and park the set-aside figure above; file a new W-4 adding extra withholding per paycheck; or pay quarterly estimates. And know the <strong>safe harbor</strong>: pay in at least 110% of last year's total tax (100% if AGI under $150k) and you owe no penalty regardless of the shortfall - the balance is simply due in April.</p>
-      <h3>ESPP, while you're here</h3>
-      <p>ESPP discounts are also ordinary income and typically have <em>zero</em> withholding - the same trap, smaller dollars. Add your expected discount income to the RSU field for a combined estimate.</p>
-      <h3>Notes</h3>
-      <p>Uses 2026 federal brackets and the standard deduction; Additional Medicare (0.9% over $200k/$250k) included. Capital gains after the vest are a separate, second tax event - the vest itself is pure ordinary income.</p>""",
     ),
 ]
 

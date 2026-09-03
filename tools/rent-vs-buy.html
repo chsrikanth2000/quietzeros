@@ -99,7 +99,8 @@
         </div>
         <div class="field">
           <label for="horizon">How long you would stay</label>
-          <div class="input-wrap"><input id="horizon" type="number" inputmode="decimal" value="10" min="1" max="40" step="1"><span class="affix">yrs</span></div>
+          <div class="input-wrap"><input id="horizon" type="number" inputmode="decimal" value="10" min="1" max="100" step="1"><span class="affix">yrs</span></div>
+          <input type="range" data-pair="horizon" min="1" max="100" step="1" value="10" aria-label="How long you would stay slider">
         </div>
         <div class="calc-actions"><button class="btn-ghost" type="reset" data-reset>Reset to defaults</button></div>
       </div>
