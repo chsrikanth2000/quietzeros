@@ -36,6 +36,13 @@ for (const id of ["price", "down"]) {
   $("#" + id).addEventListener("input", () => { syncLoanFromPrice(); if (typeof recompute === "function") recompute(); });
 }
 
+for (const r of $$('input[name="hascompare"]')) {
+  r.addEventListener("change", () => {
+    $("#compare-fields").hidden = chipVal("hascompare") !== "yes";
+    if (typeof recompute === "function") recompute();
+  });
+}
+
 /* ================= scenario events (user-built timeline) ================= */
 
 let nextId = 1;
@@ -420,6 +427,29 @@ function compute() {
   }
   if (!evs.length && !heloc) {
     impact.append(el("p", { class: "q-note" }, "Add events above — each one shows its true marginal savings, given everything else in the plan."));
+  }
+
+  // compare two extra-payment amounts, each measured on its own against minimum payments
+  const compareBlock = $("#compare-block"), compareList = $("#compare-list");
+  compareBlock.hidden = chipVal("hascompare") !== "yes";
+  if (!compareBlock.hidden) {
+    compareList.replaceChildren();
+    const freq = document.querySelector('input[name="cmpfreq"]:checked').value;
+    const mkEvents = (amt) => freq === "once" ? [{ type: "extra", when: 1, amt }] : [{ type: "recur", when: 1, amt, freq: 1 }];
+    for (const [id, label] of [["cmpA", "Amount A"], ["cmpB", "Amount B"]]) {
+      const amt = readField($("#" + id));
+      const sim = amt > 0 ? simulate(amount, ratePct, termYears, mkEvents(amt)) : base;
+      if (!sim) {
+        compareList.append(el("div", { class: "impact-row" }, el("span", {}, `${label}: ${money(amt)}`), el("span", { class: "n bad" }, "never pays off")));
+        continue;
+      }
+      const interestSaved = base.totalInterest - sim.totalInterest;
+      const monthsCut = base.months - sim.months;
+      compareList.append(el("div", { class: "impact-row" },
+        el("span", {}, `${label}: ${money(amt)}${freq === "once" ? " one-time" : "/mo"} — payoff ${monthIndexToLabel(sim.months)}`),
+        el("span", { class: "n" + (interestSaved < 0 ? " bad" : "") },
+          `${interestSaved >= 0 ? "saves" : "costs"} ${money(Math.abs(interestSaved))} — ${Math.abs(monthsCut)} ${monthsCut >= 0 ? "fewer" : "more"} payment${Math.abs(monthsCut) === 1 ? "" : "s"}`)));
+    }
   }
 
   // prepay vs invest, apples to apples at the baseline horizon

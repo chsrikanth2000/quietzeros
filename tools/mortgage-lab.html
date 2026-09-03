@@ -141,6 +141,32 @@
         </div>
 
         <div class="field">
+          <label>Compare two extra-payment amounts?</label>
+          <div class="chips" role="radiogroup" aria-label="Compare two extra-payment amounts">
+            <label><input type="radio" name="hascompare" value="yes">Yes</label>
+            <label><input type="radio" name="hascompare" value="no" checked>No</label>
+          </div>
+          <div class="subfields" id="compare-fields" hidden>
+            <div class="field">
+              <label>Paid how</label>
+              <div class="chips" role="radiogroup" aria-label="Compare cadence">
+                <label><input type="radio" name="cmpfreq" value="once" checked>One-time, starting now</label>
+                <label><input type="radio" name="cmpfreq" value="monthly">Every month, starting now</label>
+              </div>
+            </div>
+            <div class="field">
+              <label for="cmpA">Amount A</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="cmpA" type="number" inputmode="decimal" value="5000" min="0" max="1000000" step="500"></div>
+            </div>
+            <div class="field">
+              <label for="cmpB">Amount B</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="cmpB" type="number" inputmode="decimal" value="10000" min="0" max="1000000" step="500"></div>
+            </div>
+            <p class="help">Each is measured on its own against minimum payments — not stacked with the events above.</p>
+          </div>
+        </div>
+
+        <div class="field">
           <label>Add a HELOC or second loan?</label>
           <div class="chips" role="radiogroup" aria-label="HELOC">
             <label><input type="radio" name="heloc" value="no" checked>No</label>
@@ -211,6 +237,11 @@
         <div class="chart-block">
           <p class="chart-title">What each move is worth</p>
           <div class="impact-list" id="impact"></div>
+        </div>
+
+        <div class="chart-block" id="compare-block" hidden>
+          <p class="chart-title">Amount A vs. Amount B</p>
+          <div class="impact-list" id="compare-list"></div>
         </div>
 
         <div class="chart-block">
