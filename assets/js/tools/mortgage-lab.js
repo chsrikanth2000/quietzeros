@@ -219,6 +219,7 @@ function simulate(amount, ratePct, termYears, evs) {
   const balances = [bal];
   const outPath = [0];       // cumulative out-of-pocket by month (for break-even comparisons)
   const paymentPath = [];    // required payment in effect during month m (index m-1)
+  const interestPath = [0];  // cumulative interest paid by month (for the amortization table + interest-saved chart)
   const cap = 1200;
   while (bal > 0.005 && m < cap) {
     m++;
@@ -235,6 +236,7 @@ function simulate(amount, ratePct, termYears, evs) {
     paymentPath.push(payment);
     const interest = bal * rate;
     totalInterest += interest;
+    interestPath.push(totalInterest);
     let pay = Math.min(payment, bal + interest);
     for (const e of evs) {
       if (e.type === "extra" && e.when === m) pay += e.amt;
@@ -257,7 +259,7 @@ function simulate(amount, ratePct, termYears, evs) {
     }
   }
   if (bal > 0.005) return null;
-  return { months: m, totalInterest, outOfPocket, balances, outPath, paymentPath, payment };
+  return { months: m, totalInterest, outOfPocket, balances, outPath, paymentPath, interestPath, payment };
 }
 /** Cumulative out-of-pocket at month m, holding flat after payoff. */
 function cumAt(sim, m) { return sim.outPath[Math.min(m, sim.outPath.length - 1)]; }
@@ -350,12 +352,18 @@ function compute() {
   // years left would otherwise collapse to 0-1 yearly points and render blank
   const step = span <= 24 ? 3 : span <= 96 ? 6 : 12;
   const xs = [], sPlan = [], sBase = [], sHouse = [];
+  const sSaved = [];
   const pushPoint = (mi) => {
     xs.push(mi === 0 ? "Now" : (step === 12 ? monthIndexToLabel(mi).slice(-4) : monthIndexToLabel(mi)));
     const pb = plan.balances[Math.min(mi, plan.balances.length - 1)];
     sPlan.push(pb);
     sBase.push(base.balances[Math.min(mi, base.balances.length - 1)]);
     if (heloc) sHouse.push(pb + heloc.balances[Math.min(mi, heloc.balances.length - 1)]);
+    if (evs.length) {
+      const baseInt = base.interestPath[Math.min(mi, base.interestPath.length - 1)];
+      const planInt = plan.interestPath[Math.min(mi, plan.interestPath.length - 1)];
+      sSaved.push(baseInt - planInt);
+    }
   };
   for (let mi = 0; mi <= span; mi += step) pushPoint(mi);
   if (span % step !== 0) pushPoint(span); // always land exactly on the payoff month
@@ -367,6 +375,16 @@ function compute() {
   stackedArea($("#chart-balance"), {
     ariaLabel: "Balance over time", xs, stacked: false, fmt: moneyShort, fmtTip: money, series,
   });
+
+  // interest saved gets its own chart, not a series mixed into the balance chart --
+  // a $30k savings line would flatten to invisible next to a $400k balance line
+  $("#savings-block").hidden = !evs.length;
+  if (evs.length) {
+    stackedArea($("#chart-savings"), {
+      ariaLabel: "Interest saved over time", xs, stacked: false, fmt: moneyShort, fmtTip: money,
+      series: [{ name: "Interest saved", values: sSaved }],
+    });
+  }
 
   // per-event marginal attribution: re-run with each event removed
   const impact = $("#impact");
@@ -479,14 +497,25 @@ function compute() {
     history.replaceState(null, "", location.pathname + "#s=" + encodeState());
   }
 
-  // yearly table
+  // yearly amortization table: payment, principal and interest paid that year, ending balance
   const rows = [];
+  const at = (arr, mi) => arr[Math.min(mi, arr.length - 1)];
   for (let y = 1; y * 12 <= plan.months + 11; y++) {
-    rows.push({ when: monthIndexToLabel(Math.min(y * 12, plan.months)), bal: plan.balances[Math.min(y * 12, plan.balances.length - 1)] });
+    const mi0 = (y - 1) * 12, mi1 = Math.min(y * 12, plan.months);
+    rows.push({
+      when: monthIndexToLabel(mi1),
+      payment: at(plan.outPath, mi1) - at(plan.outPath, mi0),
+      principal: at(plan.balances, mi0) - at(plan.balances, mi1),
+      interest: at(plan.interestPath, mi1) - at(plan.interestPath, mi0),
+      bal: at(plan.balances, mi1),
+    });
   }
   dataTable($("#sched-table"), rows, [
     { h: "Date", get: (r) => r.when },
-    { h: "Remaining balance", get: (r) => r.bal, fmt: money },
+    { h: "Payment", get: (r) => r.payment, fmt: money },
+    { h: "Principal", get: (r) => r.principal, fmt: money },
+    { h: "Interest", get: (r) => r.interest, fmt: money },
+    { h: "Balance", get: (r) => r.bal, fmt: money },
   ]);
 }
 
