@@ -56,13 +56,35 @@
     <form class="calc" id="calc" autocomplete="off" novalidate>
       <div class="calc-inputs">
         <div class="field">
-          <label for="nest">Starting portfolio</label>
+          <label for="age">Current age</label>
+          <div class="input-wrap"><input id="age" type="number" inputmode="decimal" value="55" min="18" max="100" step="1"><span class="affix">yrs old</span></div>
+        </div>
+        <div class="field">
+          <label>Still working and contributing before retirement?</label>
+          <div class="chips" role="radiogroup" aria-label="Still contributing before retirement">
+            <label><input type="radio" name="haswork" value="yes">Yes</label>
+            <label><input type="radio" name="haswork" value="no" checked>No — already retired</label>
+          </div>
+          <div class="subfields" id="work-fields" hidden>
+            <div class="field">
+              <label for="workyrs">Years until retirement</label>
+              <div class="input-wrap"><input id="workyrs" type="number" inputmode="decimal" value="10" min="0" max="50" step="1"></div>
+            </div>
+            <div class="field">
+              <label for="contrib">Annual contribution during those years</label>
+              <div class="input-wrap"><span class="affix">$</span><input id="contrib" type="number" inputmode="decimal" value="20000" min="0" max="1000000" step="1000"></div>
+              <p class="help">Grown at your average return below, deterministically — sequence risk is about withdrawals, so we don't need three orderings for the saving years too.</p>
+            </div>
+          </div>
+        </div>
+        <div class="field">
+          <label for="nest">Portfolio today</label>
           <div class="input-wrap"><span class="affix">$</span><input id="nest" type="number" inputmode="decimal" value="1000000" min="10000" max="100000000" step="10000"></div>
-          <input type="range" data-pair="nest" min="100000" max="5000000" step="50000" value="1000000" aria-label="Starting portfolio slider">
+          <input type="range" data-pair="nest" min="100000" max="5000000" step="50000" value="1000000" aria-label="Portfolio today slider">
           <p class="err">Enter $10,000 to $100,000,000.</p>
         </div>
         <div class="field">
-          <label for="spend">Yearly withdrawal</label>
+          <label for="spend">Yearly withdrawal in retirement</label>
           <div class="input-wrap"><span class="affix">$</span><input id="spend" type="number" inputmode="decimal" value="40000" min="0" max="10000000" step="1000"></div>
           <p class="help">The classic 4% rule on $1M. Withdrawals are what make sequence matter.</p>
         </div>
@@ -89,6 +111,7 @@
         </div>
         <p class="interpret" id="r-interpret"></p>
         <div class="stat-row">
+          <div class="stat" data-info="Today&#x27;s portfolio grown deterministically through your remaining contribution years — the starting point for the sequence-risk test that follows."><p class="k">Balance at retirement</p><p class="v" id="r-atret">—</p></div>
           <div class="stat"><p class="k">Crash-first ending</p><p class="v" id="r-bad">—</p></div>
           <div class="stat"><p class="k">Steady ending</p><p class="v" id="r-flat">—</p></div>
           <div class="stat"><p class="k">Boom-first ending</p><p class="v" id="r-good">—</p></div>
@@ -116,6 +139,8 @@
       <p class="formula">balance<sub>y+1</sub> = (balance<sub>y</sub> - withdrawal) x (1 + r<sub>y</sub>)</p>
       <h3>Why order matters once you withdraw</h3>
       <p>Selling shares in a down year converts a temporary loss into a permanent one - those shares are gone before the recovery arrives. Without withdrawals, order is irrelevant (multiplication commutes); with withdrawals, early losses compound against you forever. That is sequence-of-returns risk, and it is why two retirees with identical portfolios and identical average returns can end 30 years apart by millions.</p>
+      <h3>If you're still working</h3>
+      <p>Years you're still contributing don't get the three-way ordering - a crash while you're still buying in is a discount, not a disaster, so sequence risk during accumulation cuts the other way and mixing the two would muddy the lesson. Instead, your current portfolio grows deterministically at your average return through your contribution years to produce a realistic balance at retirement, which then becomes the starting point for the sequence-risk test on your actual withdrawal years.</p>
       <h3>What to do about it</h3>
       <p>The standard defenses: hold 1-3 years of spending in cash or bonds so down years aren't sale years; flex withdrawals downward in crashes; or work one more year past a bear market's start. The gap shown above is the price of ignoring it.</p>
     </article>

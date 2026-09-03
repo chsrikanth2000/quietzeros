@@ -6,6 +6,25 @@ import { stackedArea, dataTable } from "../charts.js";
 
 initToolPage("sequence-risk");
 
+function chipVal(name) {
+  const c = document.querySelector(`input[name="${name}"]:checked`);
+  return c ? c.value : "no";
+}
+function updateWorkUI() {
+  $("#work-fields").hidden = chipVal("haswork") !== "yes";
+}
+for (const r of document.querySelectorAll('input[name="haswork"]')) r.addEventListener("change", updateWorkUI);
+updateWorkUI();
+
+/** Grows today's portfolio deterministically through the contribution years —
+ * a crash while still buying in is a discount, not a disaster, so sequence
+ * risk doesn't apply here; it only matters once withdrawals start. */
+function projectToRetirement(nest, contribYears, contribAmt, avgReturnPct) {
+  let bal = nest;
+  for (let i = 0; i < contribYears; i++) bal = bal * (1 + avgReturnPct / 100) + contribAmt;
+  return bal;
+}
+
 /** One fixed multiset of returns (avg ± spread), run in a given order. */
 function returnSet(avg, vol, n) {
   const rs = [];
@@ -28,17 +47,25 @@ function compute() {
   const avg = readField($("#avg"));
   const vol = readField($("#vol"));
   const yrs = Math.round(readField($("#yrs")));
+  const age = Math.round(readField($("#age")));
+  const working = chipVal("haswork") === "yes";
+  const contribYears = working ? Math.round(readField($("#workyrs"))) : 0;
+  const contribAmt = working ? readField($("#contrib")) : 0;
+  const retireAge = age + contribYears;
+
+  const nestAtRetirement = projectToRetirement(nest, contribYears, contribAmt, avg);
+  $("#r-atret").textContent = money(nestAtRetirement);
 
   const base = returnSet(avg, vol, yrs);
-  const bad = run(nest, spend, base);                    // worst years first
-  const good = run(nest, spend, [...base].reverse());    // best years first
+  const bad = run(nestAtRetirement, spend, base);                    // worst years first
+  const good = run(nestAtRetirement, spend, [...base].reverse());    // best years first
   // neutral: zigzag low/high pairing — same multiset, no early streaks
   const zig = [];
   for (let i = 0; i < Math.ceil(yrs / 2); i++) {
     zig.push(base[yrs - 1 - i]);
     if (i !== yrs - 1 - i) zig.push(base[i]);
   }
-  const flat = run(nest, spend, zig);
+  const flat = run(nestAtRetirement, spend, zig);
 
   const endBad = bad[bad.length - 1], endGood = good[good.length - 1], endFlat = flat[flat.length - 1];
   $("#r-hero").textContent = money(endGood - endBad);
@@ -48,17 +75,19 @@ function compute() {
 
   const failYear = bad.findIndex((b) => b <= 0);
   $("#r-interpret").replaceChildren(
-    `Identical returns averaging ${avg}%, identical ${money(spend)} withdrawals — only the order differs. `,
+    working
+      ? `Contributing ${money(contribAmt)}/yr for ${contribYears} more years grows today's ${money(nest)} to about ${money(nestAtRetirement)} by age ${retireAge}. From there, identical returns averaging ${avg}%, identical ${money(spend)} withdrawals — only the order differs. `
+      : `Identical returns averaging ${avg}%, identical ${money(spend)} withdrawals — only the order differs. `,
     Object.assign(document.createElement("strong"), {
       textContent: failYear > 0
-        ? `With the bad years first, the money runs out in year ${failYear}.`
+        ? `With the bad years first, the money runs out at age ${retireAge + failYear}.`
         : `The ordering alone moves the ending by ${money(endGood - endBad)}.`,
     }),
     ` Without withdrawals all three paths would end identically — withdrawals are what make sequence a risk.`
   );
 
   const xs = [];
-  for (let y = 0; y <= yrs; y++) xs.push(y === 0 ? "Now" : `Yr ${y}`);
+  for (let y = 0; y <= yrs; y++) xs.push(y === 0 ? `Age ${retireAge}` : `Age ${retireAge + y}`);
   stackedArea($("#chart-seq"), {
     ariaLabel: "Portfolio balance under three return orderings",
     xs, stacked: false, fmt: moneyShort, fmtTip: money,
@@ -70,9 +99,9 @@ function compute() {
   });
 
   const rows = [];
-  for (let y = 1; y <= yrs; y++) rows.push({ y, b: bad[y], f: flat[y], g: good[y] });
+  for (let y = 1; y <= yrs; y++) rows.push({ age: retireAge + y, b: bad[y], f: flat[y], g: good[y] });
   dataTable($("#sched-table"), rows, [
-    { h: "Year", get: (r) => r.y },
+    { h: "Age", get: (r) => r.age },
     { h: "Crash first", get: (r) => r.b, fmt: money },
     { h: "No streaks", get: (r) => r.f, fmt: money },
     { h: "Boom first", get: (r) => r.g, fmt: money },
