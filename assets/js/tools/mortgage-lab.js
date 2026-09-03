@@ -352,15 +352,17 @@ function compute() {
   // years left would otherwise collapse to 0-1 yearly points and render blank
   const step = span <= 24 ? 3 : span <= 96 ? 6 : 12;
   const xs = [], sPlan = [], sBase = [], sHouse = [], sPlanInt = [], sBaseInt = [];
+  // once a loan is paid off, its lines simply end there — null stops a line
+  // in stackedArea rather than projecting a flat, misleading tail
   const pushPoint = (mi) => {
     xs.push(mi === 0 ? "Now" : (step === 12 ? monthIndexToLabel(mi).slice(-4) : monthIndexToLabel(mi)));
-    const pb = plan.balances[Math.min(mi, plan.balances.length - 1)];
+    const pb = mi > plan.months ? null : plan.balances[Math.min(mi, plan.balances.length - 1)];
     sPlan.push(pb);
-    sBase.push(base.balances[Math.min(mi, base.balances.length - 1)]);
-    if (heloc) sHouse.push(pb + heloc.balances[Math.min(mi, heloc.balances.length - 1)]);
+    sBase.push(mi > base.months ? null : base.balances[Math.min(mi, base.balances.length - 1)]);
+    if (heloc) sHouse.push(pb == null ? null : pb + heloc.balances[Math.min(mi, heloc.balances.length - 1)]);
     if (evs.length && !heloc) {
-      sPlanInt.push(plan.interestPath[Math.min(mi, plan.interestPath.length - 1)]);
-      sBaseInt.push(base.interestPath[Math.min(mi, base.interestPath.length - 1)]);
+      sPlanInt.push(mi > plan.months ? null : plan.interestPath[Math.min(mi, plan.interestPath.length - 1)]);
+      sBaseInt.push(mi > base.months ? null : base.interestPath[Math.min(mi, base.interestPath.length - 1)]);
     }
   };
   for (let mi = 0; mi <= span; mi += step) pushPoint(mi);
@@ -379,7 +381,7 @@ function compute() {
     ariaLabel: "Balance and interest paid over time", xs, stacked: false, fmt: moneyShort, fmtTip: money, series,
   });
   $("#balance-note").textContent = showInterest
-    ? `The interest lines keep climbing after "Your plan" is paid off (${monthIndexToLabel(plan.months)}) because "Minimum only" keeps accruing interest until its own payoff (${monthIndexToLabel(base.months)}) — you're not still paying anything after ${monthIndexToLabel(plan.months)}, that's what you avoided.`
+    ? `Each pair of lines stops the month that loan is paid off — "Your plan" finishes ${monthIndexToLabel(plan.months)}, "Minimum only" keeps going until ${monthIndexToLabel(base.months)}.`
     : "";
 
   // per-event marginal attribution: re-run with each event removed

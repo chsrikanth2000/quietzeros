@@ -54,11 +54,19 @@ export function stackedArea(container, cfg) {
     const fmt = cfg.fmt || moneyShort;
     const stacked = cfg.stacked !== false;
 
+    // a series may end early (e.g. a loan that's paid off) by trailing its
+    // values with null — the line/area for that series simply stops there
+    // instead of projecting a flat, misleading tail across the rest of the chart
+    const validLen = (values) => {
+      const i = values.findIndex((v) => v == null);
+      return i === -1 ? values.length : i;
+    };
+
     // stacked totals per x
     const tops = cfg.xs.map((_, xi) =>
       stacked
-        ? cfg.series.reduce((a, s) => a + s.values[xi], 0)
-        : Math.max(...cfg.series.map((s) => s.values[xi]))
+        ? cfg.series.reduce((a, s) => a + (s.values[xi] ?? 0), 0)
+        : Math.max(0, ...cfg.series.map((s) => s.values[xi]).filter((v) => v != null))
     );
     const yMax = Math.max(...tops) * 1.04 || 1;
     const x = (xi) => padL + (xi / (n - 1)) * iw;
@@ -87,21 +95,24 @@ export function stackedArea(container, cfg) {
     const endLabels = [];
     cfg.series.forEach((s, si) => {
       const color = seriesColor(si);
+      const vlen = validLen(s.values);
       const lower = cum.slice();
-      const upper = stacked ? cum.map((c, xi) => c + s.values[xi]) : s.values.slice();
+      const upper = stacked ? cum.map((c, xi) => c + (s.values[xi] ?? 0)) : s.values.slice();
       if (stacked) cum = upper;
+      if (vlen < 2) return; // nothing to draw (already ended before this chart starts)
 
       if (stacked) {
         let d = `M ${x(0)} ${y(upper[0])}`;
-        for (let xi = 1; xi < n; xi++) d += ` L ${x(xi)} ${y(upper[xi])}`;
-        for (let xi = n - 1; xi >= 0; xi--) d += ` L ${x(xi)} ${y(lower[xi])}`;
+        for (let xi = 1; xi < vlen; xi++) d += ` L ${x(xi)} ${y(upper[xi])}`;
+        for (let xi = vlen - 1; xi >= 0; xi--) d += ` L ${x(xi)} ${y(lower[xi])}`;
         svg.append(svgEl("path", { d: d + " Z", fill: color, "fill-opacity": "0.82", stroke: "var(--card)", "stroke-width": "2" }));
       }
       let dl = `M ${x(0)} ${y(upper[0])}`;
-      for (let xi = 1; xi < n; xi++) dl += ` L ${x(xi)} ${y(upper[xi])}`;
+      for (let xi = 1; xi < vlen; xi++) dl += ` L ${x(xi)} ${y(upper[xi])}`;
       svg.append(svgEl("path", { d: dl, fill: "none", stroke: color, "stroke-width": "2", "stroke-linejoin": "round" }));
+      if (vlen < n) svg.append(svgEl("circle", { cx: x(vlen - 1), cy: y(upper[vlen - 1]), r: 3, fill: color }));
 
-      endLabels.push({ name: s.name, color, y: y(upper[n - 1]) + 4 });
+      endLabels.push({ name: s.name, color, x: x(vlen - 1), y: y(upper[vlen - 1]) + 4 });
     });
 
     // direct labels at line ends, pushed apart so they never collide
@@ -113,7 +124,7 @@ export function stackedArea(container, cfg) {
     }
     const overflow = endLabels.length ? endLabels[endLabels.length - 1].y - (padT + ih - 2) : 0;
     for (const lb of endLabels) {
-      svg.append(svgEl("text", { class: "direct-label", x: x(n - 1) + 7, y: lb.y - Math.max(0, overflow), fill: lb.color }, lb.name));
+      svg.append(svgEl("text", { class: "direct-label", x: lb.x + 7, y: lb.y - Math.max(0, overflow), fill: lb.color }, lb.name));
     }
 
     container.append(svg);
@@ -142,7 +153,7 @@ export function stackedArea(container, cfg) {
         ...cfg.series.map((s, si) => el("div", { class: "t-row" },
           el("span", { class: "swatch", style: { background: seriesColor(si) } }),
           el("span", {}, s.name),
-          el("span", { class: "n" }, (cfg.fmtTip || fmt)(s.values[xi]))
+          el("span", { class: "n" }, s.values[xi] == null ? "—" : (cfg.fmtTip || fmt)(s.values[xi]))
         )));
       const cw = container.getBoundingClientRect();
       const tx = ((x(xi) / W) * cw.width);
