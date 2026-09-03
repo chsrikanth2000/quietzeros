@@ -16,6 +16,22 @@ function updateWorkUI() {
 for (const r of document.querySelectorAll('input[name="haswork"]')) r.addEventListener("change", updateWorkUI);
 updateWorkUI();
 
+/* ---- deep-link prefill: lets another tool (e.g. the retirement projection)
+   hand off its projected balance and retirement age via URL query params —
+   nothing is sent anywhere, this only reads the URL the visitor already has. */
+(() => {
+  const p = new URLSearchParams(location.search);
+  for (const [param, id] of [["nest", "nest"], ["age", "age"]]) {
+    const v = p.get(param);
+    if (v && !isNaN(Number(v))) $("#" + id).value = v;
+  }
+  const haswork = p.get("haswork");
+  if (haswork === "yes" || haswork === "no") {
+    const opt = document.querySelector(`input[name="haswork"][value="${haswork}"]`);
+    if (opt) { opt.checked = true; updateWorkUI(); }
+  }
+})();
+
 /** Grows today's portfolio deterministically through the contribution years —
  * a crash while still buying in is a discount, not a disaster, so sequence
  * risk doesn't apply here; it only matters once withdrawals start. */

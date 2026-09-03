@@ -1,11 +1,21 @@
 "use strict";
 
-import { $, bindCalc, readField, money, money2, moneyShort } from "../core.js";
+import { $, el, bindCalc, readField, money, money2, moneyShort } from "../core.js";
 import { initToolPage } from "../toolpage.js";
 import { stackedArea, dataTable } from "../charts.js";
 import { project } from "./compound-interest.js";
 
 initToolPage("retirement");
+
+/* ---- deep-link prefill: lets another tool (e.g. Mortgage Lab's prepay-vs-
+   invest comparison) hand off a monthly amount via URL query params. */
+(() => {
+  const p = new URLSearchParams(location.search);
+  for (const [param, id] of [["monthly", "monthly"], ["balance", "balance"]]) {
+    const v = p.get(param);
+    if (v && !isNaN(Number(v))) $("#" + id).value = v;
+  }
+})();
 
 function compute() {
   const age = Math.round(readField($("#age")));
@@ -50,6 +60,14 @@ function compute() {
     { h: "Growth", get: (r) => r.growth, fmt: money },
     { h: "Balance", get: (r) => r.balance, fmt: money },
   ]);
+
+  const seqLink = `sequence-risk.html?nest=${Math.round(last.balance)}&age=${retire}&haswork=no`;
+  $("#chain-note").replaceChildren(
+    `A single average return hides the risk that matters most: `,
+    el("strong", {}, "the order returns arrive in"),
+    `, once you start withdrawing. `,
+    el("a", { href: seqLink }, `See how sequence-of-returns risk could shake up this ${money(last.balance)} →`),
+  );
 }
 
 bindCalc($("#calc"), compute);

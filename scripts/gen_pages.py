@@ -291,6 +291,10 @@ TOOLS = [
             stats(("You'll contribute", "r-contrib"), ("Growth earned", "r-growth"), ("Sustainable monthly draw", "r-income")),
             chart("chart-growth", "Contributions vs. growth to retirement"),
             sched(),
+            '''        <div class="note" id="chain-block">
+          <strong>This projection ignores one thing on purpose.</strong>
+          <p id="chain-note" style="margin:.5rem 0 0"></p>
+        </div>''',
         ]),
         prose="""      <h2>How this is calculated</h2>
       <p>The projection compounds your balance monthly and adds contributions, exactly like the <a href="compound-interest.html">compound interest tool</a>. The "sustainable monthly draw" applies the <strong>4% rule</strong>: withdrawing 4% of the nest egg in year one (then adjusting for inflation) has historically survived 30-year retirements in most market sequences.</p>

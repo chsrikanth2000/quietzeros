@@ -488,7 +488,9 @@ function compute() {
       el("p", {}, `· Invest it all along at ${invReturn}%: `, el("strong", {}, money(investAll)), ` — if the market cooperates.`),
       el("p", {}, diff >= 0
         ? `On these numbers, prepaying ends ${money(diff)} ahead — and its return is contractual, not hoped for.`
-        : `On these numbers, investing ends ${money(-diff)} ahead — the classic trade when the expected return beats your rate of ${ratePct}%. The mortgage's return is guaranteed; the market's is not.`)));
+        : `On these numbers, investing ends ${money(-diff)} ahead — the classic trade when the expected return beats your rate of ${ratePct}%. The mortgage's return is guaranteed; the market's is not.`),
+      el("p", { class: "q-note" }, el("a", { href: `retirement.html?monthly=${Math.round(extraMonthly)}` },
+        `See what ${money(extraMonthly)}/month grows into by retirement →`))));
   } else {
     svp.replaceChildren(el("p", { class: "q-note" }, "Add a monthly recurring extra to compare prepaying it against investing it."));
   }
