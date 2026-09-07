@@ -32,8 +32,8 @@ export const TOOLS = [
   },
   {
     slug: "move-cost",
-    name: "Full move cost calculator",
-    desc: "Truck or movers, packing, storage, the gap between homes, utility deposits, pets and re-registering a car — minus your employer's reimbursement, after tax.",
+    name: "Moving expense & relocation package calculator",
+    desc: "Truck or movers, packing, storage, the gap between homes, utility deposits, pets and re-registering a car — minus your employer's relocation package or lump sum, after tax.",
     cat: "Home & loans",
   },
   {

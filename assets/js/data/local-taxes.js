@@ -90,6 +90,30 @@ export const MO_CITIES = {
 // Delaware: Wilmington is the only Delaware municipality with its own wage tax.
 export const DE_WILMINGTON_RATE = 1.25;
 
+// Washington has no wage income tax, but does levy a state excise tax on
+// LONG-TERM CAPITAL GAINS above a standard deduction, tiered: 7% on the first
+// $1,000,000 of taxable gain, 9.9% above that (RCW 82.87, tiered rate
+// effective for the 2025 tax year per WA DOR's official "new tiered rates"
+// notice, dor.wa.gov). Real estate sales, retirement-account distributions,
+// and a handful of other categories (timber, livestock, franchise-dealership
+// goodwill) are excluded by statute -- this only applies to other long-term
+// gains (stocks, business interests, etc.).
+// WA_CG_DEDUCTION is the CONFIRMED 2025 standard deduction ($278,000, per
+// dor.wa.gov/taxes-rates/other-taxes/capital-gains-tax) carried forward as
+// the best available estimate for 2026 -- WA DOR had not yet published the
+// inflation-adjusted 2026 figure as of retrieval (2026-09-07). The real 2026
+// number will be slightly higher; this will modestly overstate the tax due
+// until it's updated.
+export const WA_CG_DEDUCTION = 278000;
+export const WA_CG_TIER1_RATE = 7;
+export const WA_CG_TIER1_MAX = 1000000;
+export const WA_CG_TIER2_RATE = 9.9;
+export function waCapitalGainsTax(longTermGains) {
+  const taxable = Math.max(0, longTermGains - WA_CG_DEDUCTION);
+  return Math.min(taxable, WA_CG_TIER1_MAX) * WA_CG_TIER1_RATE / 100
+    + Math.max(0, taxable - WA_CG_TIER1_MAX) * WA_CG_TIER2_RATE / 100;
+}
+
 // Colorado occupational privilege tax (OPT): a flat DOLLAR AMOUNT per month
 // (not a percentage), owed by the employee once a monthly earnings threshold is
 // met. Aurora repealed its OPT effective 2025. Amounts below are the EMPLOYEE's

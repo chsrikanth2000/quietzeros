@@ -93,7 +93,7 @@ export const STATES = {
   UT: { name: "Utah", t: "f", r: 4.5 },
   VA: { name: "Virginia", t: "g", b: [[2, 0], [3, 3000], [5, 5000], [5.75, 17000]], m: "same" },
   VT: { name: "Vermont", t: "g", b: [[3.35, 0], [6.6, 49400], [7.6, 119700], [8.75, 249700]], m: "approx-double" },
-  WA: { name: "Washington", t: "n", note: "No wage income tax. A 7% excise applies to long-term capital gains above a ~$278k deduction (not modeled)." },
+  WA: { name: "Washington", t: "n", note: "No wage income tax — but long-term capital gains above $278,000 owe a 7-9.9% state excise tax, included below if you entered any." },
   WI: { name: "Wisconsin", t: "g", b: [[3.5, 0], [4.4, 15110], [5.3, 51950], [7.65, 332720]], m: "approx-double" },
   WV: { name: "West Virginia", t: "g", b: [[2.22, 0], [2.96, 10000], [3.33, 25000], [4.44, 40000], [4.82, 60000]], m: "same" },
   WY: { name: "Wyoming", t: "n" },

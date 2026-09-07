@@ -5,7 +5,7 @@ import { initToolPage } from "../toolpage.js";
 import { breakdown, dataTable } from "../charts.js";
 import { META, FED, FED2025, ITEMIZED, RENTAL, QBI2025, STATES, NYC, SAVE } from "../data/tax-2026.js";
 import { STATE_TAXES, STATE_TAXES_META } from "../data/state-taxes.js";
-import { RECIPROCITY, YONKERS, MD_NONRESIDENT_RATE, MD_COUNTIES, MO_CITIES, DE_WILMINGTON_RATE, CO_OPT } from "../data/local-taxes.js";
+import { RECIPROCITY, YONKERS, MD_NONRESIDENT_RATE, MD_COUNTIES, MO_CITIES, DE_WILMINGTON_RATE, CO_OPT, waCapitalGainsTax } from "../data/local-taxes.js";
 
 let paData = null; // lazy-loaded: ~170KB, only fetched if PA is actually selected
 async function ensurePAData() {
@@ -502,6 +502,14 @@ function compute() {
   const recip = applyReciprocity(code, stateTax, stateTaxable, inp.status);
   stateTax = recip.stateTax;
 
+  // WA has no wage tax, but does levy a state excise tax on long-term capital
+  // gains above a deduction (real estate & retirement accounts are exempt)
+  let waCG = 0;
+  if (code === "WA" && inp.ltg > 0) {
+    waCG = waCapitalGainsTax(inp.ltg);
+    stateTax += waCG;
+  }
+
   const savings = r.pretax + inp.ira + (inp.status === "mfj" ? inp.iras : 0) + inp.plan529;
   const totalTax = r.fedTax + stateTax + localTax + r.payroll;
   const takeHome = Math.max(0, r.gross - savings - totalTax);
@@ -534,6 +542,7 @@ function compute() {
   if (r.depreciation > 0) bits.push(` Depreciation contributes a ${money(r.depreciation)} paper deduction, making your rental's taxable result ${money(r.rental)}.`);
   if (r.suspendedLoss > 0) bits.push(` ${money(r.suspendedLoss)} of your rental loss is suspended this year (income phase-out) — it carries forward.`);
   if (recip.note) bits.push(recip.note);
+  if (waCG > 0) bits.push(` Washington has no wage tax, but its ${money(waCG)} excise on long-term capital gains above $278,000 (2025's confirmed deduction, used here since 2026's isn't published yet) is included — real estate and retirement-account gains are exempt, so don't count those in your long-term gains figure above.`);
   $("#r-interpret").replaceChildren(...bits);
 
   breakdown($("#chart-breakdown"), {
@@ -647,7 +656,8 @@ function compute() {
   if (code2 && code2 !== stateSel.value) {
     const stB = STATES[code2];
     const sbB = stateBrackets(stB, inp.status);
-    const stateTaxB = bracketTax(Math.max(0, r.agi - (inp.ded529 ? inp.plan529 : 0)), sbB);
+    let stateTaxB = bracketTax(Math.max(0, r.agi - (inp.ded529 ? inp.plan529 : 0)), sbB);
+    if (code2 === "WA" && inp.ltg > 0) stateTaxB += waCapitalGainsTax(inp.ltg);
     const localB = stB.local ? (inp.wages + inp.rsu + r.seNet) * stB.local.def / 100 : 0;
     const incomeA = stateTax + localTax, incomeB = stateTaxB + localB;
 

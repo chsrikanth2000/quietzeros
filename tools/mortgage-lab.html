@@ -74,13 +74,15 @@
               <option value="30" selected>30 years</option>
               <option value="20">20 years</option>
               <option value="15">15 years</option>
+              <option value="50">50 years (proposed, not yet a real loan)</option>
               <option value="custom">Custom — I already have this loan</option>
             </select>
           </div>
+          <p class="help" id="term50-note" hidden>A 50-year term isn't an actual mortgage product yet — it was floated in early 2026 as a housing-affordability idea and hasn't gone anywhere since. This models the arithmetic if it existed: a lower payment, but roughly double the 30-year loan's lifetime interest.</p>
           <div class="subfields" id="term-custom-fields" hidden>
             <div class="field">
               <label for="termyears">Years remaining</label>
-              <div class="input-wrap"><input id="termyears" type="number" inputmode="decimal" value="23" min="0" max="40" step="1"></div>
+              <div class="input-wrap"><input id="termyears" type="number" inputmode="decimal" value="23" min="0" max="60" step="1"></div>
             </div>
             <div class="field">
               <label for="termmonths">Plus months</label>

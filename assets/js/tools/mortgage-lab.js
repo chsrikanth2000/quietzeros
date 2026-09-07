@@ -157,6 +157,7 @@ function currentTermYears() {
 }
 $("#term").addEventListener("change", () => {
   $("#term-custom-fields").hidden = $("#term").value !== "custom";
+  $("#term50-note").hidden = $("#term").value !== "50";
   if (typeof recompute === "function") recompute();
 });
 for (const id of ["termyears", "termmonths"]) {
@@ -550,12 +551,14 @@ function restoreState() {
   setNum("#amount", st.a); setNum("#rate", st.r); setNum("#invreturn", st.iv);
   const tYears = Number(st.t);
   if (Number.isFinite(tYears)) {
-    if ([15, 20, 30].includes(tYears)) {
+    if ([15, 20, 30, 50].includes(tYears)) {
       $("#term").value = String(tYears);
       $("#term-custom-fields").hidden = true;
+      $("#term50-note").hidden = tYears !== 50;
     } else if (tYears > 0) {
       $("#term").value = "custom";
       $("#term-custom-fields").hidden = false;
+      $("#term50-note").hidden = true;
       const y = Math.floor(tYears);
       $("#termyears").value = String(y);
       $("#termmonths").value = String(Math.round((tYears - y) * 12));
